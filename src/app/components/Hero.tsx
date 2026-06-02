@@ -189,41 +189,11 @@ function Frame() {
   );
 }
 
-function Container3() {
+function SkillTag({ label, bgColor, textColor }: { label: string; bgColor: string; textColor: string }) {
   return (
-    <div className="bg-[#fafbec] content-stretch flex flex-col items-center justify-center px-[12px] md:px-[16px] relative rounded-[16px] md:rounded-[28px] shrink-0" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#52520f] text-[24px] md:text-[32px] tracking-[-0.5px] md:tracking-[-1px] whitespace-nowrap">
-        <p className="leading-[48px] md:leading-[64px]">WEB</p>
-      </div>
-    </div>
-  );
-}
-
-function Container4() {
-  return (
-    <div className="bg-[rgba(238,232,249,0.92)] content-stretch flex flex-col items-center justify-center px-[12px] md:px-[16px] relative rounded-[16px] md:rounded-[28px] shrink-0" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-bold justify-center leading-[0] not-italic relative shrink-0 text-[#490f52] text-[24px] md:text-[32px] tracking-[-0.5px] md:tracking-[-1px] whitespace-nowrap">
-        <p className="leading-[48px] md:leading-[64px]">Mobile</p>
-      </div>
-    </div>
-  );
-}
-
-function Container5() {
-  return (
-    <div className="bg-[#eaf9ec] content-stretch flex flex-col items-center justify-center px-[12px] md:px-[16px] relative rounded-[16px] md:rounded-[28px] shrink-0" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-bold justify-center leading-[0] not-italic relative shrink-0 text-[#0f5223] text-[24px] md:text-[32px] tracking-[-0.5px] md:tracking-[-1px] whitespace-nowrap">
-        <p className="leading-[48px] md:leading-[64px]">B2B</p>
-      </div>
-    </div>
-  );
-}
-
-function Container6() {
-  return (
-    <div className="bg-[#f9eaea] content-stretch flex flex-col items-center justify-center px-[12px] md:px-[16px] relative rounded-[16px] md:rounded-[28px] shrink-0" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-bold justify-center leading-[0] not-italic relative shrink-0 text-[#52170f] text-[24px] md:text-[32px] tracking-[-0.5px] md:tracking-[-1px] whitespace-nowrap">
-        <p className="leading-[48px] md:leading-[64px]">Data-heavy</p>
+    <div className={`${bgColor} content-stretch flex flex-col items-center justify-center px-[12px] md:px-[16px] relative rounded-[16px] md:rounded-[28px] shrink-0`} data-name="Container">
+      <div className={`[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-bold justify-center leading-[0] not-italic relative shrink-0 ${textColor} text-[24px] md:text-[32px] tracking-[-0.5px] md:tracking-[-1px] whitespace-nowrap`}>
+        <p className="leading-[48px] md:leading-[64px]">{label}</p>
       </div>
     </div>
   );
@@ -232,10 +202,11 @@ function Container6() {
 function Frame5() {
   return (
     <div className="flex flex-wrap gap-[12px] md:gap-[16px_24px] items-center justify-center relative w-full">
-      <Container3 />
-      <Container4 />
-      <Container5 />
-      <Container6 />
+      <SkillTag label="WEB" bgColor="bg-[#fafbec]" textColor="text-[#52520f]" />
+      <SkillTag label="Mobile" bgColor="bg-[rgba(238,232,249,0.92)]" textColor="text-[#490f52]" />
+      <SkillTag label="B2B" bgColor="bg-[#eaf9ec]" textColor="text-[#0f5223]" />
+      <SkillTag label="Data-heavy" bgColor="bg-[#f9eaea]" textColor="text-[#52170f]" />
+      <SkillTag label="AI" bgColor="bg-[#e8f0ff]" textColor="text-[#0b57d0]" />
     </div>
   );
 }

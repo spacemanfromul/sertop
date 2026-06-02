@@ -90,13 +90,13 @@ function ProjectCard({
   tags: string;
 }) {
   return (
-    <div className="flex flex-col w-full lg:w-[908.8px]">
-      <button onClick={onClick} className="block relative overflow-clip rounded-lg md:rounded-[32px] h-[400px] md:h-[900px] group cursor-pointer w-full">
+    <div className="flex flex-col w-full min-w-0">
+      <button onClick={onClick} className="block relative overflow-clip rounded-lg md:rounded-[28px] aspect-square group cursor-pointer w-full">
         <div className={`${bgColor} absolute inset-0 transition-opacity group-hover:opacity-90`} />
-        <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
+        <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
           <img
             alt={title}
-            className="max-w-full h-[600px] md:h-[700px] object-contain rounded-lg md:rounded-[24px]"
+            className="max-w-[88%] max-h-[88%] h-auto w-auto object-contain rounded-lg md:rounded-[20px] transition-transform duration-300 group-hover:scale-[1.03]"
             src={image}
             loading="lazy"
             decoding="async"
@@ -117,7 +117,7 @@ function ProjectCard({
 
 function Projects({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
   return (
-    <div className="content-stretch flex flex-col lg:flex-row gap-8 lg:gap-[38.39px] items-start justify-center py-4 md:py-8 relative shrink-0 w-full max-w-[1392px] mx-auto px-4 md:px-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start py-4 md:py-8 relative shrink-0 w-full max-w-[1392px] mx-auto px-4 md:px-8">
       <ProjectCard
         onClick={() => onProjectClick('admin-panel')}
         bgColor="bg-[#c5a5e4]"
