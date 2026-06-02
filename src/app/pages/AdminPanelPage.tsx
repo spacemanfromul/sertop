@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { useEffect } from 'react';
 import Header from '../components/Header';
-import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.jpg";
+import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.png";
 import imgImage10 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
 
 export default function AdminPanelPage() {
