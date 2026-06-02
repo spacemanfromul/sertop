@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import ScrollProgress from './ScrollProgress';
-import imgAva from "../../imports/Header/6ca06b8c8bf2e46181e4064756e998860a07ffbb.png";
 
 function Container() {
   return (

@@ -1,10 +1,8 @@
 import { Link } from 'react-router';
 import { useEffect } from 'react';
 import Header from '../components/Header';
-import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.png";
+import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.jpg";
 import imgImage10 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
-import imgImage12 from "figma:asset/fc15bc7b37b3d3ad5ea8b0f2cfadea6c69a7ba5e.png";
-import imgImage14 from "figma:asset/c40c03fee9e5bb9d86dc88b00dea9b4b0bf29f98.png";
 
 export default function AdminPanelPage() {
   useEffect(() => {
@@ -69,7 +67,8 @@ function HeroImage() {
           <img 
             alt="Админ панель" 
             className="max-w-full max-h-full object-contain" 
-            src={imgImage3} 
+            src={imgImage3}
+            decoding="async"
           />
         </div>
       </div>
@@ -144,7 +143,7 @@ function Content() {
         <p className="mb-0 whitespace-pre-wrap">Создал wireframes для ключевых сценариев</p>
         <p className="mb-4 whitespace-pre-wrap">Провёл валидацию сценариев с пользователями</p>
         <div className="w-full">
-          <img alt="Разработка" className="w-full h-auto" src={imgImage10} />
+          <img alt="Разработка" className="w-full h-auto" src={imgImage10} loading="lazy" decoding="async" />
         </div>
       </Section>
 

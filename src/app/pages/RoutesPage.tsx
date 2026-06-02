@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import Header from '../components/Header';
-import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.png";
-import imgUntitled1 from "figma:asset/135baa3a3201b07dd545e70bc419fb50a67cd083.png";
-import imgImage5 from "figma:asset/e8c846511aa03374308d4d0bdc22c5f832e00a3a.png";
-import imgImage6 from "figma:asset/9155f2a5dd6b67a82f2e3b2e464f250a0d69327a.png";
-import imgImage7 from "figma:asset/a8f4a43bc65a3564df1b44fdf7f8eaf424c9c6de.png";
+import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.jpg";
+import imgUntitled1 from "figma:asset/135baa3a3201b07dd545e70bc419fb50a67cd083.jpg";
+import imgImage5 from "figma:asset/e8c846511aa03374308d4d0bdc22c5f832e00a3a.jpg";
+import imgImage6 from "figma:asset/9155f2a5dd6b67a82f2e3b2e464f250a0d69327a.jpg";
+import imgImage7 from "figma:asset/a8f4a43bc65a3564df1b44fdf7f8eaf424c9c6de.jpg";
 import imgImage8 from "figma:asset/6f2a29bf14bfeaf82e47e74b71c327ae0a63e3dd.png";
 
 function PageTitle() {
@@ -29,6 +29,7 @@ function HeroImage() {
             alt="Маршруты" 
             className="max-w-full max-h-full object-contain" 
             src={imgImage4} 
+            decoding="async"
           />
         </div>
       </div>
@@ -78,7 +79,7 @@ function Content() {
         </ul>
         <p className="mb-4 whitespace-pre-wrap">Провел анализ конкурентов</p>
         <div className="w-full">
-          <img alt="Анализ конкурентов" className="w-full h-auto" src={imgUntitled1} />
+          <img alt="Анализ конкурентов" className="w-full h-auto" src={imgUntitled1} loading="lazy" decoding="async" />
         </div>
       </Section>
 
@@ -86,10 +87,10 @@ function Content() {
         <p className="mb-0 whitespace-pre-wrap">Так как опыта работы с  картами у меня не было, Я постарался углубиться в основные возможности API. Как результат это помогла определить основные инструменты для взаимодействия с картами</p>
         <p className="mb-4 whitespace-pre-wrap">Редактор стилей карты помог собрать макет Карты из векторных слоев</p>
         <div className="w-full mb-4">
-          <img alt="Кара - стили" className="w-full h-auto" src={imgImage5} />
+          <img alt="Кара - стили" className="w-full h-auto" src={imgImage5} loading="lazy" decoding="async" />
         </div>
         <div className="w-full">
-          <img alt="Карта - дизайн" className="w-full h-auto" src={imgImage6} />
+          <img alt="Карта - дизайн" className="w-full h-auto" src={imgImage6} loading="lazy" decoding="async" />
         </div>
       </Section>
 
@@ -97,7 +98,7 @@ function Content() {
         <p className="mb-0 whitespace-pre-wrap">В проектировании использовал компоненты дизайн-системы AntDesign. Было решено выделить два представления: Реестр и Карта. Это решение обусловлено разными потребностями пользователей (руководители и тех. поддержка). Переход между представлениями происходит по переключателю</p>
         <p className="mb-4 whitespace-pre-wrap">Проектирование происходило в несколько итераций: каждую неделю я шел к пользователям с демонстрацией основных сценариев. На встречах получал обратную связь и возвращался к проектированию.</p>
         <div className="w-full">
-          <img alt="Проектирование" className="w-full h-auto" src={imgImage7} />
+          <img alt="Проектирование" className="w-full h-auto" src={imgImage7} loading="lazy" decoding="async" />
         </div>
       </Section>
 
@@ -105,7 +106,7 @@ function Content() {
         <p className="mb-0 whitespace-pre-wrap">На встречах я показывал интерактивный прототип, потому что это самый наглядный метод демонстрации.</p>
         <p className="mb-4 whitespace-pre-wrap">Во время разработки прототипа было принято решение использовать Variables для отображения сложной логики.</p>
         <div className="w-full flex justify-center">
-          <img alt="Прототип" className="max-w-full h-auto" src={imgImage8} />
+          <img alt="Прототип" className="max-w-full h-auto" src={imgImage8} loading="lazy" decoding="async" />
         </div>
       </Section>
 

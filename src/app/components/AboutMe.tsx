@@ -1,6 +1,6 @@
-import imgContainer from "../../imports/Frame270989289-4/02203f4f61aa30d19120aa7df16dae07061dd01f.png";
-import imgFrame270989294 from "../../imports/Frame270989289-4/a83d6113c61a6a5429e4b85d05513e17e34b7d3a.png";
-import imgContainer2 from "../../imports/Frame270989289-4/5dfcbac1716ed4b7f6d200a9779b11a60077d470.png";
+import imgContainer from "../../imports/Frame270989289-4/02203f4f61aa30d19120aa7df16dae07061dd01f.jpg";
+import imgFrame270989294 from "../../imports/Frame270989289-4/a83d6113c61a6a5429e4b85d05513e17e34b7d3a.jpg";
+import imgContainer2 from "../../imports/Frame270989289-4/5dfcbac1716ed4b7f6d200a9779b11a60077d470.jpg";
 import videoHobby from "../../imports/_______2026-06-02_122524.mp4";
 
 // Текст
@@ -39,7 +39,7 @@ export default function AboutMe() {
             </div>
             <div className="flex-[1_0_0] min-h-px relative rounded-[28px] w-full">
               <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[28px]">
-                <img alt="" className="absolute h-[101.33%] left-[-20.88%] max-w-none top-[-1.45%] w-[140.1%]" src={imgContainer} />
+                <img alt="" className="absolute h-[101.33%] left-[-20.88%] max-w-none top-[-1.45%] w-[140.1%]" src={imgContainer} loading="lazy" decoding="async" />
               </div>
               <div className="flex flex-col justify-center size-full">
                 <div className="relative size-full" />
@@ -49,7 +49,7 @@ export default function AboutMe() {
           <div className="flex flex-[1_0_0] flex-row items-center self-stretch">
             <div className="aspect-[320/510] flex-[1_0_0] min-w-px relative rounded-[28px]">
               <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[28px]">
-                <img alt="" className="absolute h-[230.2%] left-[-71.83%] max-w-none top-[-65.15%] w-[243.84%]" src={imgFrame270989294} />
+                <img alt="" className="absolute h-[230.2%] left-[-71.83%] max-w-none top-[-65.15%] w-[243.84%]" src={imgFrame270989294} loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -57,7 +57,7 @@ export default function AboutMe() {
         {/* Большое фото */}
         <div className="aspect-[684/664] relative rounded-[28px] shrink-0 w-full">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[28px]">
-            <img alt="" className="absolute h-[211.04%] left-[-18.53%] max-w-none top-[-26.95%] w-[149.29%]" src={imgContainer2} />
+            <img alt="" className="absolute h-[211.04%] left-[-18.53%] max-w-none top-[-26.95%] w-[149.29%]" src={imgContainer2} loading="lazy" decoding="async" />
           </div>
         </div>
         {/* Текст */}
@@ -87,14 +87,14 @@ export default function AboutMe() {
                 <div className="flex-[1_0_0] min-h-px relative rounded-[28px] w-full">
                   <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[28px]">
                     <div className="absolute bg-[#e9f1ff] inset-0 rounded-[28px]" />
-                    <img alt="" className="absolute max-w-none object-cover rounded-[28px] size-full" src={imgContainer} />
+                    <img alt="" className="absolute max-w-none object-cover rounded-[28px] size-full" src={imgContainer} loading="lazy" decoding="async" />
                   </div>
                 </div>
               </div>
             </div>
             <div className="aspect-[134/213] flex-[1_0_0] min-w-px relative rounded-[28px]">
               <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[28px]">
-                <img alt="" className="absolute h-[230.2%] left-[-71.83%] max-w-none top-[-65.15%] w-[243.84%]" src={imgFrame270989294} />
+                <img alt="" className="absolute h-[230.2%] left-[-71.83%] max-w-none top-[-65.15%] w-[243.84%]" src={imgFrame270989294} loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function AboutMe() {
         {/* Большое фото справа */}
         <div className="aspect-[684/664] flex-[1_0_0] min-w-px relative rounded-[28px]">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[28px]">
-            <img alt="" className="absolute h-[211.04%] left-[-18.53%] max-w-none top-[-26.95%] w-[149.29%]" src={imgContainer2} />
+            <img alt="" className="absolute h-[211.04%] left-[-18.53%] max-w-none top-[-26.95%] w-[149.29%]" src={imgContainer2} loading="lazy" decoding="async" />
           </div>
         </div>
       </div>

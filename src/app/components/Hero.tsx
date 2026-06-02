@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { RotateCw, ChevronLeft, ChevronRight } from 'lucide-react';
-import imgContainer from "../../imports/Hero/58b059b979a564c3f70557c331cb54b5e258dd48.png";
+import imgContainer from "../../imports/Hero/58b059b979a564c3f70557c331cb54b5e258dd48.jpg";
 
 function Container() {
   return (
     <div className="relative rounded-[20px] md:rounded-[28px] w-full md:w-[320px] md:flex-none aspect-square md:aspect-auto md:h-[320px]" data-name="Container">
       <div aria-hidden className="absolute inset-0 pointer-events-none rounded-[20px] md:rounded-[28px]">
         <div className="absolute bg-[#e9f1ff] inset-0 rounded-[20px] md:rounded-[28px]" />
-        <img alt="" className="absolute max-w-none object-cover rounded-[20px] md:rounded-[28px] size-full" src={imgContainer} />
+        <img alt="" className="absolute max-w-none object-cover rounded-[20px] md:rounded-[28px] size-full" src={imgContainer} fetchPriority="high" decoding="async" />
       </div>
     </div>
   );

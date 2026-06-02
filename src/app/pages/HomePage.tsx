@@ -3,15 +3,15 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
-import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.png";
-import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.png";
+import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.jpg";
+import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.jpg";
 import imgImage10 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
-import imgImage12 from "figma:asset/fc15bc7b37b3d3ad5ea8b0f2cfadea6c69a7ba5e.png";
-import imgImage14 from "figma:asset/c40c03fee9e5bb9d86dc88b00dea9b4b0bf29f98.png";
-import imgUntitled1 from "figma:asset/135baa3a3201b07dd545e70bc419fb50a67cd083.png";
-import imgImage5 from "figma:asset/e8c846511aa03374308d4d0bdc22c5f832e00a3a.png";
-import imgImage6 from "figma:asset/9155f2a5dd6b67a82f2e3b2e464f250a0d69327a.png";
-import imgImage7 from "figma:asset/a8f4a43bc65a3564df1b44fdf7f8eaf424c9c6de.png";
+import imgImage12 from "figma:asset/866a53f627e8f3bc6a6770edc44c46647d97cd95.png";
+import imgImage14 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
+import imgUntitled1 from "figma:asset/135baa3a3201b07dd545e70bc419fb50a67cd083.jpg";
+import imgImage5 from "figma:asset/e8c846511aa03374308d4d0bdc22c5f832e00a3a.jpg";
+import imgImage6 from "figma:asset/9155f2a5dd6b67a82f2e3b2e464f250a0d69327a.jpg";
+import imgImage7 from "figma:asset/a8f4a43bc65a3564df1b44fdf7f8eaf424c9c6de.jpg";
 import imgImage8 from "figma:asset/6f2a29bf14bfeaf82e47e74b71c327ae0a63e3dd.png";
 
 export default function HomePage() {
@@ -98,6 +98,8 @@ function ProjectCard({
             alt={title}
             className="max-w-full h-[600px] md:h-[700px] object-contain rounded-lg md:rounded-[24px]"
             src={image}
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </button>
@@ -172,7 +174,7 @@ function AdminPanelContent() {
       <div className="w-full mb-8">
         <div className="relative overflow-clip rounded-lg md:rounded-[32px] bg-[#c5a5e4] h-[400px] md:h-[900px]">
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
-            <img alt="Админ панель" className="max-w-full max-h-full object-contain" src={imgImage3} />
+            <img alt="Админ панель" className="max-w-full max-h-full object-contain" src={imgImage3} loading="lazy" decoding="async" />
           </div>
         </div>
       </div>
@@ -216,7 +218,7 @@ function AdminPanelContent() {
           <p className="mb-0 whitespace-pre-wrap">Разработал информационную архитектуру</p>
           <p className="mb-0 whitespace-pre-wrap">Создал wireframes для ключевых сценариев</p>
           <p className="mb-4 whitespace-pre-wrap">Провёл валидацию сценариев с пользователями</p>
-          <div className="w-full"><img alt="Разработка" className="w-full h-auto" src={imgImage10} /></div>
+          <div className="w-full"><img alt="Разработка" className="w-full h-auto" src={imgImage10} loading="lazy" decoding="async" /></div>
         </Section>
 
         <Section title="Результат">
@@ -236,8 +238,8 @@ function AdminPanelContent() {
           </ul>
         </Section>
 
-        <div className="w-full mb-8"><img alt="Скриншот 1" className="w-full h-auto" src={imgImage12} /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 2" className="w-full h-auto" src={imgImage14} /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 1" className="w-full h-auto" src={imgImage12} loading="lazy" decoding="async" /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 2" className="w-full h-auto" src={imgImage14} loading="lazy" decoding="async" /></div>
       </div>
     </div>
   );
@@ -258,7 +260,7 @@ function RoutesContent() {
       <div className="w-full mb-8">
         <div className="relative overflow-clip rounded-lg md:rounded-[32px] bg-[#84c4a5] h-[400px] md:h-[900px]">
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
-            <img alt="Маршруты" className="max-w-full max-h-full object-contain" src={imgImage4} />
+            <img alt="Маршруты" className="max-w-full max-h-full object-contain" src={imgImage4} loading="lazy" decoding="async" />
           </div>
         </div>
       </div>
@@ -291,11 +293,11 @@ function RoutesContent() {
           <p className="whitespace-pre-wrap">Появилась возможность анализировать эффективность маршрутов</p>
         </Section>
 
-        <div className="w-full mb-8"><img alt="Скриншот 1" className="w-full h-auto" src={imgUntitled1} /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 2" className="w-full h-auto" src={imgImage5} /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 3" className="w-full h-auto" src={imgImage6} /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 4" className="w-full h-auto" src={imgImage7} /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 5" className="w-full h-auto" src={imgImage8} /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 1" className="w-full h-auto" src={imgUntitled1} loading="lazy" decoding="async" /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 2" className="w-full h-auto" src={imgImage5} loading="lazy" decoding="async" /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 3" className="w-full h-auto" src={imgImage6} loading="lazy" decoding="async" /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 4" className="w-full h-auto" src={imgImage7} loading="lazy" decoding="async" /></div>
+        <div className="w-full mb-8"><img alt="Скриншот 5" className="w-full h-auto" src={imgImage8} loading="lazy" decoding="async" /></div>
       </div>
     </div>
   );
