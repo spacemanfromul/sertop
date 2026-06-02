@@ -63,9 +63,8 @@ function Buttons() {
   return (
     <div className="content-stretch flex gap-[8px] items-center justify-center relative shrink-0" data-name="Buttons">
       <a
-        href="https://disk.yandex.ru/i/Vh6K3sSQGi2xvQ"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="/cv.pdf"
+        download="Sergey-Toporkov-CV.pdf"
         className="content-stretch flex h-[56px] items-center justify-center min-h-[40px] min-w-[80px] px-[25.67px] py-[16px] relative rounded-[100px] shrink-0 border border-[#79747e] hover:bg-[#f5f5f5] transition-colors"
         data-name="Component 3"
       >
