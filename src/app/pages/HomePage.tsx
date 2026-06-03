@@ -55,6 +55,14 @@ export default function HomePage() {
     setMetaTag('twitter:card', 'summary_large_image');
     setMetaTag('twitter:title', 'Сергей Топорков — UX/UI дизайнер');
     setMetaTag('twitter:description', 'Превращаю сложные системы в понятный пользовательский опыт');
+    document.title = 'Сергей Топорков - Продуктовый дизайнер';
+    setMetaTag('description', 'Портфолио продуктового дизайнера Сергея Топоркова. Проектирую сложные B2B-системы, интерфейсы для админ-панелей, карт и AI-сценариев.');
+    setMetaTag('keywords', 'продуктовый дизайнер, UX дизайнер, UI дизайнер, портфолио дизайнера, Сергей Топорков, B2B, интерфейсы, AI');
+    setMetaTag('author', 'Сергей Топорков');
+    setPropertyTag('og:title', 'Сергей Топорков - Продуктовый дизайнер');
+    setPropertyTag('og:description', 'Проектирую сложные B2B-системы, интерфейсы для админ-панелей, карт и AI-сценариев.');
+    setMetaTag('twitter:title', 'Сергей Топорков - Продуктовый дизайнер');
+    setMetaTag('twitter:description', 'Проектирую сложные B2B-системы, интерфейсы для админ-панелей, карт и AI-сценариев.');
   }, []);
 
   return (
