@@ -13,6 +13,10 @@ import imgImage5 from "figma:asset/e8c846511aa03374308d4d0bdc22c5f832e00a3a.jpg"
 import imgImage6 from "figma:asset/9155f2a5dd6b67a82f2e3b2e464f250a0d69327a.jpg";
 import imgImage7 from "figma:asset/a8f4a43bc65a3564df1b44fdf7f8eaf424c9c6de.jpg";
 import imgImage8 from "figma:asset/6f2a29bf14bfeaf82e47e74b71c327ae0a63e3dd.png";
+import caseAdminImage from "../../assets/cases/case-admin.png";
+import caseAiMobileImage from "../../assets/cases/case-ai-mobile.jpg";
+import caseAiWebImage from "../../assets/cases/case-ai-web.jpg";
+import caseRoutesImage from "../../assets/cases/case-routes.jpg";
 
 export default function HomePage() {
   const [activeModal, setActiveModal] = useState<'admin-panel' | 'routes' | null>(null);
@@ -69,7 +73,7 @@ export default function HomePage() {
     <div className="bg-white min-h-screen w-full pt-4 md:pt-8">
       <Header />
       <Hero />
-      <Projects onProjectClick={setActiveModal} />
+      <CasesBlock onProjectClick={setActiveModal} />
       <AboutMe />
       <ThankYou />
 
@@ -123,6 +127,99 @@ function ProjectCard({
   );
 }
 
+function CaseTag({ label, tone }: { label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }) {
+  const tones = {
+    web: 'bg-[#fafbec] text-[#52520f]',
+    b2b: 'bg-[#c4eed0] text-[#0f5223]',
+    data: 'bg-[#f9eaea] text-[#52170f]',
+    ai: 'bg-[#e8f0ff] text-[#0b57d0]',
+    mobile: 'bg-[#eee8f9] text-[#490f52]',
+  };
+
+  return (
+    <span className={`${tones[tone]} rounded-lg px-2 py-1 font-['Google Sans',sans-serif] text-xs font-medium leading-[18px] tracking-[0.1px]`}>
+      {label}
+    </span>
+  );
+}
+
+function CaseCard({
+  title,
+  description,
+  tags,
+  onClick,
+  children,
+  className = '',
+}: {
+  title: string;
+  description: string;
+  tags: Array<{ label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }>;
+  onClick?: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const Wrapper = onClick ? 'button' : 'div';
+
+  return (
+    <Wrapper
+      onClick={onClick}
+      className={`group flex w-full min-w-0 flex-col items-start gap-3 rounded-[28px] bg-[#f5f5f5] p-5 text-left md:p-8 ${onClick ? 'cursor-pointer' : ''} ${className}`}
+    >
+      {children}
+      <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] text-[#191c1d] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+        {title}
+      </h2>
+      <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#191c1d] md:text-xl md:leading-[26px]">
+        {description}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <CaseTag key={tag.label} {...tag} />
+        ))}
+      </div>
+    </Wrapper>
+  );
+}
+
+function CaseImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)]">
+      <img
+        alt={alt}
+        className="size-full object-cover"
+        src={src}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  );
+}
+
+function AiPreview() {
+  return (
+    <div className="flex w-full items-center gap-4 md:gap-8">
+      <div className="h-[235px] w-[104px] shrink-0 overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px] md:w-[151px]">
+        <img
+          alt="Мобильный экран ИИ-помощника"
+          className="size-full object-cover"
+          src={caseAiMobileImage}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="h-[235px] min-w-0 flex-1 overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px]">
+        <img
+          alt="Веб-экран ИИ-помощника"
+          className="size-full object-cover"
+          src={caseAiWebImage}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  );
+}
+
 function Projects({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start py-4 md:py-8 relative shrink-0 w-full max-w-[1392px] mx-auto px-4 md:px-8">
@@ -140,6 +237,62 @@ function Projects({ onProjectClick }: { onProjectClick: (project: 'admin-panel' 
         title="Маршруты - сервис отображения истории поездок сотрудников на карте"
         tags="UX, B2B, 2024"
       />
+    </div>
+  );
+}
+
+function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
+  return (
+    <div className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col gap-6 px-4 py-4 md:px-8 md:py-8">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <CaseCard
+          onClick={() => onProjectClick('admin-panel')}
+          title="Админ панель для управления мобильным приложением"
+          description="Развитие нового внутреннего продукта для команды разработки"
+          tags={[
+            { label: 'WEB', tone: 'web' },
+            { label: 'B2B', tone: 'b2b' },
+          ]}
+        >
+          <CaseImage src={caseAdminImage} alt="Админ панель" />
+        </CaseCard>
+        <CaseCard
+          onClick={() => onProjectClick('routes')}
+          title="Система контроля транспортных расходов"
+          description="Спроектировал с нуля продукт для отслеживания перемещений сотрудников"
+          tags={[
+            { label: 'WEB', tone: 'web' },
+            { label: 'B2B', tone: 'b2b' },
+            { label: 'Data-heavy', tone: 'data' },
+          ]}
+        >
+          <CaseImage src={caseRoutesImage} alt="Система контроля транспортных расходов" />
+        </CaseCard>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.42fr_1fr]">
+        <CaseCard
+          title="ИИ-помощник сотрудника"
+          description="Сборка концептов и их защита перед заказчиком"
+          tags={[
+            { label: 'AI', tone: 'ai' },
+            { label: 'Mobile', tone: 'mobile' },
+            { label: 'WEB', tone: 'web' },
+            { label: 'B2B', tone: 'b2b' },
+          ]}
+        >
+          <AiPreview />
+        </CaseCard>
+        <CaseCard
+          title="Эксперименты"
+          description="Вайбкодинг продуктов под личные задачи"
+          tags={[
+            { label: 'AI', tone: 'ai' },
+            { label: 'Mobile', tone: 'mobile' },
+          ]}
+        >
+          <div className="h-[235px] w-[104px] rounded-xl bg-[#bdbdbd] shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px] md:w-[151px]" />
+        </CaseCard>
+      </div>
     </div>
   );
 }

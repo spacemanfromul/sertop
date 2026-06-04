@@ -85,16 +85,33 @@ function Container2() {
     setCurrentIndex((prev) => (prev + 1) % achievements.length);
   };
 
+  const isHoverDevice = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
   return (
     <div
       className="w-full xl:w-[370px] xl:flex-none h-auto md:h-[320px] cursor-pointer"
       style={{ perspective: '1000px' }}
-      onMouseEnter={() => setIsFlipped(true)}
+      onClick={() => {
+        if (!isHoverDevice()) {
+          setIsFlipped((prev) => !prev);
+          setCurrentIndex(0);
+        }
+      }}
+      onMouseEnter={() => {
+        if (isHoverDevice()) {
+          setIsFlipped(true);
+        }
+      }}
       onMouseLeave={() => {
-        setIsFlipped(false);
-        setCurrentIndex(0);
+        if (isHoverDevice()) {
+          setIsFlipped(false);
+          setCurrentIndex(0);
+        }
       }}
       data-name="Container"
+      role="button"
+      tabIndex={0}
+      aria-pressed={isFlipped}
     >
       <div
         className="w-full h-full transition-transform duration-700"
@@ -121,7 +138,6 @@ function Container2() {
 
         {/* Задняя сторона */}
         <div
-          onClick={() => setIsFlipped(false)}
           className="bg-[rgba(170,255,187,0.92)] content-stretch flex flex-col h-full items-center justify-between px-[32px] py-[32px] md:py-[24px] rounded-[20px] md:rounded-[28px] text-[#0f5223] w-full absolute inset-0 cursor-pointer md:cursor-default"
           style={{
             backfaceVisibility: 'hidden',
