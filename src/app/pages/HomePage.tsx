@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
+import { ChevronLeft, ChevronRight, Pause, Play, X, ZoomIn, ZoomOut } from 'lucide-react';
 import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.png";
 import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.png";
 import imgImage10 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
@@ -17,6 +18,13 @@ import caseAdminImage from "../../assets/cases/case-admin.png";
 import caseAiMobileImage from "../../assets/cases/case-ai-mobile.jpg";
 import caseAiWebImage from "../../assets/cases/case-ai-web.jpg";
 import caseRoutesImage from "../../assets/cases/case-routes.jpg";
+import caseExperimentVideo from "../../assets/cases/case-experiment.mp4";
+import caseAdminGroup1 from "../../assets/cases/case-admin-group-1.jpg";
+import caseAdminGroup2 from "../../assets/cases/case-admin-group-2.jpg";
+import caseAdminGroup3 from "../../assets/cases/case-admin-group-3.jpg";
+import caseAdminGroup4 from "../../assets/cases/case-admin-group-4.jpg";
+import caseAdminGroup5 from "../../assets/cases/case-admin-group-5.jpg";
+import caseAdminGroup6 from "../../assets/cases/case-admin-group-6.jpg";
 
 export default function HomePage() {
   const [activeModal, setActiveModal] = useState<'admin-panel' | 'routes' | null>(null);
@@ -73,7 +81,15 @@ export default function HomePage() {
     <div className="bg-white min-h-screen w-full pt-4 md:pt-8">
       <Header />
       <Hero />
+      <SectionIntro
+        title="Кейсы"
+        description="Сложные B2B-интерфейсы, AI-сценарии, мобильные продукты и эксперименты"
+      />
       <CasesBlock onProjectClick={setActiveModal} />
+      <SectionIntro
+        title="Обо мне"
+        description="Чем я живу вне работы и что помогает возвращаться к продуктовым задачам со свежей головой"
+      />
       <AboutMe />
       <ThankYou />
 
@@ -127,6 +143,31 @@ function ProjectCard({
   );
 }
 
+function SectionIntro({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <section className="mx-auto flex w-full max-w-[1392px] flex-col items-center gap-3 px-4 pb-2 pt-12 text-center md:px-8 md:pb-4 md:pt-20">
+      <div className="flex max-w-[760px] flex-col items-center gap-3">
+        <h2 className="font-['Google Sans',sans-serif] text-[40px] font-medium leading-[46px] tracking-[-0.5px] text-[#191c1d] md:text-[64px] md:leading-[72px]">
+          {keepShortWords(title)}
+        </h2>
+        <p className="max-w-[560px] font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#747775] md:text-xl md:leading-[28px]">
+          {keepShortWords(description)}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function keepShortWords(text: string) {
+  return text.replace(/(^|[\s(])(и|в|во|на|к|ко|с|со|по|для|под|над|от|до|из|у|а|но|за|без|при|о|об|обо)\s+/giu, '$1$2\u00a0');
+}
+
 function CaseTag({ label, tone }: { label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }) {
   const tones = {
     web: 'bg-[#fafbec] text-[#52520f]',
@@ -167,10 +208,10 @@ function CaseCard({
     >
       {children}
       <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] text-[#191c1d] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-        {title}
+        {keepShortWords(title)}
       </h2>
       <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#191c1d] md:text-xl md:leading-[26px]">
-        {description}
+        {keepShortWords(description)}
       </p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
@@ -220,6 +261,22 @@ function AiPreview() {
   );
 }
 
+function ExperimentPreview() {
+  return (
+    <div className="h-[235px] w-[104px] overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px] md:w-[151px]">
+      <video
+        className="size-full object-cover"
+        src={caseExperimentVideo}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+      />
+    </div>
+  );
+}
+
 function Projects({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start py-4 md:py-8 relative shrink-0 w-full max-w-[1392px] mx-auto px-4 md:px-8">
@@ -248,7 +305,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
         <CaseCard
           onClick={() => onProjectClick('admin-panel')}
           title="Админ панель для управления мобильным приложением"
-          description="Развитие нового внутреннего продукта для команды разработки"
+          description="Развитие нового внутреннего продукта для команды разработки"
           tags={[
             { label: 'WEB', tone: 'web' },
             { label: 'B2B', tone: 'b2b' },
@@ -259,7 +316,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
         <CaseCard
           onClick={() => onProjectClick('routes')}
           title="Система контроля транспортных расходов"
-          description="Спроектировал с нуля продукт для отслеживания перемещений сотрудников"
+          description="Спроектировал с нуля продукт для отслеживания перемещений сотрудников"
           tags={[
             { label: 'WEB', tone: 'web' },
             { label: 'B2B', tone: 'b2b' },
@@ -272,7 +329,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.42fr_1fr]">
         <CaseCard
           title="ИИ-помощник сотрудника"
-          description="Сборка концептов и их защита перед заказчиком"
+          description="Сборка концептов и их защита перед заказчиком"
           tags={[
             { label: 'AI', tone: 'ai' },
             { label: 'Mobile', tone: 'mobile' },
@@ -284,13 +341,13 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
         </CaseCard>
         <CaseCard
           title="Эксперименты"
-          description="Вайбкодинг продуктов под личные задачи"
+          description="Вайбкодинг продуктов под личные задачи"
           tags={[
             { label: 'AI', tone: 'ai' },
             { label: 'Mobile', tone: 'mobile' },
           ]}
         >
-          <div className="h-[235px] w-[104px] rounded-xl bg-[#bdbdbd] shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px] md:w-[151px]" />
+          <ExperimentPreview />
         </CaseCard>
       </div>
     </div>
@@ -320,88 +377,357 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function AdminPanelContent() {
+function CaseStudyText({ children }: { children: string }) {
   return (
-    <div className="w-full">
-      <div className="content-stretch flex flex-col gap-4 items-start leading-[0] relative shrink-0 text-[#191919] mb-8">
-        <div className="flex flex-col font-['Google Sans',sans-serif] font-black justify-center relative shrink-0 text-4xl md:text-6xl lg:text-[96px] w-full">
-          <p className="leading-[0.9] whitespace-pre-wrap">Админ панель </p>
-        </div>
-        <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center relative shrink-0 text-base md:text-[19.2px] whitespace-nowrap">
-          <p className="leading-[26.88px]">Инструмент для релиз инженера</p>
+    <p
+      className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#191c1d]"
+      style={{ fontOpticalSizing: 'auto' }}
+    >
+      {keepShortWords(children)}
+    </p>
+  );
+}
+
+function CaseDecisionTitle({ children }: { children: string }) {
+  return (
+    <h3
+      className="font-['Google Sans Flex','Google Sans',sans-serif] text-xl font-medium leading-[26px] tracking-[0] text-[#191c1d] lg:text-2xl lg:leading-[30px]"
+      style={{ fontOpticalSizing: 'auto' }}
+    >
+      {keepShortWords(children)}
+    </h3>
+  );
+}
+
+function CaseStudySection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="flex w-full flex-col gap-4 py-6 text-[#191c1d]">
+      <h2 className="font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+        {keepShortWords(title)}
+      </h2>
+      <div className="flex flex-col gap-4">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function CaseStudyImageBlock({ alt }: { alt: string }) {
+  return (
+    <div className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
+      <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
+        <img
+          alt={alt}
+          className="size-full object-cover"
+          src={caseAdminImage}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  );
+}
+
+const adminGroupSlides = [
+  caseAdminGroup1,
+  caseAdminGroup2,
+  caseAdminGroup3,
+  caseAdminGroup5,
+  caseAdminGroup6,
+];
+
+function AdminGroupSlideshow() {
+  const slideshowRef = useRef<HTMLDivElement | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [areSlidesReady, setAreSlidesReady] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoom, setZoom] = useState(1);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const preloadSlides = adminGroupSlides.map((slide) => new Promise<void>((resolve) => {
+      const image = new Image();
+      image.onload = () => {
+        if ('decode' in image) {
+          image.decode().then(() => resolve()).catch(() => resolve());
+          return;
+        }
+        resolve();
+      };
+      image.onerror = () => resolve();
+      image.src = slide;
+    }));
+
+    Promise.all(preloadSlides).then(() => {
+      if (!isCancelled) {
+        setAreSlidesReady(true);
+      }
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const node = slideshowRef.current;
+
+    if (!node) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!areSlidesReady || isPaused || (!isInView && !isFullscreen)) {
+      return undefined;
+    }
+
+    const interval = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % adminGroupSlides.length);
+    }, 1800);
+
+    return () => window.clearInterval(interval);
+  }, [areSlidesReady, isPaused, isInView, isFullscreen]);
+
+  useEffect(() => {
+    if (!isFullscreen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsFullscreen(false);
+        setZoom(1);
+      }
+      if (event.key === 'ArrowLeft') {
+        showPreviousSlide();
+      }
+      if (event.key === 'ArrowRight') {
+        showNextSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen]);
+
+  const showPreviousSlide = () => {
+    setActiveSlide((current) => (current - 1 + adminGroupSlides.length) % adminGroupSlides.length);
+    setZoom(1);
+  };
+
+  const showNextSlide = () => {
+    setActiveSlide((current) => (current + 1) % adminGroupSlides.length);
+    setZoom(1);
+  };
+
+  const openFullscreen = () => {
+    setIsFullscreen(true);
+    setZoom(1);
+  };
+
+  const closeFullscreen = () => {
+    setIsFullscreen(false);
+    setZoom(1);
+  };
+
+  return (
+    <>
+      <div ref={slideshowRef} className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
+        <div className="relative aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
+          <button
+            type="button"
+            onClick={openFullscreen}
+            className="block size-full text-left"
+            aria-label="Открыть просмотр во весь экран"
+          >
+            <img
+              alt=""
+              aria-hidden
+              className="absolute inset-0 size-full object-cover"
+              src={adminGroupSlides[0]}
+              loading="eager"
+              decoding="sync"
+            />
+            {adminGroupSlides.map((slide, index) => (
+              <img
+                key={slide}
+                alt={`Группы пользователей, шаг ${index + 1}`}
+                className={`absolute inset-0 size-full object-cover ${
+                  index === activeSlide ? 'opacity-100' : 'opacity-0'
+                }`}
+                src={slide}
+                loading="eager"
+                decoding="async"
+              />
+            ))}
+          </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              setIsPaused((current) => !current);
+            }}
+            className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-[#191c1d] shadow-[0_2px_8px_rgba(0,0,0,0.16)]"
+            aria-label={isPaused ? 'Продолжить слайдшоу' : 'Поставить слайдшоу на паузу'}
+          >
+            {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
+          </button>
         </div>
       </div>
 
-      <div className="w-full mb-8">
-        <div className="relative overflow-clip rounded-lg md:rounded-[32px] bg-[#c5a5e4] h-[400px] md:h-[900px]">
-          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
-            <img alt="Админ панель" className="max-w-full max-h-full object-contain" src={imgImage3} loading="lazy" decoding="async" />
+      {isFullscreen && (
+        <div className="fixed inset-0 z-[9999] flex flex-col bg-black/92 text-white">
+          <div className="flex items-center justify-between gap-3 p-3 md:p-5">
+            <div className="font-['Google Sans',sans-serif] text-sm font-medium md:text-base">
+              {activeSlide + 1} / {adminGroupSlides.length}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsPaused((current) => !current)}
+                className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
+                aria-label={isPaused ? 'Продолжить слайдшоу' : 'Поставить слайдшоу на паузу'}
+              >
+                {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom((current) => Math.max(1, Number((current - 0.25).toFixed(2))))}
+                className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
+                aria-label="Уменьшить"
+              >
+                <ZoomOut className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom((current) => Math.min(3, Number((current + 0.25).toFixed(2))))}
+                className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
+                aria-label="Увеличить"
+              >
+                <ZoomIn className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={closeFullscreen}
+                className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
+                aria-label="Закрыть"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative min-h-0 flex-1 overflow-auto px-4 pb-4 md:px-8 md:pb-8">
+            <button
+              type="button"
+              onClick={showPreviousSlide}
+              className="fixed left-3 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/12 hover:bg-white/20 md:left-6 md:size-12"
+              aria-label="Предыдущая картинка"
+            >
+              <ChevronLeft className="size-6" />
+            </button>
+            <button
+              type="button"
+              onClick={showNextSlide}
+              className="fixed right-3 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/12 hover:bg-white/20 md:right-6 md:size-12"
+              aria-label="Следующая картинка"
+            >
+              <ChevronRight className="size-6" />
+            </button>
+            <div className="flex min-h-full items-center justify-center">
+              <img
+                alt={`Группы пользователей, шаг ${activeSlide + 1}`}
+                className="max-h-none max-w-none rounded-xl"
+                src={adminGroupSlides[activeSlide]}
+                style={{
+                  width: `${Math.round(90 * zoom)}vw`,
+                  maxWidth: zoom === 1 ? '1500px' : 'none',
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+    </>
+  );
+}
 
-      <div className="w-full max-w-[1583px] mx-auto">
-        <Section title="Контекст">
-          <p className="mb-0 whitespace-pre-wrap">Внутреннее веб-приложение для релиз-инженеров, которое используется для подготовки и выпуска новых версий мобильного приложения.</p>
-          <p className="mb-0 whitespace-pre-wrap">Инструмент объединяет:</p>
-          <ul className="list-disc mb-0">
-            <li className="mb-0 ms-[28.8px]"><span>управление версиями</span></li>
-            <li className="mb-0 ms-[28.8px]"><span>конфигурацию релиза</span></li>
-            <li className="ms-[28.8px]"><span>контроль статусов</span></li>
-          </ul>
-          <p className="whitespace-pre-wrap">Аудитория — релиз-инженеры и DevOps-специалисты.</p>
-        </Section>
+function AdminPanelContent() {
+  return (
+    <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-6">
+      <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
+        <h1 className="font-['Google Sans',sans-serif] text-[36px] font-medium leading-[42px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {keepShortWords('Админ панель для управления мобильным приложением')}
+        </h1>
+        <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
+          {keepShortWords('Развитие нового внутреннего продукта для команды разработки')}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <CaseTag label="WEB" tone="web" />
+          <CaseTag label="B2B" tone="b2b" />
+        </div>
+      </header>
 
-        <Section title="Проблема">
-          <p className="mb-0 whitespace-pre-wrap">Существующий процесс релизов был частично ручным и фрагментированным:</p>
-          <ul className="list-disc mb-0">
-            <li className="mb-0 ms-[28.8px]"><span>данные хранились в разных системах</span></li>
-            <li className="mb-0 ms-[28.8px]"><span>не было прозрачного статуса релиза</span></li>
-            <li className="ms-[28.8px]"><span>высокий риск человеческой ошибки</span></li>
-          </ul>
-          <p className="whitespace-pre-wrap">Цель — создать единый веб-инструмент для управления релизами с понятной логикой и минимизацией ошибок. Сократить время для поиска и установки мобильного приложения для сотрудников</p>
-        </Section>
+      <CaseStudyImageBlock alt="Админ панель для управления мобильным приложением" />
 
-        <Section title="Моя роль">
-          <p className="mb-0 whitespace-pre-wrap">Вёл дизайн веб-интерфейса</p>
-          <p className="mb-0 whitespace-pre-wrap">Работал в связке: дизайнер + продакт + DevOps + backend</p>
-          <p className="mb-0 whitespace-pre-wrap">Формулировал гипотезы по упрощению сценариев</p>
-          <p className="mb-0 whitespace-pre-wrap">Проектировал user flow и ключевые состояния</p>
-          <p className="mb-0 whitespace-pre-wrap">Развивал компоненты дизайн-системы</p>
-          <p className="whitespace-pre-wrap">Сопровождал реализацию</p>
-        </Section>
+      <CaseStudySection title="Что за продукт">
+        <CaseStudyText>Изначально админ-панель создавалась как альтернатива системе удалённого управления мобильными устройствами (MDM)</CaseStudyText>
+        <CaseStudyText>Через неё команда могла настраивать белые списки приложений и блокировать доступ для отдельных устройств</CaseStudyText>
+        <CaseStudyText>Со временем панель превратилась во внутренний рабочий инструмент команды разработки. В неё начали переносить операции, которые раньше выполнялись напрямую в базе данных, чтобы сделать их быстрее, безопаснее и доступнее без ручной работы с данными. Продукт развивается параллельно с основными бизнес-задачами и помогает команде разработки решать собственные ежедневные задачи</CaseStudyText>
+      </CaseStudySection>
 
-        <Section title="Исследования">
-          <p className="whitespace-pre-wrap">Провёл мини-интервью с релиз-инженерами, а также интервью с пользователями мобильного приложения. По резльтатам интервью были подтверждены гипотезы. Получили окончательный ответ о ценности данного функционала.</p>
-        </Section>
+      <CaseStudySection title="Проблема">
+        <CaseStudyText>Для пилотных проектов и бета-тестирования команде периодически нужны отдельные сборки мобильного приложения с новым или ограниченным функционалом. Пользователи не могут самостоятельно переключаться между версиями, поэтому каждую дополнительную сборку приходится создавать и распространять вручную</CaseStudyText>
+        <CaseStudyText>Пока таких релизов было немного, процесс оставался управляемым. Но с ростом числа пилотов стало сложно отслеживать, какая сборка предназначена для конкретной группы пользователей, какой функционал в неё входит и какая версия сейчас актуальна. Команде не хватало единой системы для управления параллельными релизами</CaseStudyText>
+      </CaseStudySection>
 
-        <Section title="Разработка">
-          <p className="mb-0 whitespace-pre-wrap">Разработал информационную архитектуру</p>
-          <p className="mb-0 whitespace-pre-wrap">Создал wireframes для ключевых сценариев</p>
-          <p className="mb-4 whitespace-pre-wrap">Провёл валидацию сценариев с пользователями</p>
-          <div className="w-full"><img alt="Разработка" className="w-full h-auto" src={imgImage10} loading="lazy" decoding="async" /></div>
-        </Section>
+      <CaseStudySection title="Мой вклад">
+        <CaseStudyText>Я проектировал интерфейс админ-панели с самого начала. В этой задаче проработал ключевые пользовательские сценарии и согласовал решение с командой</CaseStudyText>
+        <CaseStudyText>Вместо обычной таблицы я предложил древовидную структуру: ветки отображаются на верхнем уровне, а связанные с ними версии — внутри. Такой подход позволяет в одном интерфейсе создавать ветки, добавлять версии и управлять ими, сохраняя понятную связь между релизами</CaseStudyText>
+      </CaseStudySection>
 
-        <Section title="Результат">
-          <p className="mb-0 whitespace-pre-wrap">Снизилось количество ошибок при подготовке релиза</p>
-          <p className="mb-0 whitespace-pre-wrap">Процесс стал прозрачным для смежных команд</p>
-          <p className="mb-0 whitespace-pre-wrap">Упростился онбординг новых релиз-инженеров</p>
-          <p className="mb-0 whitespace-pre-wrap">Сценарий выпуска стал последовательным и предсказуемым</p>
-          <p className="whitespace-pre-wrap">Раскатка и остановка бета-версий стал более простым</p>
-        </Section>
+      <CaseStudySection title="Ключевые решения">
+        <CaseStudyImageBlock alt="Древовидная таблица веток и версий" />
+        <CaseDecisionTitle>1. Древовидная таблица вместо плоского списка</CaseDecisionTitle>
+        <CaseStudyText>Ветки и версии связаны между собой: одна ветка может содержать несколько последовательных сборок. В обычной таблице эта связь была бы неочевидна, особенно при большом количестве параллельных релизов</CaseStudyText>
+        <CaseStudyText>Я предложил древовидную структуру, в которой ветки находятся на верхнем уровне, а версии раскрываются внутри них. Так пользователь сразу видит иерархию релизов и быстрее понимает, к какой ветке относится каждая сборка</CaseStudyText>
 
-        <Section title="Что дальше">
-          <p className="mb-0 whitespace-pre-wrap">В дальнейшем можно:</p>
-          <ul className="list-disc">
-            <li className="mb-0 ms-[28.8px]"><span>добавить автоматические проверки перед релизом</span></li>
-            <li className="mb-0 ms-[28.8px]"><span>интегрировать AI-помощника для анализа рисков</span></li>
-            <li className="ms-[28.8px]"><span>улучшить аналитику по релизам</span></li>
-          </ul>
-        </Section>
+        <CaseStudyImageBlock alt="Управление ветками и версиями" />
+        <CaseDecisionTitle>2. Управление ветками и версиями в одном интерфейсе</CaseDecisionTitle>
+        <CaseStudyText>Раньше работа с отдельными сборками требовала ручных действий и не давала команде единой картины происходящего</CaseStudyText>
+        <CaseStudyText>Я объединил создание веток, добавление версий и управление ими в одном рабочем пространстве. Пользователю не нужно переключаться между разными разделами или терять контекст выбранного релиза</CaseStudyText>
 
-        <div className="w-full mb-8"><img alt="Скриншот 1" className="w-full h-auto" src={imgImage12} loading="lazy" decoding="async" /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 2" className="w-full h-auto" src={imgImage14} loading="lazy" decoding="async" /></div>
-      </div>
+        <AdminGroupSlideshow />
+        <CaseDecisionTitle>3. Отдельная сущность для групп пользователей</CaseDecisionTitle>
+        <CaseStudyText>Изначально список пользователей предполагалось хранить внутри каждой ветки. Это означало, что при создании нового пилота или бета-релиза команде пришлось бы заново собирать одну и ту же группу тестировщиков</CaseStudyText>
+        <CaseStudyText>Я предложил вынести группы пользователей в отдельную вкладку и сделать их переиспользуемой сущностью. Системный аналитик поддержал идею, и в результате одну группу бета-тестеров можно назначать разным веткам без повторного заполнения списка</CaseStudyText>
+        <CaseStudyText>Такое решение сокращает ручную работу, снижает риск ошибок и упрощает управление параллельными релизами</CaseStudyText>
+      </CaseStudySection>
+
+      <CaseStudySection title="Чем я горжусь">
+        <CaseStudyText>В этой задаче было важно снизить риск ошибок: действия администратора могут затронуть большое количество пользователей. Несмотря на высокий уровень экспертизы аудитории, интерфейс не должен требовать лишних усилий и перегружать пользователя деталями</CaseStudyText>
+        <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
+      </CaseStudySection>
     </div>
   );
 }
@@ -463,3 +789,6 @@ function RoutesContent() {
     </div>
   );
 }
+
+
+

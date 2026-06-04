@@ -8,8 +8,8 @@ function TextBlock() {
   return (
     <div className="content-stretch flex items-center relative shrink-0 w-full">
       <div className="[word-break:break-word] flex flex-[1_0_0] flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[0] min-w-px not-italic relative text-[#191c1d] text-[20px] whitespace-pre-wrap">
-        <p className="leading-[26px] mb-0">{`Вне работы люблю исследовать этот мир, экстремальный отдых `}</p>
-        <p className="leading-[26px]">и 3D-печать. Это помагает восстановить силы и набраться новыми идеями.</p>
+        <p className="leading-[26px] mb-0">Вне работы люблю исследовать этот мир, экстремальный отдых и&nbsp;3D-печать</p>
+        <p className="leading-[26px]">Это помогает восстановить силы и&nbsp;набраться новыми идеями</p>
       </div>
     </div>
   );

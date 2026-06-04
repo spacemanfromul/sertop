@@ -38,7 +38,7 @@ function Frame4() {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0">
       <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#191c1d] text-[20px]">
-        <p className="leading-[26px]">Админки, FMS, мобильные трекеры и RAG/AI-агенты</p>
+        <p className="leading-[26px]">Админки, FMS, мобильные трекеры и&nbsp;RAG/AI-агенты</p>
       </div>
     </div>
   );
