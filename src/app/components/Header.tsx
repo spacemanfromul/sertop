@@ -1,37 +1,34 @@
-import { useState, useEffect } from 'react';
-import ScrollProgress from './ScrollProgress';
-
-function Container() {
-  return (
-    <div className="content-stretch flex h-[18px] items-center relative shrink-0 w-full" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] h-full justify-center leading-[0] relative shrink-0 text-[12px] text-[rgba(25,28,29,0.7)] text-left tracking-[0.1px] w-[102px]">
-        <p className="leading-[18px]">Санкт-Петербург </p>
-      </div>
-    </div>
-  );
-}
+import { useEffect, useState } from 'react';
+import { Axe } from 'lucide-react';
 
 function NameCity() {
   return (
-    <div className="content-stretch hidden md:flex flex-col items-start max-w-[684px] pb-[4px] pt-[8px] relative shrink-0" data-name="NameCity">
-      <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#191c1d] text-[14px] text-left tracking-[0.25px] whitespace-nowrap">
-        <p className="leading-[20px]">Сергей Топорков</p>
+    <div className="hidden flex-col items-start pb-1 pt-2 md:flex">
+      <div className="font-['Google Sans',sans-serif] text-sm font-medium leading-5 tracking-[0.25px] text-[#191c1d]">
+        Сергей Топорков
       </div>
-      <Container />
+      <div className="font-['Google Sans',sans-serif] text-xs leading-[18px] tracking-[0.1px] text-[rgba(25,28,29,0.7)]">
+        Санкт-Петербург
+      </div>
     </div>
   );
 }
 
-function Left({ showAvatar }: { showAvatar: boolean }) {
+function Left({ showLogo }: { showLogo: boolean }) {
   const handleClick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <button onClick={handleClick} className="content-stretch flex flex-[1_0_0] gap-[4px] items-center min-w-px relative cursor-default" data-name="left">
-      <div className={`flex gap-[4px] items-center transition-all duration-300 ${showAvatar ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
-        <div className="relative shrink-0 h-[56px] aspect-square" data-name="Progress">
-          <ScrollProgress />
+    <button
+      onClick={handleClick}
+      className="hidden flex-[1_0_0] items-center gap-2 md:flex"
+      data-name="left"
+      aria-label="Наверх"
+    >
+      <div className={`flex items-center gap-2 transition-all duration-300 ${showLogo ? 'opacity-100' : 'w-0 overflow-hidden opacity-0'}`}>
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[#e9f1ff] text-[#191c1d]" data-name="Logo">
+          <Axe className="size-7" strokeWidth={2} />
         </div>
         <NameCity />
       </div>
@@ -39,45 +36,23 @@ function Left({ showAvatar }: { showAvatar: boolean }) {
   );
 }
 
-function Container1() {
-  return (
-    <div className="content-stretch flex flex-col items-center relative shrink-0" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-black text-center tracking-[0.1px] whitespace-nowrap">
-        <p className="leading-[24px]">Скачать CV</p>
-      </div>
-    </div>
-  );
-}
-
-function Container2() {
-  return (
-    <div className="content-stretch flex flex-col items-center relative shrink-0" data-name="Container">
-      <div className="[word-break:break-word] flex flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-center text-white tracking-[0.1px] whitespace-nowrap">
-        <p className="leading-[24px]">Связаться</p>
-      </div>
-    </div>
-  );
-}
-
 function Buttons() {
   return (
-    <div className="content-stretch flex gap-[8px] items-center justify-center relative shrink-0" data-name="Buttons">
+    <div className="flex w-full shrink-0 items-center justify-center gap-2 md:w-auto" data-name="Buttons">
       <a
         href="/cv.pdf"
         download="Sergey-Toporkov-CV.pdf"
-        className="content-stretch flex h-[56px] items-center justify-center min-h-[40px] min-w-[80px] px-[25.67px] py-[16px] relative rounded-[100px] shrink-0 border border-[#79747e] hover:bg-[#f5f5f5] transition-colors"
-        data-name="Component 3"
+        className="flex h-14 min-h-10 min-w-20 flex-1 shrink-0 items-center justify-center rounded-full border border-[#79747e] px-6 py-4 font-['Google Sans',sans-serif] text-base font-medium leading-6 tracking-[0.1px] text-black transition-colors hover:bg-[#f5f5f5] md:flex-none"
       >
-        <Container1 />
+        Скачать CV
       </a>
       <a
         href="https://t.me/spacemanfromul"
         target="_blank"
         rel="noopener noreferrer"
-        className="content-stretch flex h-[56px] items-center justify-center min-h-[40px] min-w-[80px] px-[25.67px] py-[16px] relative rounded-[100px] shrink-0 bg-[#0b57d0] hover:bg-[#0842a0] transition-colors"
-        data-name="Component 4"
+        className="flex h-14 min-h-10 min-w-20 flex-1 shrink-0 items-center justify-center rounded-full bg-[#0b57d0] px-6 py-4 font-['Google Sans',sans-serif] text-base font-medium leading-6 tracking-[0.1px] text-white transition-colors hover:bg-[#0842a0] md:flex-none"
       >
-        <Container2 />
+        Связаться
       </a>
     </div>
   );
@@ -85,7 +60,7 @@ function Buttons() {
 
 function Right() {
   return (
-    <div className="content-stretch flex flex-[1_0_0] items-center justify-end min-w-px pb-[0.88px] relative" data-name="right">
+    <div className="flex w-full min-w-px items-center justify-center md:flex-[1_0_0] md:justify-end" data-name="right">
       <Buttons />
     </div>
   );
@@ -100,23 +75,23 @@ export default function Header({ showAvatar: showAvatarProp }: { showAvatar?: bo
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Если showAvatarProp не указан (главная страница), показываем аватар при скролле
-  // Если указан (страницы кейсов), используем переданное значение
-  const showAvatar = showAvatarProp !== undefined ? showAvatarProp : isScrolled;
+  const showLogo = showAvatarProp !== undefined ? showAvatarProp : isScrolled;
 
   return (
-    <div className="sticky top-0.5 md:top-4 z-50 w-full mb-0">
-      <div className="max-w-[1392px] mx-auto px-4 md:px-8">
+    <div className="sticky top-4 z-50 mb-0 w-full">
+      <div className="mx-auto max-w-[1392px] px-4 md:px-8">
         <div
-          className={`bg-white content-stretch flex items-center justify-between overflow-clip px-1 md:px-[4px] relative h-[70px] transition-all duration-300 ${
-            isScrolled ? 'shadow-[0_2px_10px_0_rgba(0,0,0,0.15)] rounded-[20px] md:rounded-[32px]' : ''
+          className={`relative flex h-[70px] items-center justify-between overflow-hidden rounded-[28px] bg-white px-2 transition-all duration-300 md:rounded-[32px] md:px-1 ${
+            isScrolled ? 'shadow-[0_2px_10px_0_rgba(0,0,0,0.15)]' : ''
           }`}
           data-name="Header"
         >
-          <Left showAvatar={showAvatar} />
+          <Left showLogo={showLogo} />
           <Right />
         </div>
       </div>

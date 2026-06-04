@@ -4,7 +4,6 @@ import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
 import { ChevronLeft, ChevronRight, Pause, Play, X, ZoomIn, ZoomOut } from 'lucide-react';
-import imgImage3 from "figma:asset/88a6e07d56a27f755fa8f667d48d08fa90a211df.png";
 import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.png";
 import imgImage10 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
 import imgImage12 from "figma:asset/866a53f627e8f3bc6a6770edc44c46647d97cd95.png";
@@ -22,9 +21,10 @@ import caseExperimentVideo from "../../assets/cases/case-experiment.mp4";
 import caseAdminGroup1 from "../../assets/cases/case-admin-group-1.jpg";
 import caseAdminGroup2 from "../../assets/cases/case-admin-group-2.jpg";
 import caseAdminGroup3 from "../../assets/cases/case-admin-group-3.jpg";
-import caseAdminGroup4 from "../../assets/cases/case-admin-group-4.jpg";
 import caseAdminGroup5 from "../../assets/cases/case-admin-group-5.jpg";
 import caseAdminGroup6 from "../../assets/cases/case-admin-group-6.jpg";
+import caseAdminTreeClosed from "../../assets/cases/case-admin-tree-closed.jpg";
+import caseAdminTreeOpen from "../../assets/cases/case-admin-tree-open.jpg";
 
 export default function HomePage() {
   const [activeModal, setActiveModal] = useState<'admin-panel' | 'routes' | null>(null);
@@ -94,51 +94,12 @@ export default function HomePage() {
       <ThankYou />
 
       <Modal isOpen={activeModal === 'admin-panel'} onClose={() => setActiveModal(null)}>
-        <AdminPanelContent />
+        <AdminPanelContent onNextCase={() => setActiveModal('routes')} />
       </Modal>
 
       <Modal isOpen={activeModal === 'routes'} onClose={() => setActiveModal(null)}>
         <RoutesContent />
       </Modal>
-    </div>
-  );
-}
-
-function ProjectCard({
-  onClick,
-  bgColor,
-  image,
-  title,
-  tags
-}: {
-  onClick: () => void;
-  bgColor: string;
-  image: string;
-  title: string;
-  tags: string;
-}) {
-  return (
-    <div className="flex flex-col w-full min-w-0">
-      <button onClick={onClick} className="block relative overflow-clip rounded-lg md:rounded-[28px] aspect-square group cursor-pointer w-full">
-        <div className={`${bgColor} absolute inset-0 transition-opacity group-hover:opacity-90`} />
-        <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
-          <img
-            alt={title}
-            className="max-w-[88%] max-h-[88%] h-auto w-auto object-contain rounded-lg md:rounded-[20px] transition-transform duration-300 group-hover:scale-[1.03]"
-            src={image}
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-      </button>
-      <div className="flex flex-col py-6 md:py-[24px]">
-        <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#191919] text-[0px] w-full">
-          <p className="text-base md:text-[19.2px]">
-            <span className="leading-[26.88px] text-[#191919]">{title} </span>
-            <span className="leading-[26.88px] text-[#999]">✦ {tags}</span>
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
@@ -154,18 +115,20 @@ function SectionIntro({
     <section className="mx-auto flex w-full max-w-[1392px] flex-col items-center gap-3 px-4 pb-2 pt-12 text-center md:px-8 md:pb-4 md:pt-20">
       <div className="flex max-w-[760px] flex-col items-center gap-3">
         <h2 className="font-['Google Sans',sans-serif] text-[40px] font-medium leading-[46px] tracking-[-0.5px] text-[#191c1d] md:text-[64px] md:leading-[72px]">
-          {keepShortWords(title)}
+          {formatText(title)}
         </h2>
         <p className="max-w-[560px] font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#747775] md:text-xl md:leading-[28px]">
-          {keepShortWords(description)}
+          {formatText(description)}
         </p>
       </div>
     </section>
   );
 }
 
-function keepShortWords(text: string) {
-  return text.replace(/(^|[\s(])(и|в|во|на|к|ко|с|со|по|для|под|над|от|до|из|у|а|но|за|без|при|о|об|обо)\s+/giu, '$1$2\u00a0');
+function formatText(text: string) {
+  return text
+    .replace(/(^|[\s(])(и|в|во|на|к|ко|с|со|по|для|под|над|от|до|из|у|а|но|за|без|при|о|об|обо)\s+/giu, '$1$2\u00a0')
+    .replace(/([A-Za-zА-Яа-яЁё0-9])[-–]([A-Za-zА-Яа-яЁё0-9])/g, '$1\u2011$2');
 }
 
 function CaseTag({ label, tone }: { label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }) {
@@ -178,7 +141,7 @@ function CaseTag({ label, tone }: { label: string; tone: 'web' | 'b2b' | 'data' 
   };
 
   return (
-    <span className={`${tones[tone]} rounded-lg px-2 py-1 font-['Google Sans',sans-serif] text-xs font-medium leading-[18px] tracking-[0.1px]`}>
+    <span className={`${tones[tone]} rounded-[10px] px-3 py-2 font-['Google Sans',sans-serif] text-sm font-medium leading-5 tracking-[0]`}>
       {label}
     </span>
   );
@@ -208,10 +171,10 @@ function CaseCard({
     >
       {children}
       <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] text-[#191c1d] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-        {keepShortWords(title)}
+        {formatText(title)}
       </h2>
       <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#191c1d] md:text-xl md:leading-[26px]">
-        {keepShortWords(description)}
+        {formatText(description)}
       </p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
@@ -277,46 +240,25 @@ function ExperimentPreview() {
   );
 }
 
-function Projects({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start py-4 md:py-8 relative shrink-0 w-full max-w-[1392px] mx-auto px-4 md:px-8">
-      <ProjectCard
-        onClick={() => onProjectClick('admin-panel')}
-        bgColor="bg-[#c5a5e4]"
-        image={imgImage3}
-        title="Админ панель - инструмент для релиз инженера"
-        tags="UX, B2B, 2025"
-      />
-      <ProjectCard
-        onClick={() => onProjectClick('routes')}
-        bgColor="bg-[#84c4a5]"
-        image={imgImage4}
-        title="Маршруты - сервис отображения истории поездок сотрудников на карте"
-        tags="UX, B2B, 2024"
-      />
-    </div>
-  );
-}
-
 function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
   return (
     <div className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col gap-6 px-4 py-4 md:px-8 md:py-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CaseCard
           onClick={() => onProjectClick('admin-panel')}
-          title="Админ панель для управления мобильным приложением"
-          description="Развитие нового внутреннего продукта для команды разработки"
+          title="Управление релизами мобильного приложения"
+          description="Сделал сложную логику проще через дерево в таблице, чтобы команда легко и быстро управляла бета-версиями"
           tags={[
             { label: 'WEB', tone: 'web' },
             { label: 'B2B', tone: 'b2b' },
           ]}
         >
-          <CaseImage src={caseAdminImage} alt="Админ панель" />
+          <CaseImage src={caseAdminImage} alt="Управление релизами мобильного приложения" />
         </CaseCard>
         <CaseCard
           onClick={() => onProjectClick('routes')}
           title="Система контроля транспортных расходов"
-          description="Спроектировал с нуля продукт для отслеживания перемещений сотрудников"
+          description="Собрал карту перемещений, чтобы быстрее находить поездки и контролировать спорные расходы"
           tags={[
             { label: 'WEB', tone: 'web' },
             { label: 'B2B', tone: 'b2b' },
@@ -329,7 +271,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.42fr_1fr]">
         <CaseCard
           title="ИИ-помощник сотрудника"
-          description="Сборка концептов и их защита перед заказчиком"
+          description="Проверил AI-сценарии на рабочих задачах и показал, где помощник экономит время"
           tags={[
             { label: 'AI', tone: 'ai' },
             { label: 'Mobile', tone: 'mobile' },
@@ -341,7 +283,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
         </CaseCard>
         <CaseCard
           title="Эксперименты"
-          description="Вайбкодинг продуктов под личные задачи"
+          description="Собираю быстрые прототипы, чтобы проверять идеи до полноценной разработки"
           tags={[
             { label: 'AI', tone: 'ai' },
             { label: 'Mobile', tone: 'mobile' },
@@ -383,7 +325,7 @@ function CaseStudyText({ children }: { children: string }) {
       className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#191c1d]"
       style={{ fontOpticalSizing: 'auto' }}
     >
-      {keepShortWords(children)}
+      {formatText(children)}
     </p>
   );
 }
@@ -394,7 +336,7 @@ function CaseDecisionTitle({ children }: { children: string }) {
       className="font-['Google Sans Flex','Google Sans',sans-serif] text-xl font-medium leading-[26px] tracking-[0] text-[#191c1d] lg:text-2xl lg:leading-[30px]"
       style={{ fontOpticalSizing: 'auto' }}
     >
-      {keepShortWords(children)}
+      {formatText(children)}
     </h3>
   );
 }
@@ -409,7 +351,7 @@ function CaseStudySection({
   return (
     <section className="flex w-full flex-col gap-4 py-6 text-[#191c1d]">
       <h2 className="font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-        {keepShortWords(title)}
+        {formatText(title)}
       </h2>
       <div className="flex flex-col gap-4">
         {children}
@@ -434,6 +376,40 @@ function CaseStudyImageBlock({ alt }: { alt: string }) {
   );
 }
 
+function CaseFooterActions({ onNextCase }: { onNextCase?: () => void }) {
+  return (
+    <section className="mt-8 flex flex-col gap-4 rounded-[28px] bg-[#e9f1ff] p-6 text-[#191c1d] md:mt-12 md:flex-row md:items-center md:justify-between md:p-8">
+      <div className="flex max-w-[560px] flex-col gap-2">
+        <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText(onNextCase ? 'Посмотреть следующий кейс' : 'Обсудить похожую задачу')}
+        </h2>
+        <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#5f6368] md:text-xl md:leading-[26px]">
+          {formatText(onNextCase ? 'Можно продолжить смотреть портфолио или сразу написать мне в Telegram' : 'Если нужно разобрать сложный B2B-сценарий, я открыт к разговору')}
+        </p>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        {onNextCase && (
+          <button
+            type="button"
+            onClick={onNextCase}
+            className="flex h-12 items-center justify-center rounded-full bg-[#191c1d] px-6 font-['Google Sans',sans-serif] text-base font-medium leading-6 text-white transition-colors hover:bg-[#303437]"
+          >
+            Следующий кейс
+          </button>
+        )}
+        <a
+          href="https://t.me/spacemanfromul"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-12 items-center justify-center rounded-full bg-[#0b57d0] px-6 font-['Google Sans',sans-serif] text-base font-medium leading-6 text-white transition-colors hover:bg-[#0842a0]"
+        >
+          Связаться
+        </a>
+      </div>
+    </section>
+  );
+}
+
 const adminGroupSlides = [
   caseAdminGroup1,
   caseAdminGroup2,
@@ -442,7 +418,12 @@ const adminGroupSlides = [
   caseAdminGroup6,
 ];
 
-function AdminGroupSlideshow() {
+const adminTreeSlides = [
+  caseAdminTreeClosed,
+  caseAdminTreeOpen,
+];
+
+function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string }) {
   const slideshowRef = useRef<HTMLDivElement | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -454,7 +435,7 @@ function AdminGroupSlideshow() {
   useEffect(() => {
     let isCancelled = false;
 
-    const preloadSlides = adminGroupSlides.map((slide) => new Promise<void>((resolve) => {
+    const preloadSlides = slides.map((slide) => new Promise<void>((resolve) => {
       const image = new Image();
       image.onload = () => {
         if ('decode' in image) {
@@ -476,7 +457,7 @@ function AdminGroupSlideshow() {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [slides]);
 
   useEffect(() => {
     const node = slideshowRef.current;
@@ -502,7 +483,7 @@ function AdminGroupSlideshow() {
     }
 
     const interval = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % adminGroupSlides.length);
+      setActiveSlide((current) => (current + 1) % slides.length);
     }, 1800);
 
     return () => window.clearInterval(interval);
@@ -531,12 +512,12 @@ function AdminGroupSlideshow() {
   }, [isFullscreen]);
 
   const showPreviousSlide = () => {
-    setActiveSlide((current) => (current - 1 + adminGroupSlides.length) % adminGroupSlides.length);
+    setActiveSlide((current) => (current - 1 + slides.length) % slides.length);
     setZoom(1);
   };
 
   const showNextSlide = () => {
-    setActiveSlide((current) => (current + 1) % adminGroupSlides.length);
+    setActiveSlide((current) => (current + 1) % slides.length);
     setZoom(1);
   };
 
@@ -564,14 +545,14 @@ function AdminGroupSlideshow() {
               alt=""
               aria-hidden
               className="absolute inset-0 size-full object-cover"
-              src={adminGroupSlides[0]}
+              src={slides[0]}
               loading="eager"
               decoding="sync"
             />
-            {adminGroupSlides.map((slide, index) => (
+            {slides.map((slide, index) => (
               <img
                 key={slide}
-                alt={`Группы пользователей, шаг ${index + 1}`}
+                alt={`${label}, шаг ${index + 1}`}
                 className={`absolute inset-0 size-full object-cover ${
                   index === activeSlide ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -599,7 +580,7 @@ function AdminGroupSlideshow() {
         <div className="fixed inset-0 z-[9999] flex flex-col bg-black/92 text-white">
           <div className="flex items-center justify-between gap-3 p-3 md:p-5">
             <div className="font-['Google Sans',sans-serif] text-sm font-medium md:text-base">
-              {activeSlide + 1} / {adminGroupSlides.length}
+              {activeSlide + 1} / {slides.length}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -656,9 +637,9 @@ function AdminGroupSlideshow() {
             </button>
             <div className="flex min-h-full items-center justify-center">
               <img
-                alt={`Группы пользователей, шаг ${activeSlide + 1}`}
+                alt={`${label}, шаг ${activeSlide + 1}`}
                 className="max-h-none max-w-none rounded-xl"
-                src={adminGroupSlides[activeSlide]}
+                src={slides[activeSlide]}
                 style={{
                   width: `${Math.round(90 * zoom)}vw`,
                   maxWidth: zoom === 1 ? '1500px' : 'none',
@@ -672,15 +653,15 @@ function AdminGroupSlideshow() {
   );
 }
 
-function AdminPanelContent() {
+function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
   return (
     <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[36px] font-medium leading-[42px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-          {keepShortWords('Админ панель для управления мобильным приложением')}
+          {formatText('Управление релизами мобильного приложения')}
         </h1>
         <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
-          {keepShortWords('Развитие нового внутреннего продукта для команды разработки')}
+          {formatText('Сделал сложную логику проще через дерево в таблице, чтобы команда легко и быстро управляла бета-версиями')}
         </p>
         <div className="flex flex-wrap gap-2">
           <CaseTag label="WEB" tone="web" />
@@ -688,7 +669,7 @@ function AdminPanelContent() {
         </div>
       </header>
 
-      <CaseStudyImageBlock alt="Админ панель для управления мобильным приложением" />
+      <CaseStudyImageBlock alt="Управление релизами мобильного приложения" />
 
       <CaseStudySection title="Что за продукт">
         <CaseStudyText>Изначально админ-панель создавалась как альтернатива системе удалённого управления мобильными устройствами (MDM)</CaseStudyText>
@@ -707,18 +688,18 @@ function AdminPanelContent() {
       </CaseStudySection>
 
       <CaseStudySection title="Ключевые решения">
-        <CaseStudyImageBlock alt="Древовидная таблица веток и версий" />
-        <CaseDecisionTitle>1. Древовидная таблица вместо плоского списка</CaseDecisionTitle>
+        <CaseDecisionTitle>1. Иерархия веток и версий</CaseDecisionTitle>
+        <CaseStudySlideshow slides={adminTreeSlides} label="Древовидная таблица веток и версий" />
         <CaseStudyText>Ветки и версии связаны между собой: одна ветка может содержать несколько последовательных сборок. В обычной таблице эта связь была бы неочевидна, особенно при большом количестве параллельных релизов</CaseStudyText>
         <CaseStudyText>Я предложил древовидную структуру, в которой ветки находятся на верхнем уровне, а версии раскрываются внутри них. Так пользователь сразу видит иерархию релизов и быстрее понимает, к какой ветке относится каждая сборка</CaseStudyText>
 
-        <CaseStudyImageBlock alt="Управление ветками и версиями" />
         <CaseDecisionTitle>2. Управление ветками и версиями в одном интерфейсе</CaseDecisionTitle>
+        <CaseStudyImageBlock alt="Управление ветками и версиями" />
         <CaseStudyText>Раньше работа с отдельными сборками требовала ручных действий и не давала команде единой картины происходящего</CaseStudyText>
         <CaseStudyText>Я объединил создание веток, добавление версий и управление ими в одном рабочем пространстве. Пользователю не нужно переключаться между разными разделами или терять контекст выбранного релиза</CaseStudyText>
 
-        <AdminGroupSlideshow />
         <CaseDecisionTitle>3. Отдельная сущность для групп пользователей</CaseDecisionTitle>
+        <CaseStudySlideshow slides={adminGroupSlides} label="Группы пользователей" />
         <CaseStudyText>Изначально список пользователей предполагалось хранить внутри каждой ветки. Это означало, что при создании нового пилота или бета-релиза команде пришлось бы заново собирать одну и ту же группу тестировщиков</CaseStudyText>
         <CaseStudyText>Я предложил вынести группы пользователей в отдельную вкладку и сделать их переиспользуемой сущностью. Системный аналитик поддержал идею, и в результате одну группу бета-тестеров можно назначать разным веткам без повторного заполнения списка</CaseStudyText>
         <CaseStudyText>Такое решение сокращает ручную работу, снижает риск ошибок и упрощает управление параллельными релизами</CaseStudyText>
@@ -728,6 +709,8 @@ function AdminPanelContent() {
         <CaseStudyText>В этой задаче было важно снизить риск ошибок: действия администратора могут затронуть большое количество пользователей. Несмотря на высокий уровень экспертизы аудитории, интерфейс не должен требовать лишних усилий и перегружать пользователя деталями</CaseStudyText>
         <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
       </CaseStudySection>
+
+      <CaseFooterActions onNextCase={onNextCase} />
     </div>
   );
 }
@@ -785,10 +768,13 @@ function RoutesContent() {
         <div className="w-full mb-8"><img alt="Скриншот 3" className="w-full h-auto" src={imgImage6} loading="lazy" decoding="async" /></div>
         <div className="w-full mb-8"><img alt="Скриншот 4" className="w-full h-auto" src={imgImage7} loading="lazy" decoding="async" /></div>
         <div className="w-full mb-8"><img alt="Скриншот 5" className="w-full h-auto" src={imgImage8} loading="lazy" decoding="async" /></div>
+
+        <CaseFooterActions />
       </div>
     </div>
   );
 }
+
 
 
 

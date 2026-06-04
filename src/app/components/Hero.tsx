@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { RotateCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import imgContainer from "../../imports/Hero/58b059b979a564c3f70557c331cb54b5e258dd48.jpg";
 
@@ -128,11 +128,11 @@ function Container2() {
           style={{ backfaceVisibility: 'hidden' }}
         >
           <RotateCw className="absolute top-4 right-4 w-6 h-6 opacity-50" />
-          <div className="flex flex-col font-['Google Sans',sans-serif] font-bold justify-center relative shrink-0 text-[64px] whitespace-nowrap">
-            <p className="leading-[96px]">3+ года</p>
+          <div className="flex flex-col font-['Google Sans',sans-serif] font-bold justify-center relative shrink-0 text-[48px] md:text-[56px] whitespace-nowrap">
+            <p className="leading-[58px] md:leading-[68px]">3 года</p>
           </div>
-          <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center min-w-full relative shrink-0 text-[40px] w-[min-content]">
-            <p className="leading-[48px]">коммерческого опыта</p>
+          <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center min-w-full relative shrink-0 text-[28px] md:text-[32px] w-[min-content]">
+            <p className="leading-[36px] md:leading-[40px]">коммерческого опыта</p>
           </div>
         </div>
 
@@ -243,3 +243,4 @@ export default function Hero() {
     </div>
   );
 }
+
