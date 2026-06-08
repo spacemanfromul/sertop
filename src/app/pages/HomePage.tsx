@@ -3,16 +3,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
-import { ChevronLeft, ChevronRight, Pause, Play, X, ZoomIn, ZoomOut } from 'lucide-react';
-import imgImage4 from "figma:asset/1491e78767295cee8997920ba3fd00bdc5d5ecd3.png";
-import imgImage10 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
-import imgImage12 from "figma:asset/866a53f627e8f3bc6a6770edc44c46647d97cd95.png";
-import imgImage14 from "figma:asset/458f81f65860ef4f62aaa75b22daf2922cc76789.png";
-import imgUntitled1 from "figma:asset/135baa3a3201b07dd545e70bc419fb50a67cd083.jpg";
-import imgImage5 from "figma:asset/e8c846511aa03374308d4d0bdc22c5f832e00a3a.jpg";
-import imgImage6 from "figma:asset/9155f2a5dd6b67a82f2e3b2e464f250a0d69327a.jpg";
-import imgImage7 from "figma:asset/a8f4a43bc65a3564df1b44fdf7f8eaf424c9c6de.jpg";
-import imgImage8 from "figma:asset/6f2a29bf14bfeaf82e47e74b71c327ae0a63e3dd.png";
+import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import caseAdminImage from "../../assets/cases/case-admin.png";
 import caseAiMobileImage from "../../assets/cases/case-ai-mobile.jpg";
 import caseAiWebImage from "../../assets/cases/case-ai-web.jpg";
@@ -25,6 +16,10 @@ import caseAdminGroup5 from "../../assets/cases/case-admin-group-5.jpg";
 import caseAdminGroup6 from "../../assets/cases/case-admin-group-6.jpg";
 import caseAdminTreeClosed from "../../assets/cases/case-admin-tree-closed.jpg";
 import caseAdminTreeOpen from "../../assets/cases/case-admin-tree-open.jpg";
+import caseAdminEdit1 from "../../assets/cases/case-admin-edit-1.jpg";
+import caseAdminEdit2 from "../../assets/cases/case-admin-edit-2.jpg";
+import caseAdminEdit3 from "../../assets/cases/case-admin-edit-3.jpg";
+import caseAdminEdit4 from "../../assets/cases/case-admin-edit-4.jpg";
 
 export default function HomePage() {
   const [activeModal, setActiveModal] = useState<'admin-panel' | 'routes' | null>(null);
@@ -98,7 +93,7 @@ export default function HomePage() {
       </Modal>
 
       <Modal isOpen={activeModal === 'routes'} onClose={() => setActiveModal(null)}>
-        <RoutesContent />
+        <RoutesContent onOpenPrototype={() => window.open('/#routes-prototype', '_blank', 'noopener,noreferrer')} />
       </Modal>
     </div>
   );
@@ -129,6 +124,11 @@ function formatText(text: string) {
   return text
     .replace(/(^|[\s(])(и|в|во|на|к|ко|с|со|по|для|под|над|от|до|из|у|а|но|за|без|при|о|об|обо)\s+/giu, '$1$2\u00a0')
     .replace(/([A-Za-zА-Яа-яЁё0-9])[-–]([A-Za-zА-Яа-яЁё0-9])/g, '$1\u2011$2');
+}
+
+function formatParagraph(text: string) {
+  const formatted = formatText(text);
+  return /[.!?…]$/.test(formatted.trim()) ? formatted : `${formatted}.`;
 }
 
 function CaseTag({ label, tone }: { label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }) {
@@ -306,26 +306,13 @@ function ThankYou() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="content-stretch flex flex-col gap-4 items-start leading-[0] py-6 md:py-[24px] relative shrink-0 text-[#191919] w-full">
-      <div className="flex flex-col font-['Google Sans',sans-serif] font-black justify-center relative shrink-0 text-3xl md:text-[48px] w-full">
-        <p className="leading-[43.2px]">{title}</p>
-      </div>
-      <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center leading-[26.88px] relative shrink-0 text-base md:text-[19.2px] w-full">
-        {children}
-      </div>
-    </div>
-  );
-}
-
 function CaseStudyText({ children }: { children: string }) {
   return (
     <p
       className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#191c1d]"
       style={{ fontOpticalSizing: 'auto' }}
     >
-      {formatText(children)}
+      {formatParagraph(children)}
     </p>
   );
 }
@@ -360,14 +347,14 @@ function CaseStudySection({
   );
 }
 
-function CaseStudyImageBlock({ alt }: { alt: string }) {
+function CaseStudyImageBlock({ alt, src = caseAdminImage }: { alt: string; src?: string }) {
   return (
     <div className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
       <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
         <img
           alt={alt}
           className="size-full object-cover"
-          src={caseAdminImage}
+          src={src}
           loading="lazy"
           decoding="async"
         />
@@ -378,30 +365,30 @@ function CaseStudyImageBlock({ alt }: { alt: string }) {
 
 function CaseFooterActions({ onNextCase }: { onNextCase?: () => void }) {
   return (
-    <section className="mt-8 flex flex-col gap-4 rounded-[28px] bg-[#e9f1ff] p-6 text-[#191c1d] md:mt-12 md:flex-row md:items-center md:justify-between md:p-8">
+    <section className="mt-8 flex flex-col gap-6 rounded-[28px] bg-[#e9f1ff] p-6 text-[#191c1d] md:mt-12 md:flex-row md:items-center md:justify-between md:p-8">
       <div className="flex max-w-[560px] flex-col gap-2">
         <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-          {formatText(onNextCase ? 'Посмотреть следующий кейс' : 'Обсудить похожую задачу')}
+            {formatText(onNextCase ? 'Продолжить или посмотреть' : 'Обсудить похожую задачу')}
         </h2>
         <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#5f6368] md:text-xl md:leading-[26px]">
           {formatText(onNextCase ? 'Можно продолжить смотреть портфолио или сразу написать мне в Telegram' : 'Если нужно разобрать сложный B2B-сценарий, я открыт к разговору')}
         </p>
       </div>
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:items-center md:justify-end">
         {onNextCase && (
           <button
             type="button"
             onClick={onNextCase}
-            className="flex h-12 items-center justify-center rounded-full bg-[#191c1d] px-6 font-['Google Sans',sans-serif] text-base font-medium leading-6 text-white transition-colors hover:bg-[#303437]"
+            className="flex h-14 min-w-[132px] items-center justify-center rounded-full bg-[#191c1d] px-6 text-center font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
           >
-            Следующий кейс
+            Продолжить
           </button>
         )}
         <a
           href="https://t.me/spacemanfromul"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-12 items-center justify-center rounded-full bg-[#0b57d0] px-6 font-['Google Sans',sans-serif] text-base font-medium leading-6 text-white transition-colors hover:bg-[#0842a0]"
+          className="flex h-14 min-w-[132px] items-center justify-center rounded-full bg-[#2f5bd6] px-6 font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#2448b8]"
         >
           Связаться
         </a>
@@ -423,10 +410,18 @@ const adminTreeSlides = [
   caseAdminTreeOpen,
 ];
 
+const adminEditSlides = [
+  caseAdminEdit1,
+  caseAdminEdit2,
+  caseAdminEdit3,
+  caseAdminEdit4,
+];
+
 function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string }) {
   const slideshowRef = useRef<HTMLDivElement | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [hasCompleted, setHasCompleted] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [areSlidesReady, setAreSlidesReady] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -470,7 +465,7 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
       ([entry]) => {
         setIsInView(entry.isIntersecting);
       },
-      { threshold: 0.35 }
+      { threshold: 0.75 }
     );
 
     observer.observe(node);
@@ -478,16 +473,23 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
   }, []);
 
   useEffect(() => {
-    if (!areSlidesReady || isPaused || (!isInView && !isFullscreen)) {
+    if (!areSlidesReady || isPaused || hasCompleted || (!isInView && !isFullscreen)) {
       return undefined;
     }
 
     const interval = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % slides.length);
+      setActiveSlide((current) => {
+        if (current >= slides.length - 1) {
+          setHasCompleted(true);
+          return 0;
+        }
+
+        return current + 1;
+      });
     }, 1800);
 
     return () => window.clearInterval(interval);
-  }, [areSlidesReady, isPaused, isInView, isFullscreen]);
+  }, [areSlidesReady, isPaused, hasCompleted, isInView, isFullscreen, slides.length]);
 
   useEffect(() => {
     if (!isFullscreen) {
@@ -518,6 +520,13 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
 
   const showNextSlide = () => {
     setActiveSlide((current) => (current + 1) % slides.length);
+    setZoom(1);
+  };
+
+  const replaySlideshow = () => {
+    setActiveSlide(0);
+    setHasCompleted(false);
+    setIsPaused(false);
     setZoom(1);
   };
 
@@ -562,17 +571,31 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
               />
             ))}
           </button>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              setIsPaused((current) => !current);
-            }}
-            className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-[#191c1d] shadow-[0_2px_8px_rgba(0,0,0,0.16)]"
-            aria-label={isPaused ? 'Продолжить слайдшоу' : 'Поставить слайдшоу на паузу'}
-          >
-            {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
-          </button>
+          {hasCompleted ? (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                replaySlideshow();
+              }}
+              className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-[#191c1d] shadow-[0_2px_8px_rgba(0,0,0,0.16)]"
+              aria-label="Повторить слайдшоу"
+            >
+              <RotateCcw className="size-5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                setIsPaused((current) => !current);
+              }}
+              className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/90 text-[#191c1d] shadow-[0_2px_8px_rgba(0,0,0,0.16)]"
+              aria-label={isPaused ? 'Продолжить слайдшоу' : 'Поставить слайдшоу на паузу'}
+            >
+              {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -583,14 +606,25 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
               {activeSlide + 1} / {slides.length}
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setIsPaused((current) => !current)}
-                className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
-                aria-label={isPaused ? 'Продолжить слайдшоу' : 'Поставить слайдшоу на паузу'}
-              >
-                {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
-              </button>
+              {hasCompleted ? (
+                <button
+                  type="button"
+                  onClick={replaySlideshow}
+                  className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
+                  aria-label="Повторить слайдшоу"
+                >
+                  <RotateCcw className="size-5" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsPaused((current) => !current)}
+                  className="flex size-10 items-center justify-center rounded-full bg-white/12 hover:bg-white/20"
+                  aria-label={isPaused ? 'Продолжить слайдшоу' : 'Поставить слайдшоу на паузу'}
+                >
+                  {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setZoom((current) => Math.max(1, Number((current - 0.25).toFixed(2))))}
@@ -657,7 +691,7 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
   return (
     <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
-        <h1 className="font-['Google Sans',sans-serif] text-[36px] font-medium leading-[42px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+        <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText('Управление релизами мобильного приложения')}
         </h1>
         <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
@@ -694,7 +728,7 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
         <CaseStudyText>Я предложил древовидную структуру, в которой ветки находятся на верхнем уровне, а версии раскрываются внутри них. Так пользователь сразу видит иерархию релизов и быстрее понимает, к какой ветке относится каждая сборка</CaseStudyText>
 
         <CaseDecisionTitle>2. Управление ветками и версиями в одном интерфейсе</CaseDecisionTitle>
-        <CaseStudyImageBlock alt="Управление ветками и версиями" />
+        <CaseStudySlideshow slides={adminEditSlides} label="Управление ветками и версиями" />
         <CaseStudyText>Раньше работа с отдельными сборками требовала ручных действий и не давала команде единой картины происходящего</CaseStudyText>
         <CaseStudyText>Я объединил создание веток, добавление версий и управление ими в одном рабочем пространстве. Пользователю не нужно переключаться между разными разделами или терять контекст выбранного релиза</CaseStudyText>
 
@@ -715,62 +749,81 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
   );
 }
 
-function RoutesContent() {
+function RoutesContent({ onOpenPrototype }: { onOpenPrototype: () => void }) {
   return (
-    <div className="w-full">
-      <div className="content-stretch flex flex-col gap-4 items-start leading-[0] relative shrink-0 text-[#191919] mb-8">
-        <div className="flex flex-col font-['Google Sans',sans-serif] font-black justify-center relative shrink-0 text-4xl md:text-6xl lg:text-[96px] w-full">
-          <p className="leading-[0.9] whitespace-pre-wrap">Маршруты </p>
-        </div>
-        <div className="flex flex-col font-['Google Sans',sans-serif] font-medium justify-center relative shrink-0 text-base md:text-[19.2px] whitespace-nowrap">
-          <p className="leading-[19.2px]">Сервис отображения истории поездок сотрудников на карте</p>
-        </div>
-      </div>
-
-      <div className="w-full mb-8">
-        <div className="relative overflow-clip rounded-lg md:rounded-[32px] bg-[#84c4a5] h-[400px] md:h-[900px]">
-          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
-            <img alt="Маршруты" className="max-w-full max-h-full object-contain" src={imgImage4} loading="lazy" decoding="async" />
-          </div>
+    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+      <div className="flex flex-col gap-3 text-[#191c1d]">
+        <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Система контроля транспортных расходов')}
+        </h1>
+        <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
+          {formatText('Собрал карту перемещений, чтобы быстрее находить поездки и контролировать спорные расходы')}
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <CaseTag label="WEB" tone="web" />
+          <CaseTag label="B2B" tone="b2b" />
+          <CaseTag label="Data-heavy" tone="data" />
         </div>
       </div>
 
-      <div className="w-full max-w-[1583px] mx-auto">
-        <Section title="Контекст">
-          <p className="whitespace-pre-wrap">Внутренний веб-сервис для логистов и операторов, который отображает историю поездок сотрудников на карте в реальном времени. Помогает отслеживать перемещения, анализировать маршруты и оптимизировать логистику.</p>
-        </Section>
+      <CaseStudyImageBlock alt="Админ-панель для управления маршрутами" src={caseRoutesImage} />
 
-        <Section title="Проблема">
-          <p className="mb-0 whitespace-pre-wrap">До внедрения сервиса:</p>
-          <ul className="list-disc mb-0">
-            <li className="mb-0 ms-[28.8px]"><span>не было визуализации маршрутов</span></li>
-            <li className="mb-0 ms-[28.8px]"><span>сложно было отследить историю поездок</span></li>
-            <li className="ms-[28.8px]"><span>отсутствовала аналитика по маршрутам</span></li>
-          </ul>
-          <p className="whitespace-pre-wrap">Цель — создать удобный инструмент для визуализации и анализа маршрутов сотрудников.</p>
-        </Section>
-
-        <Section title="Моя роль">
-          <p className="mb-0 whitespace-pre-wrap">Проектировал интерфейс карты и элементов управления</p>
-          <p className="mb-0 whitespace-pre-wrap">Разработал систему фильтров и поиска</p>
-          <p className="mb-0 whitespace-pre-wrap">Создал дизайн информационных карточек</p>
-          <p className="whitespace-pre-wrap">Участвовал в разработке мобильной версии</p>
-        </Section>
-
-        <Section title="Результат">
-          <p className="mb-0 whitespace-pre-wrap">Логисты получили наглядный инструмент для отслеживания</p>
-          <p className="mb-0 whitespace-pre-wrap">Сократилось время на поиск нужной поездки</p>
-          <p className="whitespace-pre-wrap">Появилась возможность анализировать эффективность маршрутов</p>
-        </Section>
-
-        <div className="w-full mb-8"><img alt="Скриншот 1" className="w-full h-auto" src={imgUntitled1} loading="lazy" decoding="async" /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 2" className="w-full h-auto" src={imgImage5} loading="lazy" decoding="async" /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 3" className="w-full h-auto" src={imgImage6} loading="lazy" decoding="async" /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 4" className="w-full h-auto" src={imgImage7} loading="lazy" decoding="async" /></div>
-        <div className="w-full mb-8"><img alt="Скриншот 5" className="w-full h-auto" src={imgImage8} loading="lazy" decoding="async" /></div>
-
-        <CaseFooterActions />
+      <div className="flex flex-col gap-3 rounded-[28px] bg-[#e9f1ff] p-5 text-[#191c1d] md:flex-row md:items-center md:justify-between md:p-6">
+        <div className="flex max-w-[680px] flex-col gap-1">
+          <h2 className="font-['Google Sans',sans-serif] text-[24px] font-medium leading-[30px] tracking-[0]">
+            {formatText('Интерактивный прототип маршрута')}
+          </h2>
+          <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#5f6368]">
+            {formatParagraph('Можно посмотреть, как машина движется по маршруту и как карта помогает считывать поездку в динамике')}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onOpenPrototype}
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#191c1d] px-5 font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
+        >
+          Открыть прототип
+          <ArrowRight className="size-5" />
+        </button>
       </div>
+
+      <CaseStudySection title="Что за продукт">
+        <CaseStudyText>В компании есть разъездные сотрудники, которые обслуживают заявки на выезде и используют личный транспорт. Компания компенсирует им расходы по пробегу за месяц</CaseStudyText>
+        <CaseStudyText>Для этого используется система, которая автоматически фиксирует поездки и считает пробег. Руководители и диспетчеры проверяют данные, подтверждают компенсации и разбирают спорные ситуации, когда нужно детальнее посмотреть маршрут сотрудника</CaseStudyText>
+      </CaseStudySection>
+
+      <CaseStudySection title="Проблема">
+        <CaseStudyText>Старая legacy-система не давала наглядно анализировать маршруты сотрудников и зависела от Google Maps API, который не подходил компании по требованиям лицензирования и надежности. Нужно было с нуля спроектировать новый интерфейс на Яндекс Картах, где карта, таблицы и данные о заявках помогают быстро проверять пробеги и разбирать спорные ситуации</CaseStudyText>
+      </CaseStudySection>
+
+      <CaseStudySection title="Мой вклад">
+        <CaseStudyText>Я подключился к проекту на этапе, когда старую систему решили полностью заменить. Нужно было не просто перерисовать интерфейс, а заново собрать логику продукта: как руководитель проверяет пробег, где видит маршрут, как сопоставляет поездки с заявками и принимает решение по спорным участкам</CaseStudyText>
+        <CaseStudyText>Чтобы не утонуть в объеме данных, я начал с информационной архитектуры: раскладывал каждый раздел на сценарии, сущности и данные, а потом вместе с командой мы отсекали лишнее. Так у всех появилось общее понимание, какой продукт мы строим и что действительно нужно пользователю</CaseStudyText>
+        <CaseStudyText>Главным решением стала связка карты и таблицы. Карта дает быстрый обзор смены и перемещений сотрудника, а таблица помогает спокойно разобрать детали: заявки, статусы и спорные участки маршрута. Параллельно я изучал возможности API Яндекс Карт, чтобы предлагать не абстрактные идеи, а решения, которые команда сможет реализовать</CaseStudyText>
+      </CaseStudySection>
+
+      <CaseStudySection title="Ключевые решения">
+        <CaseDecisionTitle>1. Связал карту и таблицу в одном рабочем сценарии</CaseDecisionTitle>
+        <CaseStudyImageBlock alt="Карта и таблица маршрутов в одном сценарии" src={caseRoutesImage} />
+        <CaseStudyText>Проверка маршрута требует одновременно видеть общую картину и детали. Поэтому экран разделён на две зоны: карта показывает перемещения сотрудника за смену, а таблица помогает разобрать заявки, статусы, время и спорные участки</CaseStudyText>
+        <CaseStudyText>Так руководитель не переключается между разными источниками данных и быстрее понимает, где именно возникла проблема</CaseStudyText>
+
+        <CaseDecisionTitle>2. Разделил сценарии через режимы «Карта» и «Реестр»</CaseDecisionTitle>
+        <CaseStudyImageBlock alt="Режимы карты и реестра маршрутов" src={caseRoutesImage} />
+        <CaseStudyText>Не все задачи удобно решать на карте. Для анализа конкретного маршрута нужен визуальный режим, а для массовой проверки, поиска и фильтрации — табличный</CaseStudyText>
+        <CaseStudyText>Переключатель «Карта / Реестр» разделяет эти сценарии и не перегружает один экран лишними функциями. Пользователь выбирает режим под задачу, а не адаптируется к универсальному интерфейсу</CaseStudyText>
+
+        <CaseDecisionTitle>3. Спроектировал работу с геозонами</CaseDecisionTitle>
+        <CaseStudyImageBlock alt="Работа с геозонами на карте" src={caseRoutesImage} />
+        <CaseStudyText>Геозоны нужны не только как технические данные, но и как рабочий инструмент для анализа маршрутов. Поэтому я вынес их в понятный сценарий: существующие зоны можно находить через дерево в фильтрах, а новые — создавать прямо на карте через рисование</CaseStudyText>
+        <CaseStudyText>Это помогает быстрее работать с объектами обслуживания и держать структуру зон понятной даже при большом объёме данных</CaseStudyText>
+      </CaseStudySection>
+
+      <CaseStudySection title="Чем я горжусь">
+        <CaseStudyText>Горжусь тем, что этот проект стал для меня точкой роста: я не просто рисовал интерфейс, а проектировал систему с нуля — с логикой, сценариями, ограничениями и реальными пользователями. Продукт работает в той структуре, которую мы заложили, и продолжает развиваться, а для меня это стало первым большим подтверждением ценности продуктового подхода</CaseStudyText>
+      </CaseStudySection>
+
+      <CaseFooterActions />
     </div>
   );
 }
