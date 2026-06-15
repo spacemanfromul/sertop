@@ -97,7 +97,10 @@ export default function HomePage() {
       </Modal>
 
       <Modal isOpen={activeModal === 'routes'} onClose={() => setActiveModal(null)}>
-        <RoutesContent onOpenPrototype={() => window.open('/#routes-prototype', '_blank', 'noopener,noreferrer')} />
+        <RoutesContent
+          onAdjacentCase={() => setActiveModal('admin-panel')}
+          onOpenPrototype={() => window.open('/#routes-prototype', '_blank', 'noopener,noreferrer')}
+        />
       </Modal>
     </div>
   );
@@ -323,11 +326,11 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
 
 function ThankYou() {
   return (
-    <div className="content-stretch flex flex-col items-center pb-4 md:pb-[0.19px] pt-6 md:pt-[31px] relative shrink-0 w-full max-w-[1392px] mx-auto px-4 md:px-8">
-      <div className="flex flex-col font-['Google Sans',sans-serif] font-normal justify-center leading-[0] relative shrink-0 text-[#999] text-[13px] text-center whitespace-nowrap">
-        <p className="leading-[18.2px]">Спасибо за просмотр)</p>
-      </div>
-    </div>
+    <footer className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col items-center px-4 pb-6 pt-8 text-center md:px-8 md:pb-8 md:pt-12">
+      <p className="font-['Google Sans',sans-serif] text-[13px] font-normal leading-[18px] text-[#999]">
+        © Сергей Топорков 2026
+      </p>
+    </footer>
   );
 }
 
@@ -433,27 +436,31 @@ function CaseStudyVideoBlock({ src, label }: { src: string; label: string }) {
   );
 }
 
-function CaseFooterActions({ onNextCase }: { onNextCase?: () => void }) {
+function CaseFooterActions({
+  adjacentCaseLabel,
+  onAdjacentCase,
+}: {
+  adjacentCaseLabel: string;
+  onAdjacentCase: () => void;
+}) {
   return (
     <section className="mt-8 flex flex-col gap-6 rounded-[28px] bg-[#e9f1ff] p-6 text-[#191c1d] md:mt-12 md:flex-row md:items-center md:justify-between md:p-8">
       <div className="flex max-w-[560px] flex-col gap-2">
         <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-            {formatText(onNextCase ? 'Продолжить или посмотреть' : 'Обсудить похожую задачу')}
+          {formatText('Продолжить или связаться')}
         </h2>
         <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#5f6368] md:text-xl md:leading-[26px]">
-          {formatText(onNextCase ? 'Можно продолжить смотреть портфолио или сразу написать мне в Telegram' : 'Если нужно разобрать сложный B2B-сценарий, я открыт к разговору')}
+          {formatText('Можно посмотреть соседний кейс или сразу написать мне в Telegram')}
         </p>
       </div>
       <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:items-center md:justify-end">
-        {onNextCase && (
-          <button
-            type="button"
-            onClick={onNextCase}
-            className="flex h-14 min-w-[132px] items-center justify-center rounded-full bg-[#191c1d] px-6 text-center font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
-          >
-            Продолжить
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onAdjacentCase}
+          className="flex h-14 min-w-[176px] items-center justify-center rounded-full bg-[#191c1d] px-6 text-center font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
+        >
+          {formatText(adjacentCaseLabel)}
+        </button>
         <a
           href="https://t.me/spacemanfromul"
           target="_blank"
@@ -814,12 +821,18 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
         <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
       </CaseStudySection>
 
-      <CaseFooterActions onNextCase={onNextCase} />
+      <CaseFooterActions adjacentCaseLabel="Кейс про маршруты" onAdjacentCase={onNextCase} />
     </div>
   );
 }
 
-function RoutesContent({ onOpenPrototype }: { onOpenPrototype: () => void }) {
+function RoutesContent({
+  onAdjacentCase,
+  onOpenPrototype,
+}: {
+  onAdjacentCase: () => void;
+  onOpenPrototype: () => void;
+}) {
   return (
     <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
       <div className="flex flex-col gap-3 text-[#191c1d]">
@@ -879,12 +892,10 @@ function RoutesContent({ onOpenPrototype }: { onOpenPrototype: () => void }) {
         <CaseStudyText>Так руководитель не переключается между разными источниками данных и быстрее понимает, где именно возникла проблема</CaseStudyText>
 
         <CaseDecisionTitle>2. Разделил сценарии через режимы «Карта» и «Реестр»</CaseDecisionTitle>
-        <CaseStudyVideoBlock src={caseRoutesCarVideo} label="Режимы карты и реестра маршрутов" />
         <CaseStudyText>Не все задачи удобно решать на карте. Для анализа конкретного маршрута нужен визуальный режим, а для массовой проверки, поиска и фильтрации — табличный</CaseStudyText>
         <CaseStudyText>Переключатель «Карта / Реестр» разделяет эти сценарии и не перегружает один экран лишними функциями. Пользователь выбирает режим под задачу, а не адаптируется к универсальному интерфейсу</CaseStudyText>
 
         <CaseDecisionTitle>3. Спроектировал работу с геозонами</CaseDecisionTitle>
-        <CaseStudyVideoBlock src={caseRoutesCarVideo} label="Работа с геозонами на карте" />
         <CaseStudyText>Геозоны нужны не только как технические данные, но и как рабочий инструмент для анализа маршрутов. Поэтому я вынес их в понятный сценарий: существующие зоны можно находить через дерево в фильтрах, а новые — создавать прямо на карте через рисование</CaseStudyText>
         <CaseStudyText>Это помогает быстрее работать с объектами обслуживания и держать структуру зон понятной даже при большом объёме данных</CaseStudyText>
       </CaseStudySection>
@@ -893,7 +904,7 @@ function RoutesContent({ onOpenPrototype }: { onOpenPrototype: () => void }) {
         <CaseStudyText>Горжусь тем, что этот проект стал для меня точкой роста: я не просто рисовал интерфейс, а проектировал систему с нуля — с логикой, сценариями, ограничениями и реальными пользователями. Продукт работает в той структуре, которую мы заложили, и продолжает развиваться, а для меня это стало первым большим подтверждением ценности продуктового подхода</CaseStudyText>
       </CaseStudySection>
 
-      <CaseFooterActions />
+      <CaseFooterActions adjacentCaseLabel="Кейс про релизы" onAdjacentCase={onAdjacentCase} />
     </div>
   );
 }
