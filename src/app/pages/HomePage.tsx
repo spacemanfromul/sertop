@@ -3,12 +3,15 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
+import TagBadge, { type TagBadgeTone } from '../components/TagBadge';
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import caseAdminImage from "../../assets/cases/case-admin.png";
 import caseAiMobileImage from "../../assets/cases/case-ai-mobile.jpg";
 import caseAiWebImage from "../../assets/cases/case-ai-web.jpg";
-import caseRoutesImage from "../../assets/cases/case-routes.jpg";
 import caseExperimentVideo from "../../assets/cases/case-experiment.mp4";
+import caseRoutesHideShowVideo from "../../assets/cases/hide-show.mp4";
+import caseRoutesCarVideo from "../../assets/cases/route-car.mp4";
+import heroTransitionVideo from "../../assets/cases/hero-transition.mp4";
 import caseAdminGroup1 from "../../assets/cases/case-admin-group-1.jpg";
 import caseAdminGroup2 from "../../assets/cases/case-admin-group-2.jpg";
 import caseAdminGroup3 from "../../assets/cases/case-admin-group-3.jpg";
@@ -76,9 +79,10 @@ export default function HomePage() {
     <div className="bg-white min-h-screen w-full pt-4 md:pt-8">
       <Header />
       <Hero />
+      <CaseVideoSlot />
       <SectionIntro
         title="Кейсы"
-        description="Сложные B2B-интерфейсы, AI-сценарии, мобильные продукты и эксперименты"
+        description="B2B-интерфейсы для маршрутов, администрирования и управления версиями"
       />
       <CasesBlock onProjectClick={setActiveModal} />
       <SectionIntro
@@ -131,19 +135,19 @@ function formatParagraph(text: string) {
   return /[.!?…]$/.test(formatted.trim()) ? formatted : `${formatted}.`;
 }
 
-function CaseTag({ label, tone }: { label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }) {
-  const tones = {
-    web: 'bg-[#fafbec] text-[#52520f]',
-    b2b: 'bg-[#c4eed0] text-[#0f5223]',
-    data: 'bg-[#f9eaea] text-[#52170f]',
-    ai: 'bg-[#e8f0ff] text-[#0b57d0]',
-    mobile: 'bg-[#eee8f9] text-[#490f52]',
-  };
-
+function CaseVideoSlot() {
   return (
-    <span className={`${tones[tone]} rounded-[10px] px-3 py-2 font-['Google Sans',sans-serif] text-sm font-medium leading-5 tracking-[0]`}>
-      {label}
-    </span>
+    <section className="w-full py-8 md:py-12" aria-label="Видео перед кейсами">
+      <video
+        className="aspect-video w-full bg-[#f5f5f5] object-cover"
+        src={heroTransitionVideo}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+      />
+    </section>
   );
 }
 
@@ -157,7 +161,7 @@ function CaseCard({
 }: {
   title: string;
   description: string;
-  tags: Array<{ label: string; tone: 'web' | 'b2b' | 'data' | 'ai' | 'mobile' }>;
+  tags: Array<{ label: string; tone: TagBadgeTone }>;
   onClick?: () => void;
   children: React.ReactNode;
   className?: string;
@@ -178,7 +182,9 @@ function CaseCard({
       </p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <CaseTag key={tag.label} {...tag} />
+          <TagBadge key={tag.label} tone={tag.tone}>
+            {tag.label}
+          </TagBadge>
         ))}
       </div>
     </Wrapper>
@@ -194,6 +200,23 @@ function CaseImage({ src, alt }: { src: string; alt: string }) {
         src={src}
         loading="lazy"
         decoding="async"
+      />
+    </div>
+  );
+}
+
+function CaseVideoPreview({ src, label }: { src: string; label: string }) {
+  return (
+    <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)]">
+      <video
+        aria-label={label}
+        className="size-full object-cover"
+        src={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
       />
     </div>
   );
@@ -245,6 +268,18 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
     <div className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col gap-6 px-4 py-4 md:px-8 md:py-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CaseCard
+          onClick={() => onProjectClick('routes')}
+          title="Система контроля транспортных расходов"
+          description="Собрал карту перемещений, чтобы быстрее находить поездки и контролировать спорные расходы"
+          tags={[
+            { label: 'WEB', tone: 'web' },
+            { label: 'B2B', tone: 'b2b' },
+            { label: 'Data-heavy', tone: 'data' },
+          ]}
+        >
+          <CaseVideoPreview src={caseRoutesCarVideo} label="Система контроля транспортных расходов" />
+        </CaseCard>
+        <CaseCard
           onClick={() => onProjectClick('admin-panel')}
           title="Управление релизами мобильного приложения"
           description="Сделал сложную логику проще через дерево в таблице, чтобы команда легко и быстро управляла бета-версиями"
@@ -255,19 +290,8 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
         >
           <CaseImage src={caseAdminImage} alt="Управление релизами мобильного приложения" />
         </CaseCard>
-        <CaseCard
-          onClick={() => onProjectClick('routes')}
-          title="Система контроля транспортных расходов"
-          description="Собрал карту перемещений, чтобы быстрее находить поездки и контролировать спорные расходы"
-          tags={[
-            { label: 'WEB', tone: 'web' },
-            { label: 'B2B', tone: 'b2b' },
-            { label: 'Data-heavy', tone: 'data' },
-          ]}
-        >
-          <CaseImage src={caseRoutesImage} alt="Система контроля транспортных расходов" />
-        </CaseCard>
       </div>
+      {false && (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.42fr_1fr]">
         <CaseCard
           title="ИИ-помощник сотрудника"
@@ -292,6 +316,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
           <ExperimentPreview />
         </CaseCard>
       </div>
+      )}
     </div>
   );
 }
@@ -347,16 +372,61 @@ function CaseStudySection({
   );
 }
 
-function CaseStudyImageBlock({ alt, src = caseAdminImage }: { alt: string; src?: string }) {
+function CaseStudyImageBlock({
+  alt,
+  src = caseAdminImage,
+  onClick,
+}: {
+  alt: string;
+  src?: string;
+  onClick?: () => void;
+}) {
+  const image = (
+    <img
+      alt={alt}
+      className="size-full object-cover"
+      src={src}
+      loading="lazy"
+      decoding="async"
+    />
+  );
+
   return (
     <div className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
       <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
-        <img
-          alt={alt}
+        {onClick ? (
+          <button
+            type="button"
+            onClick={onClick}
+            className="group relative size-full cursor-pointer overflow-hidden text-left"
+          >
+            {image}
+            <span className="absolute bottom-4 left-4 rounded-full bg-black/80 px-4 py-2 font-['Google Sans',sans-serif] text-sm font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
+              Открыть в плеере
+            </span>
+          </button>
+        ) : (
+          image
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CaseStudyVideoBlock({ src, label }: { src: string; label: string }) {
+  return (
+    <div className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
+      <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
+        <video
+          aria-label={label}
           className="size-full object-cover"
           src={src}
-          loading="lazy"
-          decoding="async"
+          autoPlay
+          muted
+          loop
+          playsInline
+          controls
+          preload="metadata"
         />
       </div>
     </div>
@@ -698,8 +768,8 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
           {formatText('Сделал сложную логику проще через дерево в таблице, чтобы команда легко и быстро управляла бета-версиями')}
         </p>
         <div className="flex flex-wrap gap-2">
-          <CaseTag label="WEB" tone="web" />
-          <CaseTag label="B2B" tone="b2b" />
+          <TagBadge tone="web">WEB</TagBadge>
+          <TagBadge tone="b2b">B2B</TagBadge>
         </div>
       </header>
 
@@ -760,13 +830,13 @@ function RoutesContent({ onOpenPrototype }: { onOpenPrototype: () => void }) {
           {formatText('Собрал карту перемещений, чтобы быстрее находить поездки и контролировать спорные расходы')}
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
-          <CaseTag label="WEB" tone="web" />
-          <CaseTag label="B2B" tone="b2b" />
-          <CaseTag label="Data-heavy" tone="data" />
+          <TagBadge tone="web">WEB</TagBadge>
+          <TagBadge tone="b2b">B2B</TagBadge>
+          <TagBadge tone="data">Data-heavy</TagBadge>
         </div>
       </div>
 
-      <CaseStudyImageBlock alt="Админ-панель для управления маршрутами" src={caseRoutesImage} />
+      <CaseStudyVideoBlock src={caseRoutesCarVideo} label="Админ-панель для управления маршрутами" />
 
       <div className="flex flex-col gap-3 rounded-[28px] bg-[#e9f1ff] p-5 text-[#191c1d] md:flex-row md:items-center md:justify-between md:p-6">
         <div className="flex max-w-[680px] flex-col gap-1">
@@ -804,17 +874,17 @@ function RoutesContent({ onOpenPrototype }: { onOpenPrototype: () => void }) {
 
       <CaseStudySection title="Ключевые решения">
         <CaseDecisionTitle>1. Связал карту и таблицу в одном рабочем сценарии</CaseDecisionTitle>
-        <CaseStudyImageBlock alt="Карта и таблица маршрутов в одном сценарии" src={caseRoutesImage} />
+        <CaseStudyVideoBlock src={caseRoutesHideShowVideo} label="Демонстрация скрытия и показа таблицы маршрутов" />
         <CaseStudyText>Проверка маршрута требует одновременно видеть общую картину и детали. Поэтому экран разделён на две зоны: карта показывает перемещения сотрудника за смену, а таблица помогает разобрать заявки, статусы, время и спорные участки</CaseStudyText>
         <CaseStudyText>Так руководитель не переключается между разными источниками данных и быстрее понимает, где именно возникла проблема</CaseStudyText>
 
         <CaseDecisionTitle>2. Разделил сценарии через режимы «Карта» и «Реестр»</CaseDecisionTitle>
-        <CaseStudyImageBlock alt="Режимы карты и реестра маршрутов" src={caseRoutesImage} />
+        <CaseStudyVideoBlock src={caseRoutesCarVideo} label="Режимы карты и реестра маршрутов" />
         <CaseStudyText>Не все задачи удобно решать на карте. Для анализа конкретного маршрута нужен визуальный режим, а для массовой проверки, поиска и фильтрации — табличный</CaseStudyText>
         <CaseStudyText>Переключатель «Карта / Реестр» разделяет эти сценарии и не перегружает один экран лишними функциями. Пользователь выбирает режим под задачу, а не адаптируется к универсальному интерфейсу</CaseStudyText>
 
         <CaseDecisionTitle>3. Спроектировал работу с геозонами</CaseDecisionTitle>
-        <CaseStudyImageBlock alt="Работа с геозонами на карте" src={caseRoutesImage} />
+        <CaseStudyVideoBlock src={caseRoutesCarVideo} label="Работа с геозонами на карте" />
         <CaseStudyText>Геозоны нужны не только как технические данные, но и как рабочий инструмент для анализа маршрутов. Поэтому я вынес их в понятный сценарий: существующие зоны можно находить через дерево в фильтрах, а новые — создавать прямо на карте через рисование</CaseStudyText>
         <CaseStudyText>Это помогает быстрее работать с объектами обслуживания и держать структуру зон понятной даже при большом объёме данных</CaseStudyText>
       </CaseStudySection>
