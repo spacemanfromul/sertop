@@ -1,5 +1,5 @@
 ﻿import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, Car, Copy } from 'lucide-react';
+import { CalendarDays, Car, Check, Copy, Eraser, Trash2, XCircle } from 'lucide-react';
 
 type ReactNode = import('react').ReactNode;
 
@@ -13,11 +13,23 @@ type TimelineStop = {
 type SortState = { key: string; direction: 'asc' | 'desc' } | null;
 type GeozoneCreationStep = 'address' | 'drawing' | 'saved';
 type CreatedGeozone = {
+  id: string;
   name: string;
   address: string;
   color: string;
   points: RoutePoint[];
 };
+type GeozoneMapItem = {
+  id: string;
+  name: string;
+  color: string;
+  points: RoutePoint[];
+};
+type GeozonePointMenu = {
+  pointIndex: number;
+  x: number;
+  y: number;
+} | null;
 
 declare global {
   interface Window {
@@ -42,6 +54,7 @@ const routeWaypoints: RoutePoint[] = [
 
 const geozonePolygons = [
   {
+    id: 'petrogradskaya-zone',
     name: 'Петроградская зона',
     color: '#ff00d6',
     points: [
@@ -54,6 +67,7 @@ const geozonePolygons = [
     ] as RoutePoint[],
   },
   {
+    id: 'central-zone',
     name: 'Центральная зона',
     color: '#ff9f1c',
     points: [
@@ -66,6 +80,7 @@ const geozonePolygons = [
     ] as RoutePoint[],
   },
   {
+    id: 'vasileostrovskaya-zone',
     name: 'Василеостровская зона',
     color: '#1ed532',
     points: [
@@ -201,24 +216,21 @@ function drawGradientRoute(L: any, map: any, points: RoutePoint[]) {
   }
 }
 
-function drawGeozones(L: any, map: any) {
-  geozonePolygons.forEach((zone) => {
+function drawGeozones(L: any, zones: GeozoneMapItem[]) {
+  return L.layerGroup(zones.map((zone) => {
     const polygon = L.polygon(zone.points, {
       color: zone.color,
       fillColor: zone.color,
       fillOpacity: 0.22,
+      interactive: false,
       opacity: 0.9,
       weight: 2,
       lineJoin: 'round',
       className: 'route-geozone-polygon',
-    }).addTo(map);
-
-    polygon.bindTooltip(zone.name, {
-      permanent: true,
-      direction: 'center',
-      className: 'route-geozone-label',
     });
-  });
+
+    return polygon;
+  }));
 }
 
 function carSvg(rotation = 0) {
@@ -651,8 +663,17 @@ export default function RoutesPrototypePage() {
   const [geozoneCreationStep, setGeozoneCreationStep] = useState<GeozoneCreationStep>('address');
   const [geozoneName, setGeozoneName] = useState('Приморский район');
   const [geozoneAddress, setGeozoneAddress] = useState('');
+  const [geozoneBank, setGeozoneBank] = useState('55');
+  const [geozoneGroup, setGeozoneGroup] = useState('Макетск');
+  const [geozoneCategory, setGeozoneCategory] = useState('УС');
+  const [geozoneStatus, setGeozoneStatus] = useState('Активна');
+  const [geozoneColor, setGeozoneColor] = useState('#ff00d6');
   const [geozoneDraftPoints, setGeozoneDraftPoints] = useState<RoutePoint[]>([]);
+  const [geozonePointMenu, setGeozonePointMenu] = useState<GeozonePointMenu>(null);
   const [createdGeozones, setCreatedGeozones] = useState<CreatedGeozone[]>([]);
+  const [selectedGeozoneIds, setSelectedGeozoneIds] = useState<Set<string>>(
+    () => new Set(geozonePolygons.map((zone) => zone.id)),
+  );
   const [geozoneSearch, setGeozoneSearch] = useState('');
   const [isGeozoneFiltersOpen, setIsGeozoneFiltersOpen] = useState(false);
   const [areGeozoneFiltersApplied, setAreGeozoneFiltersApplied] = useState(false);
@@ -661,6 +682,7 @@ export default function RoutesPrototypePage() {
   const leafletLibRef = useRef<any>(null);
   const geozoneDraftLayerRef = useRef<any>(null);
   const geozoneDraftMarkerLayerRef = useRef<any>(null);
+  const geozoneDraftPointsRef = useRef<RoutePoint[]>([]);
   const createdGeozoneLayerRef = useRef<any>(null);
   const carMarkerRef = useRef<any>(null);
   const carBodyRef = useRef<HTMLElement | null>(null);
@@ -676,6 +698,7 @@ export default function RoutesPrototypePage() {
   const playbackStartedAtRef = useRef(0);
   const lastTimelineUpdateRef = useRef(0);
   const isRouteReady = Boolean(selectedEngineer && selectedRouteDate);
+  geozoneDraftPointsRef.current = geozoneDraftPoints;
   const tableGridTemplate = columnWidths
     .map((width, index) => {
       const column = tableColumns[index];
@@ -772,6 +795,26 @@ export default function RoutesPrototypePage() {
     () => tableRows.reduce((sum, row) => sum + row.actualDistanceValue, 0),
     [tableRows],
   );
+  const allGeozones = useMemo<GeozoneMapItem[]>(
+    () => [...geozonePolygons, ...createdGeozones],
+    [createdGeozones],
+  );
+  const visibleGeozones = useMemo(
+    () => allGeozones.filter((zone) => selectedGeozoneIds.has(zone.id)),
+    [allGeozones, selectedGeozoneIds],
+  );
+  const visibleGeozoneTreeItems = useMemo(() => {
+    const query = geozoneSearch.trim().toLowerCase();
+    if (!query) {
+      return allGeozones;
+    }
+
+    return allGeozones.filter((zone) => zone.name.toLowerCase().includes(query));
+  }, [allGeozones, geozoneSearch]);
+  const allGeozoneIds = useMemo(() => allGeozones.map((zone) => zone.id), [allGeozones]);
+  const visibleGeozoneTreeIds = useMemo(() => visibleGeozoneTreeItems.map((zone) => zone.id), [visibleGeozoneTreeItems]);
+  const visibleTreeChecked = visibleGeozoneTreeIds.length > 0 && visibleGeozoneTreeIds.every((id) => selectedGeozoneIds.has(id));
+  const visibleTreeMixed = !visibleTreeChecked && visibleGeozoneTreeIds.some((id) => selectedGeozoneIds.has(id));
 
   function selectRouteDate(nextDate: string, dayOffset: number) {
     setSelectedRouteDate(nextDate);
@@ -794,16 +837,23 @@ export default function RoutesPrototypePage() {
     setRouteViewMode('map');
     setIsTableHidden(true);
     setIsCreatingGeozone(true);
-    setGeozoneCreationStep('address');
+    setGeozoneCreationStep('drawing');
     setGeozoneName('Приморский район');
-    setGeozoneAddress('');
+    setGeozoneAddress('Макетск, ТБ 55');
+    setGeozoneBank('55');
+    setGeozoneGroup('Макетск');
+    setGeozoneCategory('УС');
+    setGeozoneStatus('Активна');
+    setGeozoneColor('#ff00d6');
     setGeozoneDraftPoints([]);
+    setGeozonePointMenu(null);
   }
 
   function cancelGeozoneCreation() {
     setIsCreatingGeozone(false);
     setGeozoneCreationStep('address');
     setGeozoneDraftPoints([]);
+    setGeozonePointMenu(null);
   }
 
   function saveGeozone() {
@@ -811,16 +861,20 @@ export default function RoutesPrototypePage() {
       return;
     }
 
+    const newGeozoneId = `created-geozone-${Date.now()}`;
     setCreatedGeozones((current) => [
       {
+        id: newGeozoneId,
         name: geozoneName.trim() || 'Новая геозона',
-        address: geozoneAddress.trim() || 'Санкт-Петербург, Приморский район',
-        color: '#ff00d6',
+        address: geozoneAddress.trim() || `${geozoneGroup}, ТБ ${geozoneBank}`,
+        color: geozoneColor,
         points: geozoneDraftPoints,
       },
       ...current,
     ]);
+    setGeozoneIdsSelected([newGeozoneId], true);
     setGeozoneDraftPoints([]);
+    setGeozonePointMenu(null);
     setGeozoneCreationStep('saved');
     window.setTimeout(() => {
       setIsCreatingGeozone(false);
@@ -844,119 +898,308 @@ export default function RoutesPrototypePage() {
     }
   }
 
+  function updateDraftPoint(index: number, point: RoutePoint) {
+    setGeozoneDraftPoints((current) => current.map((draftPoint, draftIndex) => (draftIndex === index ? point : draftPoint)));
+  }
+
+  function getDraftPointsWithUpdatedPoint(points: RoutePoint[], index: number, point: RoutePoint) {
+    return points.map((draftPoint, draftIndex) => (draftIndex === index ? point : draftPoint));
+  }
+
+  function previewUpdatedDraftPoint(index: number, point: RoutePoint) {
+    const layer = geozoneDraftLayerRef.current;
+    if (!layer) {
+      return;
+    }
+
+    layer.setLatLngs(getDraftPointsWithUpdatedPoint(geozoneDraftPointsRef.current, index, point));
+  }
+
+  function insertDraftPoint(afterIndex: number, point: RoutePoint) {
+    setGeozoneDraftPoints((current) => [
+      ...current.slice(0, afterIndex + 1),
+      point,
+      ...current.slice(afterIndex + 1),
+    ]);
+    setGeozonePointMenu(null);
+  }
+
+  function getDraftPointsWithInsertedPoint(points: RoutePoint[], afterIndex: number, point: RoutePoint) {
+    return [
+      ...points.slice(0, afterIndex + 1),
+      point,
+      ...points.slice(afterIndex + 1),
+    ];
+  }
+
+  function previewInsertedDraftPoint(afterIndex: number, point: RoutePoint) {
+    const layer = geozoneDraftLayerRef.current;
+    if (!layer) {
+      return;
+    }
+
+    layer.setLatLngs(getDraftPointsWithInsertedPoint(geozoneDraftPointsRef.current, afterIndex, point));
+  }
+
+  function deleteDraftPoint(index: number) {
+    setGeozoneDraftPoints((current) => current.filter((_, draftIndex) => draftIndex !== index));
+    setGeozonePointMenu(null);
+  }
+
+  function clearDraftGeozone() {
+    setGeozoneDraftPoints([]);
+    setGeozonePointMenu(null);
+  }
+
+  function deleteCurrentGeozone() {
+    cancelGeozoneCreation();
+  }
+
+  function openGeozoneDetails() {
+    if (geozoneDraftPoints.length < 3) {
+      return;
+    }
+
+    setGeozonePointMenu(null);
+    setGeozoneCreationStep('address');
+  }
+
+  function setGeozoneIdsSelected(ids: string[], selected: boolean) {
+    setSelectedGeozoneIds((current) => {
+      const next = new Set(current);
+      ids.forEach((id) => {
+        if (selected) {
+          next.add(id);
+        } else {
+          next.delete(id);
+        }
+      });
+      return next;
+    });
+  }
+
+  function toggleGeozone(id: string) {
+    setSelectedGeozoneIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
   const renderGeozoneTreeItem = (
     label: string,
-    options: { level?: number; checked?: boolean; mixed?: boolean; color?: string; expanded?: boolean } = {},
-  ) => (
-    <div
-      className="flex h-8 w-full items-center rounded px-1 text-sm leading-[22px] text-black/85 hover:bg-black/[0.03]"
-      style={{ paddingLeft: `${4 + (options.level ?? 0) * 24}px` }}
-    >
-      {(options.expanded ?? false) ? (
-        <span className="mr-1 grid size-5 place-items-center text-black/45">⌄</span>
-      ) : (
-        <span className="mr-1 size-5" />
-      )}
-      <span className="mr-2 grid size-4 place-items-center rounded-sm border border-[#d9d9d9] bg-white">
-        {options.checked ? <span className="size-2 rounded-[1px] bg-[#1890ff]" /> : options.mixed ? <span className="h-2 w-2 bg-[#1890ff]" /> : null}
-      </span>
-      {options.color ? <span className="mr-2 size-3 rounded-full" style={{ backgroundColor: options.color }} /> : null}
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      {(options.level ?? 0) < 2 ? <span className="ml-2 text-[#1677ff]">✎</span> : null}
-    </div>
-  );
+    options: { level?: number; checked?: boolean; mixed?: boolean; color?: string; expanded?: boolean; onToggle?: () => void } = {},
+  ) => {
+    const isIndeterminate = Boolean(options.mixed);
+    const isChecked = Boolean(options.checked) && !isIndeterminate;
+    const isActive = isChecked || isIndeterminate;
+
+    return (
+      <button
+        aria-checked={isIndeterminate ? 'mixed' : isChecked}
+        className="flex h-8 w-full items-center rounded px-1 text-left text-sm leading-[22px] text-black/85 hover:bg-black/[0.03]"
+        role="checkbox"
+        style={{ paddingLeft: `${4 + (options.level ?? 0) * 24}px` }}
+        type="button"
+        onClick={options.onToggle}
+      >
+        {(options.expanded ?? false) ? (
+          <span className="mr-1 grid size-5 place-items-center text-black/45">⌄</span>
+        ) : (
+          <span className="mr-1 size-5" />
+        )}
+        <span
+          className={[
+            'mr-2 grid size-6 shrink-0 place-items-center rounded border transition-colors',
+            isActive ? 'border-[#1E88FF] bg-[#1E88FF]' : 'border-[#d9d9d9] bg-white',
+          ].join(' ')}
+        >
+          {isIndeterminate ? (
+            <span className="h-0.5 w-3.5 rounded-full bg-white" />
+          ) : isChecked ? (
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none" aria-hidden="true">
+              <path d="M1.5 5.45 5.45 9.25 13.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : null}
+        </span>
+        {options.color ? <span className="mr-2 size-3 rounded-full" style={{ backgroundColor: options.color }} /> : null}
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+        {(options.level ?? 0) < 2 ? <span className="ml-2 text-[#1677ff]">✎</span> : null}
+      </button>
+    );
+  };
 
   const renderGeozoneCreationOverlay = () => {
     if (!isCreatingGeozone) {
       return null;
     }
 
-    const isDrawing = geozoneCreationStep === 'drawing';
+    const renderGeozoneField = (
+      label: string,
+      control: ReactNode,
+    ) => (
+      <label className="block">
+        <span className="mb-1.5 block text-sm font-medium leading-5 text-black/65">{label}</span>
+        {control}
+      </label>
+    );
+
+    const inputClassName = 'h-10 w-full rounded-md border border-[#d9d9d9] bg-white px-3 text-sm text-black/85 outline-none transition-colors placeholder:text-black/35 focus:border-[#1677ff]';
+    const colorOptions = ['#ff00d6', '#1E88FF', '#22c55e', '#ff9f1c'];
 
     return (
       <>
-        <section className="absolute left-1/2 top-[86px] z-[760] w-[430px] -translate-x-1/2 overflow-hidden rounded-2xl bg-white shadow-[0_18px_52px_rgba(0,0,0,0.22)]">
-          <div className="flex h-14 items-center border-b border-black/10 px-5">
-            <h2 className="text-lg font-medium">Создание геозоны</h2>
-            <button className="ml-auto text-sm text-[#1677ff]" type="button" onClick={cancelGeozoneCreation}>
-              Закрыть
-            </button>
-          </div>
-
-          <div className="space-y-4 p-5">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-black/75">Название</span>
-              <input
-                className="h-10 w-full rounded-lg border border-black/15 px-3 text-sm outline-none focus:border-[#1677ff]"
-                value={geozoneName}
-                onChange={(event) => setGeozoneName(event.currentTarget.value)}
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-black/75">Адрес</span>
-              <input
-                className="h-10 w-full rounded-lg border border-black/15 px-3 text-sm outline-none focus:border-[#1677ff]"
-                placeholder="Введите адрес"
-                value={geozoneAddress}
-                onChange={(event) => setGeozoneAddress(event.currentTarget.value)}
-              />
-            </label>
-
-            <p className="rounded-xl bg-[#f5f7fb] p-3 text-sm leading-5 text-black/65">
-              {isDrawing
-                ? 'Ставьте точки кликами по карте. После третьей точки появится многоугольник, который можно сохранить как геозону.'
-                : 'Выберите точку на карте, где должна начинаться граница геозоны. Отображение геозон можно включать и выключать в списке слева.'}
+        {geozoneCreationStep === 'drawing' ? (
+          <section data-block="geozone-drawing-banner" className="absolute left-1/2 top-0 z-[760] flex h-[60px] w-[648px] max-w-[calc(100vw-32px)] -translate-x-1/2 items-center justify-between gap-4 rounded-b-md bg-black/65 px-4 py-1.5 text-white shadow-[0_8px_22px_rgba(0,0,0,0.18)]">
+            <p className="min-w-0 text-sm leading-5">
+              Выберите точку на карте, где должна начинаться граница геозоны.
+              <br />
+              Вы можете включить или выключить отображение геозон в списке слева.
             </p>
-
-            <div className="rounded-xl border border-[#ff00d6]/25 bg-[#ff00d6]/10 p-4">
-              <div className="text-xs font-medium uppercase tracking-[0.08em] text-black/45">Распознано по карте</div>
-              <div className="mt-1 text-xl font-medium leading-6 uppercase text-black/85">Приморский район</div>
-            </div>
-
-            {geozoneCreationStep === 'saved' ? (
-              <div className="rounded-xl bg-[#f0fff1] px-4 py-3 text-sm font-medium text-[#237804]">
-                Геозона сохранена и добавлена в список
-              </div>
-            ) : (
-              <div className="flex justify-between gap-3 pt-1">
-                {isDrawing ? (
-                  <button className="h-10 rounded-lg border border-black/10 px-4 text-sm" type="button" onClick={() => setGeozoneDraftPoints([])}>
-                    Начать заново
-                  </button>
-                ) : (
-                  <button className="h-10 rounded-lg border border-black/10 px-4 text-sm" type="button" onClick={cancelGeozoneCreation}>
-                    Отменить
-                  </button>
-                )}
+            <button
+              className="h-8 shrink-0 rounded-md bg-white/12 px-4 text-sm font-medium text-white transition-colors hover:bg-white/20"
+              type="button"
+              onClick={cancelGeozoneCreation}
+            >
+              Отмена
+            </button>
+          </section>
+        ) : null}
+        {geozoneCreationStep === 'address' ? (
+          <div data-block="geozone-modal-overlay" className="absolute inset-0 z-[850] flex items-center justify-center bg-black/50 px-4">
+            <section data-block="geozone-modal" className="max-h-[calc(100vh-32px)] w-[540px] max-w-full overflow-auto rounded-2xl bg-white shadow-[0_24px_72px_rgba(0,0,0,0.28)]">
+              <div className="flex min-h-[64px] items-center gap-3 border-b border-black/10 px-6 py-4">
+                <h2 className="min-w-0 flex-1 text-xl font-medium leading-7 text-black/85">Новая геозона</h2>
                 <button
-                  className="h-10 rounded-lg bg-[#1677ff] px-5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-black/20"
+                  className="h-9 rounded-md px-4 text-sm font-medium text-black/65 transition-colors hover:bg-black/[0.04] hover:text-black/85"
                   type="button"
-                  onClick={() => (isDrawing ? saveGeozone() : setGeozoneCreationStep('drawing'))}
-                  disabled={isDrawing && geozoneDraftPoints.length < 3}
+                  onClick={cancelGeozoneCreation}
                 >
-                  {isDrawing ? `Сохранить${geozoneDraftPoints.length ? ` (${geozoneDraftPoints.length})` : ''}` : 'Выбрать точку'}
+                  Отмена
+                </button>
+                <button
+                  className="h-9 rounded-md bg-[#1677ff] px-4 text-sm font-medium text-white transition-colors hover:bg-[#0958d9]"
+                  type="button"
+                  onClick={saveGeozone}
+                >
+                  Сохранить
                 </button>
               </div>
-            )}
+              <div className="grid grid-cols-1 gap-4 px-6 py-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  {renderGeozoneField(
+                    'Наименование',
+                    <input
+                      className={inputClassName}
+                      value={geozoneName}
+                      onChange={(event) => setGeozoneName(event.currentTarget.value)}
+                    />,
+                  )}
+                </div>
+                {renderGeozoneField(
+                  'Территориальный банк',
+                  <input
+                    className={inputClassName}
+                    value={geozoneBank}
+                    onChange={(event) => setGeozoneBank(event.currentTarget.value)}
+                  />,
+                )}
+                {renderGeozoneField(
+                  'Группа',
+                  <input
+                    className={inputClassName}
+                    value={geozoneGroup}
+                    onChange={(event) => setGeozoneGroup(event.currentTarget.value)}
+                  />,
+                )}
+                {renderGeozoneField(
+                  'Категория',
+                  <select
+                    className={inputClassName}
+                    value={geozoneCategory}
+                    onChange={(event) => setGeozoneCategory(event.currentTarget.value)}
+                  >
+                    <option>УС</option>
+                    <option>Район</option>
+                    <option>Область</option>
+                  </select>,
+                )}
+                {renderGeozoneField(
+                  'Статус',
+                  <select
+                    className={inputClassName}
+                    value={geozoneStatus}
+                    onChange={(event) => setGeozoneStatus(event.currentTarget.value)}
+                  >
+                    <option>Активна</option>
+                    <option>Черновик</option>
+                    <option>Архив</option>
+                  </select>,
+                )}
+                <div className="sm:col-span-2">
+                  {renderGeozoneField(
+                    'Цвет',
+                    <div className="flex h-10 items-center gap-2 rounded-md border border-[#d9d9d9] bg-white px-3">
+                      {colorOptions.map((color) => (
+                        <button
+                          key={color}
+                          aria-label={`Цвет ${color}`}
+                          className={[
+                            'size-6 rounded-full border-2 transition-transform',
+                            geozoneColor === color ? 'border-black/70 ring-2 ring-[#1677ff]/20' : 'border-white hover:scale-105',
+                          ].join(' ')}
+                          style={{ backgroundColor: color }}
+                          type="button"
+                          onClick={() => setGeozoneColor(color)}
+                        />
+                      ))}
+                    </div>,
+                  )}
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
+        ) : null}
+        {geozonePointMenu ? (
+          <div
+            data-block="geozone-point-context-menu"
+            className="fixed z-[900] w-[178px] rounded-md bg-white p-1 shadow-[0px_9px_28px_8px_rgba(0,0,0,0.05),0px_3px_6px_-4px_rgba(0,0,0,0.12),0px_6px_16px_rgba(0,0,0,0.08)]"
+            style={{ left: geozonePointMenu.x, top: geozonePointMenu.y }}
+            onPointerDown={(event) => event.stopPropagation()}
+          >
+            <button
+              className="flex h-8 w-full items-center gap-2 rounded px-3 text-left text-sm text-[#F5222D] transition-colors hover:bg-[#fff1f0]"
+              type="button"
+              onClick={() => deleteDraftPoint(geozonePointMenu.pointIndex)}
+            >
+              <Trash2 className="size-4" />
+              Удалить точку
+            </button>
+          </div>
+        ) : null}
       </>
     );
   };
 
   const renderGeozonesPanel = () => (
     <>
-      <button
-        className="absolute left-40 top-5 z-[720] flex h-10 items-center gap-2 rounded-lg bg-[#1677ff] px-4 text-base text-white shadow-[0_4px_14px_rgba(22,119,255,0.28)]"
-        type="button"
-        onClick={startGeozoneCreation}
-      >
-        <span className="text-xl leading-none">+</span>
-        Создать геозону
-      </button>
+      {!isCreatingGeozone ? (
+        <button
+          data-block="geozone-create-button"
+          className="absolute left-40 top-5 z-[720] flex h-10 items-center gap-2 rounded-lg bg-[#1677ff] px-4 text-base text-white shadow-[0_4px_14px_rgba(22,119,255,0.28)]"
+          type="button"
+          onClick={startGeozoneCreation}
+        >
+          <span className="text-xl leading-none">+</span>
+          Создать геозону
+        </button>
+      ) : null}
 
-      <div className="absolute right-3 top-5 z-[720] flex h-10 w-[540px] items-center overflow-hidden rounded-xl bg-white shadow-[0_0_4px_2px_rgba(138,139,151,0.35)]">
+      <div data-block="geozone-map-search" className="absolute left-5 right-5 top-16 z-[720] hidden h-10 items-center overflow-hidden rounded-xl bg-white shadow-[0_0_4px_2px_rgba(138,139,151,0.35)] sm:left-auto sm:right-5 sm:top-5 sm:w-[min(540px,calc(100vw-380px))]">
         <input className="min-w-0 flex-1 bg-transparent px-4 text-sm outline-none" aria-label="Поиск геозон" />
         <button className="grid size-10 place-items-center bg-[#1677ff] text-white" type="button" aria-label="Поиск">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -965,7 +1208,43 @@ export default function RoutesPrototypePage() {
         </button>
       </div>
 
-      <aside className="absolute left-5 top-20 z-[720] flex h-[calc(100%-100px)] w-[422px] flex-col overflow-hidden rounded-lg bg-white shadow-[0_0_4px_2px_rgba(138,139,151,0.35)]">
+      {isCreatingGeozone ? (
+        <section data-block="geozone-edit-panel" className="absolute right-5 top-[72px] z-[730] w-[260px] rounded-md bg-white shadow-[0px_9px_28px_8px_rgba(0,0,0,0.05),0px_3px_6px_-4px_rgba(0,0,0,0.12),0px_6px_16px_rgba(0,0,0,0.08)]">
+          <div className="border-b border-black/10 px-4 py-3">
+            <h2 className="text-base font-medium leading-6 text-black/85">Геозона</h2>
+            <p className="mt-0.5 text-xs leading-5 text-black/45">{geozoneDraftPoints.length} точек</p>
+          </div>
+          <div className="p-1">
+            <button
+              className="flex h-10 w-full items-center gap-2 rounded px-3 text-left text-sm text-[#22c55e] transition-colors hover:bg-[#f0fff4] disabled:cursor-not-allowed disabled:text-black/25 disabled:hover:bg-transparent"
+              type="button"
+              disabled={geozoneDraftPoints.length < 3}
+              onClick={openGeozoneDetails}
+            >
+              <Check className="size-4" />
+              Далее
+            </button>
+            <button
+              className="flex h-10 w-full items-center gap-2 rounded px-3 text-left text-sm text-[#F5222D] transition-colors hover:bg-[#fff1f0]"
+              type="button"
+              onClick={deleteCurrentGeozone}
+            >
+              <XCircle className="size-4" />
+              Удалить
+            </button>
+            <button
+              className="flex h-10 w-full items-center gap-2 rounded px-3 text-left text-sm text-black/85 transition-colors hover:bg-black/[0.04]"
+              type="button"
+              onClick={clearDraftGeozone}
+            >
+              <Eraser className="size-4" />
+              Очистить форму
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      <aside data-block="geozones-sidebar" className="absolute left-5 top-20 z-[720] flex h-[calc(100%-100px)] w-[422px] flex-col overflow-hidden rounded-lg bg-white shadow-[0_0_4px_2px_rgba(138,139,151,0.35)]">
         <div className="relative border-b border-[#d9d9d9] p-4">
           <div className="flex gap-3">
             <div className="flex h-10 min-w-0 flex-1 items-center rounded-md border border-[#d9d9d9] px-3">
@@ -975,7 +1254,9 @@ export default function RoutesPrototypePage() {
                 value={geozoneSearch}
                 onChange={(event) => setGeozoneSearch(event.currentTarget.value)}
               />
-              <span className="ml-auto text-black/35">⌕</span>
+              <svg className="ml-auto size-4 shrink-0 text-black/35" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10.5 18a7.5 7.5 0 1 1 5.3-12.8A7.5 7.5 0 0 1 10.5 18Zm5.6-1.2 4.1 4.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
             </div>
             <button
               className={[
@@ -986,7 +1267,9 @@ export default function RoutesPrototypePage() {
               aria-label="Фильтры"
               onClick={() => setIsGeozoneFiltersOpen((current) => !current)}
             >
-              ≡
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
               {areGeozoneFiltersApplied ? <span className="absolute right-1 top-1 size-2 rounded-full bg-[#1677ff]" /> : null}
             </button>
           </div>
@@ -1045,26 +1328,37 @@ export default function RoutesPrototypePage() {
           <div className="mb-3 flex items-center text-sm">
             <span className="font-semibold">Группы/Геозоны</span>
             <button className="ml-auto px-3 text-[#4096ff]" type="button">Cвернуть все</button>
-            <button className="px-3 text-[#1677ff]" type="button">Выбрать все</button>
+            <button className="px-3 text-[#1677ff]" type="button" onClick={() => setGeozoneIdsSelected(allGeozoneIds, true)}>Выбрать все</button>
           </div>
           <div className="min-h-full rounded-md border border-[#d9d9d9] bg-white p-1">
-            {areGeozoneFiltersApplied ? (
+            {visibleGeozoneTreeItems.length > 0 ? (
               <>
-                {renderGeozoneTreeItem('УС Санкт-Петербург', { checked: true, mixed: true, expanded: true })}
-                {renderGeozoneTreeItem('СПБУС01 (В.О.)', { checked: true, expanded: true, level: 1 })}
-                {renderGeozoneTreeItem('КАЛИНИНСКИЙ РАЙОН', { checked: true, color: '#ff00d6', level: 2 })}
-                {renderGeozoneTreeItem('ПЕТРОГРАДСКИЙ РАЙОН', { checked: true, color: '#ff9f1c', level: 2 })}
-                {renderGeozoneTreeItem('КРАСНОГВАРДЕЙСКИЙ РАЙОН', { checked: true, color: '#22c55e', level: 2 })}
-                {createdGeozones.map((zone) => renderGeozoneTreeItem(zone.name, { checked: true, color: zone.color, level: 2 }))}
+                {renderGeozoneTreeItem(areGeozoneFiltersApplied ? 'УС Санкт-Петербург' : 'Ситимовский край', {
+                  checked: visibleTreeChecked,
+                  mixed: visibleTreeMixed,
+                  expanded: true,
+                  onToggle: () => setGeozoneIdsSelected(visibleGeozoneTreeIds, !visibleTreeChecked),
+                })}
+                {renderGeozoneTreeItem(areGeozoneFiltersApplied ? 'СПБУС01 (В.О.)' : 'Макетск', {
+                  checked: visibleTreeChecked,
+                  mixed: visibleTreeMixed,
+                  expanded: true,
+                  level: 1,
+                  onToggle: () => setGeozoneIdsSelected(visibleGeozoneTreeIds, !visibleTreeChecked),
+                })}
+                {visibleGeozoneTreeItems.map((zone) => (
+                  <div key={zone.id}>
+                    {renderGeozoneTreeItem(zone.name, {
+                      checked: selectedGeozoneIds.has(zone.id),
+                      color: zone.color,
+                      level: 2,
+                      onToggle: () => toggleGeozone(zone.id),
+                    })}
+                  </div>
+                ))}
               </>
             ) : (
-              <>
-                {renderGeozoneTreeItem('Ситимовский край', { checked: true, mixed: true, expanded: true })}
-                {renderGeozoneTreeItem('Макетск', { checked: true, expanded: true, level: 1 })}
-                {createdGeozones.map((zone) => renderGeozoneTreeItem(zone.name, { checked: true, color: zone.color, level: 2 }))}
-                {renderGeozoneTreeItem('СПБУС15(Центральный(лев)', { checked: true, color: '#ff9f1c', level: 2 })}
-                {renderGeozoneTreeItem('СПБУС16(Центральный(прав)', { checked: true, color: '#ff00d6', level: 2 })}
-              </>
+              <div className="px-3 py-2 text-sm text-black/45">Ничего не найдено</div>
             )}
           </div>
         </OverlayScrollArea>
@@ -1100,7 +1394,7 @@ export default function RoutesPrototypePage() {
 
   const renderRoutesTable = () => (
     <>
-      <div className="grid shrink-0 bg-[#f5f5f5] px-4 text-[14px] font-medium leading-[20px]" style={{ gridTemplateColumns: tableGridTemplate }}>
+      <div data-block="routes-table-header" className="grid shrink-0 bg-[#f5f5f5] px-4 text-[14px] font-medium leading-[20px]" style={{ gridTemplateColumns: tableGridTemplate }}>
         {tableColumns.map((column, index) => (
           <button
             key={column.key}
@@ -1118,6 +1412,7 @@ export default function RoutesPrototypePage() {
         ))}
       </div>
       <OverlayScrollArea className="min-h-0 flex-1" contentClassName="overflow-x-auto">
+        <div data-block="routes-table-body">
         {tableRows.map((row, index) => (
           <button
             key={row.request}
@@ -1186,6 +1481,7 @@ export default function RoutesPrototypePage() {
             <div className={['border-b border-black/5 px-2 py-3', sortState?.key === 'confirmed' ? 'bg-black/[0.04]' : ''].join(' ')}><span className="rounded border border-[#b7eb8f] bg-[#f6ffed] px-2 py-1 text-xs text-[#52c41a]">{row.confirmed}</span></div>
           </button>
         ))}
+        </div>
       </OverlayScrollArea>
     </>
   );
@@ -1259,7 +1555,6 @@ export default function RoutesPrototypePage() {
         L.control.scale({ imperial: false, metric: true, position: 'bottomright', maxWidth: 34 }).addTo(map);
 
         drawGradientRoute(L, map, roadRoute);
-        drawGeozones(L, map);
 
         routeWaypoints.slice(1, -1).forEach((point, index) => {
           L.marker(point, {
@@ -1375,12 +1670,12 @@ export default function RoutesPrototypePage() {
   useEffect(() => {
     const L = leafletLibRef.current;
     const map = leafletMapRef.current;
-    if (!L || !map) {
+    if (!L || !map || mapStatus !== 'ready') {
       return;
     }
 
     clearDraftGeozoneLayer();
-    if (!isCreatingGeozone || geozoneCreationStep !== 'drawing' || geozoneDraftPoints.length === 0) {
+    if (!isCreatingGeozone || geozoneDraftPoints.length === 0) {
       return;
     }
 
@@ -1405,19 +1700,95 @@ export default function RoutesPrototypePage() {
           });
 
     geozoneDraftLayerRef.current = draftLayer.addTo(map);
-    geozoneDraftMarkerLayerRef.current = L.layerGroup(
-      geozoneDraftPoints.map((point, index) =>
-        L.marker(point, {
-          icon: L.divIcon({
-            className: 'route-geozone-draft-point',
-            html: `<span>${index + 1}</span>`,
-            iconSize: [24, 24],
-            iconAnchor: [12, 12],
-          }),
-          interactive: false,
+    const vertexMarkers = geozoneDraftPoints.map((point, index) => {
+      const marker = L.marker(point, {
+        icon: L.divIcon({
+          className: 'route-geozone-draft-point',
+          html: '<span aria-hidden="true"></span>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10],
         }),
-      ),
-    ).addTo(map);
+        draggable: true,
+        interactive: true,
+        zIndexOffset: 1400,
+      });
+
+      marker.on('click', (event: any) => {
+        L.DomEvent.stop(event);
+        setGeozonePointMenu(null);
+      });
+      marker.on('dragstart', () => {
+        setGeozonePointMenu(null);
+      });
+      marker.on('drag', (event: any) => {
+        const latLng = event.target.getLatLng();
+        previewUpdatedDraftPoint(index, [latLng.lat, latLng.lng]);
+      });
+      marker.on('dragend', (event: any) => {
+        const latLng = event.target.getLatLng();
+        updateDraftPoint(index, [latLng.lat, latLng.lng]);
+      });
+      marker.on('contextmenu', (event: any) => {
+        L.DomEvent.stop(event);
+        event.originalEvent?.preventDefault();
+        setGeozonePointMenu({
+          pointIndex: index,
+          x: event.originalEvent?.clientX ?? 0,
+          y: event.originalEvent?.clientY ?? 0,
+        });
+      });
+
+      return marker;
+    });
+
+    const midpointMarkers = geozoneDraftPoints.flatMap((point, index) => {
+      const nextIndex = index + 1;
+      const nextPoint = geozoneDraftPoints[nextIndex];
+      const shouldClosePolygon = geozoneDraftPoints.length >= 3 && index === geozoneDraftPoints.length - 1;
+      const targetPoint = nextPoint ?? (shouldClosePolygon ? geozoneDraftPoints[0] : null);
+
+      if (!targetPoint) {
+        return [];
+      }
+
+      const midpoint: RoutePoint = [
+        (point[0] + targetPoint[0]) / 2,
+        (point[1] + targetPoint[1]) / 2,
+      ];
+      const marker = L.marker(midpoint, {
+        icon: L.divIcon({
+          className: 'route-geozone-midpoint',
+          html: '<span aria-hidden="true"></span>',
+          iconSize: [12, 12],
+          iconAnchor: [6, 6],
+        }),
+        draggable: true,
+        interactive: true,
+        zIndexOffset: 1350,
+      });
+
+      marker.on('click', (event: any) => {
+        L.DomEvent.stop(event);
+      });
+      marker.on('dragstart', (event: any) => {
+        L.DomEvent.stop(event);
+        setGeozonePointMenu(null);
+        const latLng = event.target.getLatLng();
+        previewInsertedDraftPoint(index, [latLng.lat, latLng.lng]);
+      });
+      marker.on('drag', (event: any) => {
+        const latLng = event.target.getLatLng();
+        previewInsertedDraftPoint(index, [latLng.lat, latLng.lng]);
+      });
+      marker.on('dragend', (event: any) => {
+        const latLng = event.target.getLatLng();
+        insertDraftPoint(index, [latLng.lat, latLng.lng]);
+      });
+
+      return [marker];
+    });
+
+    geozoneDraftMarkerLayerRef.current = L.layerGroup([...midpointMarkers, ...vertexMarkers]).addTo(map);
   }, [geozoneDraftPoints, geozoneCreationStep, isCreatingGeozone]);
 
   useEffect(() => {
@@ -1432,30 +1803,12 @@ export default function RoutesPrototypePage() {
       createdGeozoneLayerRef.current = null;
     }
 
-    if (createdGeozones.length === 0) {
+    if (visibleGeozones.length === 0) {
       return;
     }
 
-    createdGeozoneLayerRef.current = L.layerGroup(
-      createdGeozones.map((zone) => {
-        const polygon = L.polygon(zone.points, {
-          color: zone.color,
-          fillColor: zone.color,
-          fillOpacity: 0.22,
-          opacity: 0.95,
-          weight: 2,
-          lineJoin: 'round',
-          className: 'route-geozone-polygon',
-        });
-        polygon.bindTooltip(zone.name, {
-          permanent: true,
-          direction: 'center',
-          className: 'route-geozone-label',
-        });
-        return polygon;
-      }),
-    ).addTo(map);
-  }, [createdGeozones]);
+    createdGeozoneLayerRef.current = drawGeozones(L, visibleGeozones).addTo(map);
+  }, [mapStatus, visibleGeozones]);
 
   useEffect(() => {
     const map = leafletMapRef.current;
@@ -1464,17 +1817,35 @@ export default function RoutesPrototypePage() {
     }
 
     const handleMapClick = (event: { latlng: { lat: number; lng: number } }) => {
+      setGeozonePointMenu(null);
       setGeozoneDraftPoints((current) => [...current, [event.latlng.lat, event.latlng.lng]]);
+    };
+
+    const handleMapContextMenu = (event: any) => {
+      event.originalEvent?.preventDefault();
+      setGeozonePointMenu(null);
     };
 
     map.getContainer().classList.add('is-drawing-geozone');
     map.on('click', handleMapClick);
+    map.on('contextmenu', handleMapContextMenu);
 
     return () => {
       map.off('click', handleMapClick);
+      map.off('contextmenu', handleMapContextMenu);
       map.getContainer().classList.remove('is-drawing-geozone');
     };
   }, [geozoneCreationStep, isCreatingGeozone]);
+
+  useEffect(() => {
+    if (!geozonePointMenu) {
+      return undefined;
+    }
+
+    const closePointMenu = () => setGeozonePointMenu(null);
+    window.addEventListener('pointerdown', closePointMenu);
+    return () => window.removeEventListener('pointerdown', closePointMenu);
+  }, [geozonePointMenu]);
 
   useEffect(() => {
     if (leafletMapRef.current) {
@@ -1484,6 +1855,7 @@ export default function RoutesPrototypePage() {
 
   return (
     <main
+      data-block="routes-prototype-page"
       className={[
         'relative h-screen min-h-[720px] overflow-hidden bg-[#f5f5f5] font-[\'Roboto\',\'Arial\',sans-serif] text-[rgba(0,0,0,0.88)]',
         activeTab === 'zones' ? 'zones-mode' : '',
@@ -1615,6 +1987,7 @@ export default function RoutesPrototypePage() {
           color: rgba(0,0,0,.78);
           font: 500 12px/16px Roboto, Arial, sans-serif;
           padding: 5px 10px;
+          pointer-events: none;
           box-shadow: 0 4px 14px rgba(0,0,0,.14);
         }
         .route-geozone-label::before {
@@ -1626,21 +1999,43 @@ export default function RoutesPrototypePage() {
         .route-geozone-draft {
           pointer-events: none;
         }
+        .route-geozone-midpoint,
         .route-geozone-draft-point {
           background: transparent;
           border: 0;
         }
         .route-geozone-draft-point span {
-          display: grid;
-          width: 24px;
-          height: 24px;
-          place-items: center;
+          display: block;
+          width: 20px;
+          height: 20px;
           border: 2px solid white;
           border-radius: 999px;
           background: #ff00d6;
-          color: white;
-          font: 700 12px/1 Roboto, Arial, sans-serif;
-          box-shadow: 0 3px 10px rgba(0,0,0,.25);
+          box-shadow: 0 2px 8px rgba(0,0,0,.24), inset 0 0 0 3px rgba(255,255,255,.18);
+          cursor: grab;
+          touch-action: none;
+        }
+        .route-geozone-draft-point:active span {
+          cursor: grabbing;
+        }
+        .route-geozone-midpoint span {
+          display: block;
+          width: 12px;
+          height: 12px;
+          border: 2px solid white;
+          border-radius: 999px;
+          background: #ff9bea;
+          box-shadow: 0 2px 6px rgba(0,0,0,.16);
+          cursor: grab;
+          touch-action: none;
+          transition: transform .16s ease, background-color .16s ease;
+        }
+        .route-geozone-midpoint:active span {
+          cursor: grabbing;
+        }
+        .route-geozone-midpoint:hover span {
+          background: #ff00d6;
+          transform: scale(1.12);
         }
         .route-overlay-scroll-content {
           scrollbar-width: none;
@@ -1707,7 +2102,7 @@ export default function RoutesPrototypePage() {
         }
       `}</style>
 
-      <div className="absolute left-1/2 top-4 z-[700] flex -translate-x-1/2 rounded-3xl bg-white p-1 shadow-[0_6px_18px_rgba(0,0,0,0.08)]">
+      <div data-block="top-tabs-menu" className={['absolute left-1/2 top-4 z-[700] flex gap-1 -translate-x-1/2 rounded-3xl bg-white p-1 shadow-[0_6px_18px_rgba(0,0,0,0.08)]', isCreatingGeozone ? 'hidden' : ''].join(' ')}>
         {tabItems.map(([key, label]) => {
           const isActive = activeTab === key;
           return (
@@ -1722,7 +2117,7 @@ export default function RoutesPrototypePage() {
                 }
               }}
               className={[
-                'h-10 rounded-lg px-6 text-sm transition-colors',
+                'h-10 rounded-full px-6 text-sm transition-colors',
                 isActive ? 'bg-black/[0.04] text-black' : 'text-black/70 hover:bg-black/[0.04] hover:text-black',
               ].join(' ')}
             >
@@ -1732,7 +2127,15 @@ export default function RoutesPrototypePage() {
         })}
       </div>
 
-      <div className="absolute left-5 top-5 z-[700] flex h-10 w-[125px] items-center rounded-xl bg-white px-0.5 [background-image:linear-gradient(0deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)),linear-gradient(0deg,#fff,#fff)]">
+      <div data-block="map-registry-switch" className={['absolute left-5 top-5 z-[700] grid h-10 w-[125px] grid-cols-2 gap-1 overflow-hidden rounded-full bg-white p-0.5 [background-image:linear-gradient(0deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)),linear-gradient(0deg,#fff,#fff)]', isCreatingGeozone ? 'hidden' : ''].join(' ')}>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0.5 top-0.5 z-0 h-9 rounded-full bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-in-out"
+          style={{
+            width: 'calc((100% - 8px) / 2)',
+            transform: `translateX(${routeViewMode === 'map' ? '0' : 'calc(100% + 4px)'})`,
+          }}
+        />
         {(['map', 'registry'] as const).map((mode) => (
           <button
             key={mode}
@@ -1746,14 +2149,12 @@ export default function RoutesPrototypePage() {
               setRouteViewMode(mode);
             }}
             className={[
-              'flex h-9 flex-col items-start justify-center rounded-xl p-0 text-sm font-normal leading-[22px] text-black/[0.88] transition-colors',
-              mode === 'map' ? 'w-[63px]' : 'w-[70px]',
-              routeViewMode === mode ? 'relative z-[1] bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)]' : 'hover:bg-white/30',
-              mode === 'registry' ? 'ml-[-8px]' : '',
+              'relative z-[1] flex h-9 min-w-0 flex-col items-center justify-center rounded-full p-0 text-sm font-normal leading-[22px] transition-colors duration-200 ease-in-out',
+              routeViewMode === mode ? 'text-black/[0.88]' : 'text-black/60 hover:bg-white/35 hover:text-black/[0.88]',
             ].join(' ')}
             style={{ fontFamily: 'Roboto, Arial, sans-serif' }}
           >
-            <span className="flex h-[30px] items-center gap-2 rounded-lg px-3 py-1">
+            <span className="flex h-[30px] items-center justify-center gap-2 rounded-full px-2 py-1">
               {mode === 'map' ? 'Карта' : 'Реестр'}
             </span>
           </button>
@@ -1761,13 +2162,14 @@ export default function RoutesPrototypePage() {
       </div>
 
       <section
+        data-block="map-section"
         className={[
           'absolute inset-x-0 top-0 overflow-hidden transition-[height] duration-500 ease-out',
           isTableHidden || activeTab === 'zones' || !isRouteReady ? 'h-full' : 'h-[calc(66%+20px)]',
           (activeTab === 'routes' && routeViewMode === 'map') || activeTab === 'zones' ? '' : 'hidden',
         ].join(' ')}
       >
-        <div ref={mapRef} className="absolute inset-0" />
+        <div ref={mapRef} data-block="leaflet-map" className="absolute inset-0" />
         {mapStatus !== 'ready' && (
           <div className="absolute inset-0 grid place-items-center bg-[#eef3eb] text-sm text-black/55">
             {mapStatus === 'loading' ? 'Загружаю карту...' : 'Не удалось загрузить OpenStreetMap'}
@@ -1775,8 +2177,8 @@ export default function RoutesPrototypePage() {
         )}
 
         {activeTab === 'routes' && (
-        <div className="absolute bottom-9 left-5 right-5 z-[500] flex items-end gap-3">
-          <div className="relative">
+        <div data-block="route-map-bottom-controls" className="absolute bottom-9 left-5 right-5 z-[500] flex items-end gap-3">
+          <div data-block="engineer-picker" className="relative">
             <label className="flex h-11 w-[280px] items-center rounded-xl bg-white px-4 shadow-[0_4px_14px_rgba(0,0,0,0.12)]">
               <input
                 className="min-w-0 flex-1 bg-transparent text-sm text-black/85 outline-none placeholder:text-black/45"
@@ -1828,7 +2230,7 @@ export default function RoutesPrototypePage() {
               </div>
             )}
           </div>
-          <div className="relative">
+          <div data-block="date-picker" className="relative">
             <button
               type="button"
               aria-label="Выберите дату маршрута"
@@ -1897,7 +2299,7 @@ export default function RoutesPrototypePage() {
           </div>
 
           {isRouteReady && (
-          <div className="relative h-11 min-w-[360px] flex-1 rounded-xl bg-white/92 px-3 shadow-[0_4px_14px_rgba(0,0,0,0.12)] backdrop-blur-sm">
+          <div data-block="route-timeline" className="relative h-11 min-w-[360px] flex-1 rounded-xl bg-white/92 px-3 shadow-[0_4px_14px_rgba(0,0,0,0.12)] backdrop-blur-sm">
             <div className="absolute inset-x-3 -top-6 z-[9] text-[9px] font-medium text-[#7a8299]">
               {timelineEdgeLabels.map((time) => (
                 <span
@@ -1977,6 +2379,7 @@ export default function RoutesPrototypePage() {
 
           {isRouteReady && (
           <button
+            data-block="route-table-toggle"
             className="grid size-11 place-items-center rounded-xl bg-white text-[#4d4d4d] shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-colors hover:bg-[#f8f8f8]"
             type="button"
             aria-label={isTableHidden ? 'Показать таблицу' : 'Скрыть таблицу'}
@@ -2000,7 +2403,7 @@ export default function RoutesPrototypePage() {
 
         {activeTab === 'zones' && renderGeozonesPanel()}
 
-        <div className="absolute right-5 top-[26%] z-[500] flex w-10 flex-col items-start gap-2">
+        <div data-block="map-tools" className="absolute right-5 top-[26%] z-[500] flex w-10 flex-col items-start gap-2">
           <button className="grid size-10 place-items-center rounded-xl bg-white p-1.5 shadow-[0_0_4px_2px_rgba(138,139,151,0.35)] transition-colors hover:bg-[#f8f8f8]" type="button" aria-label="Слои карты">
             <MapLayerIcon />
           </button>
@@ -2022,7 +2425,7 @@ export default function RoutesPrototypePage() {
       </section>
 
       {activeTab === 'routes' && routeViewMode === 'registry' && (
-        <section className="absolute inset-0 z-[520] flex flex-col bg-[#f5f5f5] pt-20">
+        <section data-block="routes-registry-section" className="absolute inset-0 z-[520] flex flex-col bg-[#f5f5f5] pt-20">
           <div className="mx-0 mb-0 min-h-0 flex-1 overflow-hidden rounded-t-2xl border border-x-0 border-b-0 border-black/10 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
             <div className="flex h-full flex-col">
               <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-black/10 bg-white px-4">

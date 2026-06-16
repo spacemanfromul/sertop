@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
+import PortfolioVideo from '../components/PortfolioVideo';
 import TagBadge, { type TagBadgeTone } from '../components/TagBadge';
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import caseAdminImage from "../../assets/cases/case-admin.png";
@@ -141,13 +142,10 @@ function formatParagraph(text: string) {
 function CaseVideoSlot() {
   return (
     <section className="w-full py-8 md:py-12" aria-label="Видео перед кейсами">
-      <video
-        className="aspect-video w-full bg-[#f5f5f5] object-cover"
+      <PortfolioVideo
+        className="aspect-video w-full"
         src={heroTransitionVideo}
-        autoPlay
-        loop
-        muted
-        playsInline
+        label="Переход к кейсам"
         preload="metadata"
       />
     </section>
@@ -210,18 +208,12 @@ function CaseImage({ src, alt }: { src: string; alt: string }) {
 
 function CaseVideoPreview({ src, label }: { src: string; label: string }) {
   return (
-    <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)]">
-      <video
-        aria-label={label}
-        className="size-full object-cover"
-        src={src}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-      />
-    </div>
+    <PortfolioVideo
+      className="aspect-[3840/2136] w-full rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)]"
+      src={src}
+      label={label}
+      preload="metadata"
+    />
   );
 }
 
@@ -252,17 +244,12 @@ function AiPreview() {
 
 function ExperimentPreview() {
   return (
-    <div className="h-[235px] w-[104px] overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px] md:w-[151px]">
-      <video
-        className="size-full object-cover"
-        src={caseExperimentVideo}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-      />
-    </div>
+    <PortfolioVideo
+      className="h-[235px] w-[104px] rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)] md:h-[341px] md:w-[151px]"
+      src={caseExperimentVideo}
+      label="Экспериментальный прототип"
+      preload="metadata"
+    />
   );
 }
 
@@ -419,19 +406,13 @@ function CaseStudyImageBlock({
 function CaseStudyVideoBlock({ src, label }: { src: string; label: string }) {
   return (
     <div className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
-      <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
-        <video
-          aria-label={label}
-          className="size-full object-cover"
-          src={src}
-          autoPlay
-          muted
-          loop
-          playsInline
-          controls
-          preload="metadata"
-        />
-      </div>
+      <PortfolioVideo
+        className="aspect-[3840/2136] w-full rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]"
+        src={src}
+        label={label}
+        controls
+        preload="metadata"
+      />
     </div>
   );
 }
@@ -908,7 +889,6 @@ function RoutesContent({
     </div>
   );
 }
-
 
 
 
