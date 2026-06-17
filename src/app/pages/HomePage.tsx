@@ -10,8 +10,10 @@ import caseAdminImage from "../../assets/cases/case-admin.png";
 import caseAiMobileImage from "../../assets/cases/case-ai-mobile.jpg";
 import caseAiWebImage from "../../assets/cases/case-ai-web.jpg";
 import caseExperimentVideo from "../../assets/cases/case-experiment.mp4";
-import caseRoutesHideShowVideo from "../../assets/cases/hide-show.mp4";
-import caseRoutesCarVideo from "../../assets/cases/route-car.mp4";
+import caseRoutesPrototypeDemoVideo from "../../assets/cases/routes-prototype-demo.mp4";
+import caseRoutesPrototypeGeozonesVideo from "../../assets/cases/routes-prototype-geozones.mp4";
+import caseRoutesPrototypeModesVideo from "../../assets/cases/routes-prototype-modes.mp4";
+import caseRoutesCoverVideo from "../../assets/cases/routes-prototype-cover.mp4";
 import heroTransitionVideo from "../../assets/cases/hero-transition.mp4";
 import caseAdminGroup1 from "../../assets/cases/case-admin-group-1.jpg";
 import caseAdminGroup2 from "../../assets/cases/case-admin-group-2.jpg";
@@ -267,7 +269,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
             { label: 'Data-heavy', tone: 'data' },
           ]}
         >
-          <CaseVideoPreview src={caseRoutesCarVideo} label="Система контроля транспортных расходов" />
+          <CaseVideoPreview src={caseRoutesCoverVideo} label="Система контроля транспортных расходов" />
         </CaseCard>
         <CaseCard
           onClick={() => onProjectClick('admin-panel')}
@@ -830,7 +832,7 @@ function RoutesContent({
         </div>
       </div>
 
-      <CaseStudyVideoBlock src={caseRoutesCarVideo} label="Админ-панель для управления маршрутами" />
+      <CaseStudyVideoBlock src={caseRoutesCoverVideo} label="Админ-панель для управления маршрутами" />
 
       <div className="flex flex-col gap-3 rounded-[28px] bg-[#e9f1ff] p-5 text-[#191c1d] md:flex-row md:items-center md:justify-between md:p-6">
         <div className="flex max-w-[680px] flex-col gap-1">
@@ -868,15 +870,17 @@ function RoutesContent({
 
       <CaseStudySection title="Ключевые решения">
         <CaseDecisionTitle>1. Связал карту и таблицу в одном рабочем сценарии</CaseDecisionTitle>
-        <CaseStudyVideoBlock src={caseRoutesHideShowVideo} label="Демонстрация скрытия и показа таблицы маршрутов" />
+        <CaseStudyVideoBlock src={caseRoutesPrototypeDemoVideo} label="Демонстрация прототипа маршрутов" />
         <CaseStudyText>Проверка маршрута требует одновременно видеть общую картину и детали. Поэтому экран разделён на две зоны: карта показывает перемещения сотрудника за смену, а таблица помогает разобрать заявки, статусы, время и спорные участки</CaseStudyText>
         <CaseStudyText>Так руководитель не переключается между разными источниками данных и быстрее понимает, где именно возникла проблема</CaseStudyText>
 
         <CaseDecisionTitle>2. Разделил сценарии через режимы «Карта» и «Реестр»</CaseDecisionTitle>
+        <CaseStudyVideoBlock src={caseRoutesPrototypeModesVideo} label="Демонстрация переключения режимов карты и реестра" />
         <CaseStudyText>Не все задачи удобно решать на карте. Для анализа конкретного маршрута нужен визуальный режим, а для массовой проверки, поиска и фильтрации — табличный</CaseStudyText>
         <CaseStudyText>Переключатель «Карта / Реестр» разделяет эти сценарии и не перегружает один экран лишними функциями. Пользователь выбирает режим под задачу, а не адаптируется к универсальному интерфейсу</CaseStudyText>
 
         <CaseDecisionTitle>3. Спроектировал работу с геозонами</CaseDecisionTitle>
+        <CaseStudyVideoBlock src={caseRoutesPrototypeGeozonesVideo} label="Демонстрация создания и редактирования геозон" />
         <CaseStudyText>Геозоны нужны не только как технические данные, но и как рабочий инструмент для анализа маршрутов. Поэтому я вынес их в понятный сценарий: существующие зоны можно находить через дерево в фильтрах, а новые — создавать прямо на карте через рисование</CaseStudyText>
         <CaseStudyText>Это помогает быстрее работать с объектами обслуживания и держать структуру зон понятной даже при большом объёме данных</CaseStudyText>
       </CaseStudySection>
@@ -889,6 +893,3 @@ function RoutesContent({
     </div>
   );
 }
-
-
-

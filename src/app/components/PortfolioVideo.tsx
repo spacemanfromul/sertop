@@ -70,6 +70,16 @@ export default function PortfolioVideo({
           onCanPlay?.(event);
         }}
       />
+      <style>{`
+        video:fullscreen {
+          object-fit: contain !important;
+          background: #000;
+        }
+        video:-webkit-full-screen {
+          object-fit: contain !important;
+          background: #000;
+        }
+      `}</style>
     </div>
   );
 }

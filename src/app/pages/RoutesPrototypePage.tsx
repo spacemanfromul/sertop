@@ -30,6 +30,11 @@ type GeozonePointMenu = {
   x: number;
   y: number;
 } | null;
+type GeozoneInfoCard = {
+  id: string;
+  x: number;
+  y: number;
+} | null;
 
 declare global {
   interface Window {
@@ -39,6 +44,8 @@ declare global {
 
 const leafletCssUrl = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
 const leafletScriptUrl = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+const baseGeozonesStorageKey = 'routes-prototype:base-geozones';
+const createdGeozonesStorageKey = 'routes-prototype:created-geozones';
 
 const routeWaypoints: RoutePoint[] = [
   [59.961459, 30.291013],
@@ -59,11 +66,17 @@ const geozonePolygons = [
     color: '#ff00d6',
     points: [
       [59.9718, 30.2475],
+      [59.9739, 30.2668],
       [59.9758, 30.3018],
+      [59.9692, 30.3186],
       [59.9612, 30.3345],
+      [59.9518, 30.3294],
       [59.9398, 30.323],
+      [59.9359, 30.3026],
       [59.9328, 30.2795],
+      [59.9384, 30.2609],
       [59.9468, 30.242],
+      [59.9594, 30.2442],
     ] as RoutePoint[],
   },
   {
@@ -72,11 +85,17 @@ const geozonePolygons = [
     color: '#ff9f1c',
     points: [
       [59.9598, 30.314],
+      [59.9647, 30.3362],
       [59.9668, 30.366],
+      [59.9616, 30.3894],
       [59.9538, 30.4105],
+      [59.9406, 30.4088],
       [59.9282, 30.405],
+      [59.9208, 30.3826],
       [59.9138, 30.3535],
+      [59.9204, 30.3337],
       [59.9288, 30.318],
+      [59.9446, 30.3154],
     ] as RoutePoint[],
   },
   {
@@ -85,14 +104,48 @@ const geozonePolygons = [
     color: '#1ed532',
     points: [
       [59.9488, 30.214],
+      [59.9494, 30.2386],
       [59.948, 30.277],
+      [59.9382, 30.2965],
       [59.9265, 30.3175],
+      [59.9152, 30.3064],
       [59.9048, 30.292],
+      [59.9075, 30.2638],
       [59.913, 30.235],
+      [59.9219, 30.218],
       [59.9325, 30.207],
+      [59.9414, 30.2098],
     ] as RoutePoint[],
   },
 ];
+
+function readStoredCreatedGeozones() {
+  try {
+    const rawValue = window.localStorage.getItem(createdGeozonesStorageKey);
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+    return Array.isArray(parsedValue) ? parsedValue as CreatedGeozone[] : [];
+  } catch {
+    return [];
+  }
+}
+
+function readStoredBaseGeozones() {
+  try {
+    const rawValue = window.localStorage.getItem(baseGeozonesStorageKey);
+    if (!rawValue) {
+      return geozonePolygons;
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+    return Array.isArray(parsedValue) ? parsedValue as GeozoneMapItem[] : geozonePolygons;
+  } catch {
+    return geozonePolygons;
+  }
+}
 
 const fallbackRoutePoints: RoutePoint[] = [
   [59.961459, 30.291013],
@@ -216,18 +269,25 @@ function drawGradientRoute(L: any, map: any, points: RoutePoint[]) {
   }
 }
 
-function drawGeozones(L: any, zones: GeozoneMapItem[]) {
+function drawGeozones(L: any, zones: GeozoneMapItem[], onSelect?: (zone: GeozoneMapItem, event: any) => void) {
   return L.layerGroup(zones.map((zone) => {
     const polygon = L.polygon(zone.points, {
       color: zone.color,
       fillColor: zone.color,
       fillOpacity: 0.22,
-      interactive: false,
+      interactive: Boolean(onSelect),
       opacity: 0.9,
       weight: 2,
       lineJoin: 'round',
       className: 'route-geozone-polygon',
     });
+
+    if (onSelect) {
+      polygon.on('click', (event: any) => {
+        L.DomEvent.stop(event);
+        onSelect(zone, event);
+      });
+    }
 
     return polygon;
   }));
@@ -524,7 +584,7 @@ function smoothRoutePoints(points: RoutePoint[], passes = 2) {
 }
 
 function getStopProgresses(route: RoutePoint[]) {
-  const progresses = routeWaypoints.slice(0, -1).map((stop) => {
+  const progresses = routeWaypoints.slice(1, -1).map((stop) => {
       let closestIndex = 0;
       let closestDistance = Number.POSITIVE_INFINITY;
 
@@ -643,7 +703,7 @@ function formatKm(value: number) {
 }
 
 export default function RoutesPrototypePage() {
-  const [isTableHidden, setIsTableHidden] = useState(false);
+  const [isTableHidden, setIsTableHidden] = useState(true);
   const [activeTab, setActiveTab] = useState<'requests' | 'routes' | 'zones' | 'settings'>('routes');
   const [routeViewMode, setRouteViewMode] = useState<'map' | 'registry'>('map');
   const [selectedEngineer, setSelectedEngineer] = useState('');
@@ -670,9 +730,12 @@ export default function RoutesPrototypePage() {
   const [geozoneColor, setGeozoneColor] = useState('#ff00d6');
   const [geozoneDraftPoints, setGeozoneDraftPoints] = useState<RoutePoint[]>([]);
   const [geozonePointMenu, setGeozonePointMenu] = useState<GeozonePointMenu>(null);
-  const [createdGeozones, setCreatedGeozones] = useState<CreatedGeozone[]>([]);
+  const [geozoneInfoCard, setGeozoneInfoCard] = useState<GeozoneInfoCard>(null);
+  const [editingGeozoneId, setEditingGeozoneId] = useState<string | null>(null);
+  const [baseGeozones, setBaseGeozones] = useState<GeozoneMapItem[]>(readStoredBaseGeozones);
+  const [createdGeozones, setCreatedGeozones] = useState<CreatedGeozone[]>(readStoredCreatedGeozones);
   const [selectedGeozoneIds, setSelectedGeozoneIds] = useState<Set<string>>(
-    () => new Set(geozonePolygons.map((zone) => zone.id)),
+    () => new Set([...readStoredBaseGeozones().map((zone) => zone.id), ...readStoredCreatedGeozones().map((zone) => zone.id)]),
   );
   const [geozoneSearch, setGeozoneSearch] = useState('');
   const [isGeozoneFiltersOpen, setIsGeozoneFiltersOpen] = useState(false);
@@ -683,6 +746,8 @@ export default function RoutesPrototypePage() {
   const geozoneDraftLayerRef = useRef<any>(null);
   const geozoneDraftMarkerLayerRef = useRef<any>(null);
   const geozoneDraftPointsRef = useRef<RoutePoint[]>([]);
+  const geozoneMidpointMarkersRef = useRef<any[]>([]);
+  const geozoneDraggedMidpointRef = useRef<RoutePoint | null>(null);
   const createdGeozoneLayerRef = useRef<any>(null);
   const carMarkerRef = useRef<any>(null);
   const carBodyRef = useRef<HTMLElement | null>(null);
@@ -796,12 +861,18 @@ export default function RoutesPrototypePage() {
     [tableRows],
   );
   const allGeozones = useMemo<GeozoneMapItem[]>(
-    () => [...geozonePolygons, ...createdGeozones],
-    [createdGeozones],
+    () => [...baseGeozones, ...createdGeozones],
+    [baseGeozones, createdGeozones],
   );
   const visibleGeozones = useMemo(
-    () => allGeozones.filter((zone) => selectedGeozoneIds.has(zone.id)),
-    [allGeozones, selectedGeozoneIds],
+    () => allGeozones.filter((zone) => {
+      if (isCreatingGeozone && editingGeozoneId && zone.id === editingGeozoneId) {
+        return false;
+      }
+
+      return selectedGeozoneIds.has(zone.id);
+    }),
+    [allGeozones, editingGeozoneId, isCreatingGeozone, selectedGeozoneIds],
   );
   const visibleGeozoneTreeItems = useMemo(() => {
     const query = geozoneSearch.trim().toLowerCase();
@@ -815,6 +886,15 @@ export default function RoutesPrototypePage() {
   const visibleGeozoneTreeIds = useMemo(() => visibleGeozoneTreeItems.map((zone) => zone.id), [visibleGeozoneTreeItems]);
   const visibleTreeChecked = visibleGeozoneTreeIds.length > 0 && visibleGeozoneTreeIds.every((id) => selectedGeozoneIds.has(id));
   const visibleTreeMixed = !visibleTreeChecked && visibleGeozoneTreeIds.some((id) => selectedGeozoneIds.has(id));
+  const selectedGeozoneInfo = geozoneInfoCard ? allGeozones.find((zone) => zone.id === geozoneInfoCard.id) : null;
+
+  useEffect(() => {
+    window.localStorage.setItem(baseGeozonesStorageKey, JSON.stringify(baseGeozones));
+  }, [baseGeozones]);
+
+  useEffect(() => {
+    window.localStorage.setItem(createdGeozonesStorageKey, JSON.stringify(createdGeozones));
+  }, [createdGeozones]);
 
   function selectRouteDate(nextDate: string, dayOffset: number) {
     setSelectedRouteDate(nextDate);
@@ -837,6 +917,8 @@ export default function RoutesPrototypePage() {
     setRouteViewMode('map');
     setIsTableHidden(true);
     setIsCreatingGeozone(true);
+    setEditingGeozoneId(null);
+    setGeozoneInfoCard(null);
     setGeozoneCreationStep('drawing');
     setGeozoneName('Приморский район');
     setGeozoneAddress('Макетск, ТБ 55');
@@ -845,19 +927,43 @@ export default function RoutesPrototypePage() {
     setGeozoneCategory('УС');
     setGeozoneStatus('Активна');
     setGeozoneColor('#ff00d6');
+    geozoneDraftPointsRef.current = [];
     setGeozoneDraftPoints([]);
     setGeozonePointMenu(null);
   }
 
   function cancelGeozoneCreation() {
     setIsCreatingGeozone(false);
+    setEditingGeozoneId(null);
     setGeozoneCreationStep('address');
+    geozoneDraftPointsRef.current = [];
     setGeozoneDraftPoints([]);
     setGeozonePointMenu(null);
   }
 
   function saveGeozone() {
-    if (geozoneDraftPoints.length < 3) {
+    const draftPoints = geozoneDraftPointsRef.current;
+    if (draftPoints.length < 3) {
+      return;
+    }
+
+    if (editingGeozoneId) {
+      const nextZone = {
+        id: editingGeozoneId,
+        name: geozoneName.trim() || 'Геозона',
+        address: geozoneAddress.trim() || `${geozoneGroup}, ТБ ${geozoneBank}`,
+        color: geozoneColor,
+        points: draftPoints.map((point) => [...point] as RoutePoint),
+      };
+
+      setBaseGeozones((current) => current.map((zone) => (zone.id === editingGeozoneId ? nextZone : zone)));
+      setCreatedGeozones((current) => current.map((zone) => (zone.id === editingGeozoneId ? nextZone : zone)));
+      setEditingGeozoneId(null);
+      geozoneDraftPointsRef.current = [];
+      setGeozoneDraftPoints([]);
+      setGeozoneInfoCard(null);
+      setIsCreatingGeozone(false);
+      setGeozoneCreationStep('address');
       return;
     }
 
@@ -868,11 +974,12 @@ export default function RoutesPrototypePage() {
         name: geozoneName.trim() || 'Новая геозона',
         address: geozoneAddress.trim() || `${geozoneGroup}, ТБ ${geozoneBank}`,
         color: geozoneColor,
-        points: geozoneDraftPoints,
+        points: draftPoints.map((point) => [...point] as RoutePoint),
       },
       ...current,
     ]);
     setGeozoneIdsSelected([newGeozoneId], true);
+    geozoneDraftPointsRef.current = [];
     setGeozoneDraftPoints([]);
     setGeozonePointMenu(null);
     setGeozoneCreationStep('saved');
@@ -896,14 +1003,32 @@ export default function RoutesPrototypePage() {
       map.removeLayer(geozoneDraftMarkerLayerRef.current);
       geozoneDraftMarkerLayerRef.current = null;
     }
+    geozoneMidpointMarkersRef.current = [];
   }
 
   function updateDraftPoint(index: number, point: RoutePoint) {
-    setGeozoneDraftPoints((current) => current.map((draftPoint, draftIndex) => (draftIndex === index ? point : draftPoint)));
+    const nextPoints = getDraftPointsWithUpdatedPoint(geozoneDraftPointsRef.current, index, point);
+    geozoneDraftPointsRef.current = nextPoints;
+    setGeozoneDraftPoints(nextPoints);
   }
 
   function getDraftPointsWithUpdatedPoint(points: RoutePoint[], index: number, point: RoutePoint) {
     return points.map((draftPoint, draftIndex) => (draftIndex === index ? point : draftPoint));
+  }
+
+  function updatePreviewMidpoints(points: RoutePoint[]) {
+    geozoneMidpointMarkersRef.current.forEach((marker, index) => {
+      const point = points[index];
+      const nextPoint = points[index + 1] ?? (points.length >= 3 ? points[0] : null);
+      if (!point || !nextPoint) {
+        return;
+      }
+
+      marker.setLatLng([
+        (point[0] + nextPoint[0]) / 2,
+        (point[1] + nextPoint[1]) / 2,
+      ]);
+    });
   }
 
   function previewUpdatedDraftPoint(index: number, point: RoutePoint) {
@@ -912,15 +1037,15 @@ export default function RoutesPrototypePage() {
       return;
     }
 
-    layer.setLatLngs(getDraftPointsWithUpdatedPoint(geozoneDraftPointsRef.current, index, point));
+    const previewPoints = getDraftPointsWithUpdatedPoint(geozoneDraftPointsRef.current, index, point);
+    layer.setLatLngs(previewPoints);
+    updatePreviewMidpoints(previewPoints);
   }
 
   function insertDraftPoint(afterIndex: number, point: RoutePoint) {
-    setGeozoneDraftPoints((current) => [
-      ...current.slice(0, afterIndex + 1),
-      point,
-      ...current.slice(afterIndex + 1),
-    ]);
+    const nextPoints = getDraftPointsWithInsertedPoint(geozoneDraftPointsRef.current, afterIndex, point);
+    geozoneDraftPointsRef.current = nextPoints;
+    setGeozoneDraftPoints(nextPoints);
     setGeozonePointMenu(null);
   }
 
@@ -938,15 +1063,19 @@ export default function RoutesPrototypePage() {
       return;
     }
 
-    layer.setLatLngs(getDraftPointsWithInsertedPoint(geozoneDraftPointsRef.current, afterIndex, point));
+    const previewPoints = getDraftPointsWithInsertedPoint(geozoneDraftPointsRef.current, afterIndex, point);
+    layer.setLatLngs(previewPoints);
   }
 
   function deleteDraftPoint(index: number) {
-    setGeozoneDraftPoints((current) => current.filter((_, draftIndex) => draftIndex !== index));
+    const nextPoints = geozoneDraftPointsRef.current.filter((_, draftIndex) => draftIndex !== index);
+    geozoneDraftPointsRef.current = nextPoints;
+    setGeozoneDraftPoints(nextPoints);
     setGeozonePointMenu(null);
   }
 
   function clearDraftGeozone() {
+    geozoneDraftPointsRef.current = [];
     setGeozoneDraftPoints([]);
     setGeozonePointMenu(null);
   }
@@ -956,12 +1085,60 @@ export default function RoutesPrototypePage() {
   }
 
   function openGeozoneDetails() {
-    if (geozoneDraftPoints.length < 3) {
+    if (geozoneDraftPointsRef.current.length < 3) {
       return;
     }
 
     setGeozonePointMenu(null);
     setGeozoneCreationStep('address');
+  }
+
+  function openGeozoneInfo(zone: GeozoneMapItem, event: any) {
+    setGeozoneInfoCard({
+      id: zone.id,
+      x: event.originalEvent?.clientX ?? 0,
+      y: event.originalEvent?.clientY ?? 0,
+    });
+  }
+
+  function editGeozone(zone: GeozoneMapItem) {
+    setEditingGeozoneId(zone.id);
+    setGeozoneName(zone.name);
+    setGeozoneAddress('address' in zone ? String(zone.address ?? '') : '');
+    setGeozoneColor(zone.color);
+    geozoneDraftPointsRef.current = zone.points.map((point) => [...point] as RoutePoint);
+    setGeozoneDraftPoints(geozoneDraftPointsRef.current);
+    setGeozoneInfoCard(null);
+    setIsCreatingGeozone(true);
+    setGeozoneCreationStep('address');
+  }
+
+  function editGeozoneShape(zone: GeozoneMapItem) {
+    setEditingGeozoneId(zone.id);
+    setGeozoneName(zone.name);
+    setGeozoneAddress('address' in zone ? String(zone.address ?? '') : '');
+    setGeozoneColor(zone.color);
+    geozoneDraftPointsRef.current = zone.points.map((point) => [...point] as RoutePoint);
+    setGeozoneDraftPoints(geozoneDraftPointsRef.current);
+    setGeozoneInfoCard(null);
+    setIsCreatingGeozone(true);
+    setGeozoneCreationStep('drawing');
+  }
+
+  function duplicateGeozone(zone: GeozoneMapItem) {
+    const duplicatedGeozoneId = `created-geozone-${Date.now()}`;
+    setCreatedGeozones((current) => [
+      {
+        id: duplicatedGeozoneId,
+        name: `${zone.name} копия`,
+        address: 'address' in zone ? String(zone.address ?? '') : `${geozoneGroup}, ТБ ${geozoneBank}`,
+        color: zone.color,
+        points: zone.points.map((point) => [...point] as RoutePoint),
+      },
+      ...current,
+    ]);
+    setGeozoneIdsSelected([duplicatedGeozoneId], true);
+    setGeozoneInfoCard(null);
   }
 
   function setGeozoneIdsSelected(ids: string[], selected: boolean) {
@@ -1073,7 +1250,7 @@ export default function RoutesPrototypePage() {
           <div data-block="geozone-modal-overlay" className="absolute inset-0 z-[850] flex items-center justify-center bg-black/50 px-4">
             <section data-block="geozone-modal" className="max-h-[calc(100vh-32px)] w-[540px] max-w-full overflow-auto rounded-2xl bg-white shadow-[0_24px_72px_rgba(0,0,0,0.28)]">
               <div className="flex min-h-[64px] items-center gap-3 border-b border-black/10 px-6 py-4">
-                <h2 className="min-w-0 flex-1 text-xl font-medium leading-7 text-black/85">Новая геозона</h2>
+                <h2 className="min-w-0 flex-1 text-xl font-medium leading-7 text-black/85">{editingGeozoneId ? 'Редактирование геозоны' : 'Новая геозона'}</h2>
                 <button
                   className="h-9 rounded-md px-4 text-sm font-medium text-black/65 transition-colors hover:bg-black/[0.04] hover:text-black/85"
                   type="button"
@@ -1182,6 +1359,64 @@ export default function RoutesPrototypePage() {
           </div>
         ) : null}
       </>
+    );
+  };
+
+  const renderGeozoneInfoCard = () => {
+    if (!geozoneInfoCard || !selectedGeozoneInfo) {
+      return null;
+    }
+
+    return (
+      <div
+        data-block="geozone-info-card"
+        className="fixed z-[840] w-[320px] max-w-[calc(100vw-24px)] rounded-md bg-white p-3 shadow-[0px_9px_28px_8px_rgba(0,0,0,0.05),0px_3px_6px_-4px_rgba(0,0,0,0.12),0px_6px_16px_rgba(0,0,0,0.08)]"
+        style={{ left: Math.min(geozoneInfoCard.x + 12, window.innerWidth - 332), top: Math.min(geozoneInfoCard.y + 12, window.innerHeight - 176) }}
+      >
+        <div className="flex h-8 items-center gap-2">
+          <span className="size-4 rounded-full" style={{ backgroundColor: selectedGeozoneInfo.color }} />
+          <div className="min-w-0 flex-1 truncate text-base font-semibold leading-6 text-black/85">{selectedGeozoneInfo.name}</div>
+          <div className="flex h-8 w-[104px] shrink-0 items-start gap-1">
+            <button
+              className="grid size-8 place-items-center rounded-md bg-[#e6f4ff] text-[#1677ff]"
+              type="button"
+              aria-label="Редактировать информацию геозоны"
+              onClick={() => editGeozone(selectedGeozoneInfo)}
+            >
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m4 16.5-.5 4 4-.5L18.8 8.7a2.1 2.1 0 0 0 0-3L18.3 5a2.1 2.1 0 0 0-3 0L4 16.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              className="grid size-8 place-items-center rounded-md text-[#1677ff] hover:bg-[#e6f4ff]"
+              type="button"
+              aria-label="Редактировать форму геозоны"
+              onClick={() => editGeozoneShape(selectedGeozoneInfo)}
+            >
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 7h10v10H7V7Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                <path d="M4 4h4v4H4V4Zm12 0h4v4h-4V4ZM4 16h4v4H4v-4Zm12 0h4v4h-4v-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              className="grid size-8 place-items-center rounded-md text-[#1677ff] hover:bg-[#e6f4ff]"
+              type="button"
+              aria-label="Создать дубликат геозоны"
+              onClick={() => duplicateGeozone(selectedGeozoneInfo)}
+            >
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 7V5a2 2 0 0 1 2-2h9v14h-2" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                <path d="M5 7h9v14H5V7Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className="mt-3 rounded-md bg-black/[0.03] px-3 py-2 text-xs leading-5 text-black/55">
+          Точек: {selectedGeozoneInfo.points.length}
+          <br />
+          Координаты сохранены в localStorage.
+        </div>
+      </div>
     );
   };
 
@@ -1682,8 +1917,8 @@ export default function RoutesPrototypePage() {
     const draftLayer =
       geozoneDraftPoints.length >= 3
         ? L.polygon(geozoneDraftPoints, {
-            color: '#ff00d6',
-            fillColor: '#ff00d6',
+            color: geozoneColor,
+            fillColor: geozoneColor,
             fillOpacity: 0.18,
             opacity: 1,
             weight: 3,
@@ -1692,7 +1927,7 @@ export default function RoutesPrototypePage() {
             className: 'route-geozone-draft',
           })
         : L.polyline(geozoneDraftPoints, {
-            color: '#ff00d6',
+            color: geozoneColor,
             opacity: 1,
             weight: 3,
             dashArray: '8 6',
@@ -1704,7 +1939,7 @@ export default function RoutesPrototypePage() {
       const marker = L.marker(point, {
         icon: L.divIcon({
           className: 'route-geozone-draft-point',
-          html: '<span aria-hidden="true"></span>',
+          html: `<span style="--geozone-point-color:${geozoneColor}" aria-hidden="true"></span>`,
           iconSize: [20, 20],
           iconAnchor: [10, 10],
         }),
@@ -1758,7 +1993,7 @@ export default function RoutesPrototypePage() {
       const marker = L.marker(midpoint, {
         icon: L.divIcon({
           className: 'route-geozone-midpoint',
-          html: '<span aria-hidden="true"></span>',
+          html: `<span style="--geozone-point-color:${geozoneColor}" aria-hidden="true"></span>`,
           iconSize: [12, 12],
           iconAnchor: [6, 6],
         }),
@@ -1774,22 +2009,28 @@ export default function RoutesPrototypePage() {
         L.DomEvent.stop(event);
         setGeozonePointMenu(null);
         const latLng = event.target.getLatLng();
+        geozoneDraggedMidpointRef.current = [latLng.lat, latLng.lng];
+        event.target.setLatLng(latLng);
         previewInsertedDraftPoint(index, [latLng.lat, latLng.lng]);
       });
       marker.on('drag', (event: any) => {
         const latLng = event.target.getLatLng();
+        geozoneDraggedMidpointRef.current = [latLng.lat, latLng.lng];
+        event.target.setLatLng(latLng);
         previewInsertedDraftPoint(index, [latLng.lat, latLng.lng]);
       });
       marker.on('dragend', (event: any) => {
         const latLng = event.target.getLatLng();
-        insertDraftPoint(index, [latLng.lat, latLng.lng]);
+        insertDraftPoint(index, geozoneDraggedMidpointRef.current ?? [latLng.lat, latLng.lng]);
+        geozoneDraggedMidpointRef.current = null;
       });
 
       return [marker];
     });
 
+    geozoneMidpointMarkersRef.current = midpointMarkers;
     geozoneDraftMarkerLayerRef.current = L.layerGroup([...midpointMarkers, ...vertexMarkers]).addTo(map);
-  }, [geozoneDraftPoints, geozoneCreationStep, isCreatingGeozone]);
+  }, [geozoneColor, geozoneDraftPoints, geozoneCreationStep, isCreatingGeozone]);
 
   useEffect(() => {
     const L = leafletLibRef.current;
@@ -1807,7 +2048,7 @@ export default function RoutesPrototypePage() {
       return;
     }
 
-    createdGeozoneLayerRef.current = drawGeozones(L, visibleGeozones).addTo(map);
+    createdGeozoneLayerRef.current = drawGeozones(L, visibleGeozones, openGeozoneInfo).addTo(map);
   }, [mapStatus, visibleGeozones]);
 
   useEffect(() => {
@@ -1818,7 +2059,9 @@ export default function RoutesPrototypePage() {
 
     const handleMapClick = (event: { latlng: { lat: number; lng: number } }) => {
       setGeozonePointMenu(null);
-      setGeozoneDraftPoints((current) => [...current, [event.latlng.lat, event.latlng.lng]]);
+      const nextPoints = [...geozoneDraftPointsRef.current, [event.latlng.lat, event.latlng.lng] as RoutePoint];
+      geozoneDraftPointsRef.current = nextPoints;
+      setGeozoneDraftPoints(nextPoints);
     };
 
     const handleMapContextMenu = (event: any) => {
@@ -2010,7 +2253,7 @@ export default function RoutesPrototypePage() {
           height: 20px;
           border: 2px solid white;
           border-radius: 999px;
-          background: #ff00d6;
+          background: var(--geozone-point-color, #ff00d6);
           box-shadow: 0 2px 8px rgba(0,0,0,.24), inset 0 0 0 3px rgba(255,255,255,.18);
           cursor: grab;
           touch-action: none;
@@ -2024,7 +2267,7 @@ export default function RoutesPrototypePage() {
           height: 12px;
           border: 2px solid white;
           border-radius: 999px;
-          background: #ff9bea;
+          background: var(--geozone-point-color, #ff00d6);
           box-shadow: 0 2px 6px rgba(0,0,0,.16);
           cursor: grab;
           touch-action: none;
@@ -2034,7 +2277,6 @@ export default function RoutesPrototypePage() {
           cursor: grabbing;
         }
         .route-geozone-midpoint:hover span {
-          background: #ff00d6;
           transform: scale(1.12);
         }
         .route-overlay-scroll-content {
@@ -2402,6 +2644,7 @@ export default function RoutesPrototypePage() {
         )}
 
         {activeTab === 'zones' && renderGeozonesPanel()}
+        {activeTab === 'zones' && renderGeozoneInfoCard()}
 
         <div data-block="map-tools" className="absolute right-5 top-[26%] z-[500] flex w-10 flex-col items-start gap-2">
           <button className="grid size-10 place-items-center rounded-xl bg-white p-1.5 shadow-[0_0_4px_2px_rgba(138,139,151,0.35)] transition-colors hover:bg-[#f8f8f8]" type="button" aria-label="Слои карты">
