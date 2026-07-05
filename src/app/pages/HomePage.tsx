@@ -1,11 +1,34 @@
-﻿import { useEffect, useRef, useState } from 'react';
+﻿import { Children, useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import Modal from '../components/Modal';
 import PortfolioVideo from '../components/PortfolioVideo';
 import TagBadge, { type TagBadgeTone } from '../components/TagBadge';
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  ChevronLeft,
+  ChevronRight,
+  CircleAlert,
+  FileText,
+  GitBranch,
+  Layers3,
+  MapPinned,
+  Pause,
+  Play,
+  RotateCcw,
+  Route,
+  ScanSearch,
+  Sparkles,
+  ToggleLeft,
+  Trophy,
+  UsersRound,
+  X,
+  ZoomIn,
+  ZoomOut,
+  type LucideIcon,
+} from 'lucide-react';
 import caseAdminImage from "../../assets/cases/case-admin.png";
 import caseAiMobileImage from "../../assets/cases/case-ai-mobile.jpg";
 import caseAiWebImage from "../../assets/cases/case-ai-web.jpg";
@@ -14,6 +37,13 @@ import caseRoutesPrototypeDemoVideo from "../../assets/cases/routes-prototype-de
 import caseRoutesPrototypeGeozonesVideo from "../../assets/cases/routes-prototype-geozones.mp4";
 import caseRoutesPrototypeModesVideo from "../../assets/cases/routes-prototype-modes.mp4";
 import caseRoutesCoverVideo from "../../assets/cases/routes-prototype-cover.mp4";
+import routesDriverImage from "../../assets/cases/routes-driver.jpg";
+import routesDashboardImage from "../../assets/cases/routes-dashboard.jpg";
+import routesFuelImage from "../../assets/cases/routes-fuel.jpg";
+import routesDispatcherImage from "../../assets/cases/routes-dispatcher.jpg";
+import routesPrototypeGeozonesImage from "../../assets/cases/routes-prototype-geozones.jpg";
+import routesPrototypeMapImage from "../../assets/cases/routes-prototype-map.jpg";
+import routesPrototypeRegistryImage from "../../assets/cases/routes-prototype-registry.jpg";
 import heroTransitionVideo from "../../assets/cases/hero-transition.mp4";
 import caseAdminGroup1 from "../../assets/cases/case-admin-group-1.jpg";
 import caseAdminGroup2 from "../../assets/cases/case-admin-group-2.jpg";
@@ -27,8 +57,10 @@ import caseAdminEdit2 from "../../assets/cases/case-admin-edit-2.jpg";
 import caseAdminEdit3 from "../../assets/cases/case-admin-edit-3.jpg";
 import caseAdminEdit4 from "../../assets/cases/case-admin-edit-4.jpg";
 
+type ProjectId = 'admin-panel' | 'routes' | 'pushup-counter';
+
 export default function HomePage() {
-  const [activeModal, setActiveModal] = useState<'admin-panel' | 'routes' | null>(null);
+  const [activeModal, setActiveModal] = useState<ProjectId | null>(null);
 
   useEffect(() => {
     // SEO метатеги для главной страницы
@@ -79,10 +111,9 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="bg-white min-h-screen w-full pt-4 md:pt-8">
+    <div className="min-h-screen w-full bg-white">
       <Header />
-      <Hero />
-      <CaseVideoSlot />
+      <HeroStage />
       <SectionIntro
         title="Кейсы"
         description="B2B-интерфейсы для маршрутов, администрирования и управления версиями"
@@ -96,7 +127,7 @@ export default function HomePage() {
       <ThankYou />
 
       <Modal isOpen={activeModal === 'admin-panel'} onClose={() => setActiveModal(null)}>
-        <AdminPanelContent onNextCase={() => setActiveModal('routes')} />
+        <AdminPanelContent onNextCase={() => setActiveModal('pushup-counter')} />
       </Modal>
 
       <Modal isOpen={activeModal === 'routes'} onClose={() => setActiveModal(null)}>
@@ -104,6 +135,10 @@ export default function HomePage() {
           onAdjacentCase={() => setActiveModal('admin-panel')}
           onOpenPrototype={() => window.open('/#routes-prototype', '_blank', 'noopener,noreferrer')}
         />
+      </Modal>
+
+      <Modal isOpen={activeModal === 'pushup-counter'} onClose={() => setActiveModal(null)}>
+        <PushupCounterContent onAdjacentCase={() => setActiveModal('routes')} />
       </Modal>
     </div>
   );
@@ -133,7 +168,7 @@ function SectionIntro({
 function formatText(text: string) {
   return text
     .replace(/(^|[\s(])(и|в|во|на|к|ко|с|со|по|для|под|над|от|до|из|у|а|но|за|без|при|о|об|обо)\s+/giu, '$1$2\u00a0')
-    .replace(/([A-Za-zА-Яа-яЁё0-9])[-–]([A-Za-zА-Яа-яЁё0-9])/g, '$1\u2011$2');
+    .replace(/([\p{L}0-9])[-–]([\p{L}0-9])/gu, '$1\u2011$2');
 }
 
 function formatParagraph(text: string) {
@@ -141,15 +176,82 @@ function formatParagraph(text: string) {
   return /[.!?…]$/.test(formatted.trim()) ? formatted : `${formatted}.`;
 }
 
-function CaseVideoSlot() {
+function HeroStage() {
+  const leftVideoRef = useRef<HTMLVideoElement>(null);
+  const rightVideoRef = useRef<HTMLVideoElement>(null);
+  const readyVideosRef = useRef(new Set<string>());
+  const splitVideoStartedRef = useRef(false);
+
+  const playSplitVideos = (videoKey: 'left' | 'right') => {
+    readyVideosRef.current.add(videoKey);
+
+    if (
+      splitVideoStartedRef.current ||
+      readyVideosRef.current.size < 2 ||
+      !leftVideoRef.current ||
+      !rightVideoRef.current
+    ) {
+      return;
+    }
+
+    splitVideoStartedRef.current = true;
+    leftVideoRef.current.currentTime = 0;
+    rightVideoRef.current.currentTime = 0;
+
+    requestAnimationFrame(() => {
+      void leftVideoRef.current?.play();
+      void rightVideoRef.current?.play();
+    });
+  };
+
   return (
-    <section className="w-full py-8 md:py-12" aria-label="Видео перед кейсами">
-      <PortfolioVideo
-        className="aspect-video w-full"
+    <section className="relative isolate mx-auto w-full overflow-hidden" aria-label="Главный экран">
+      <video
+        className="pointer-events-none absolute inset-0 z-0 size-full object-cover md:hidden"
         src={heroTransitionVideo}
-        label="Переход к кейсам"
+        autoPlay
+        loop
+        muted
+        playsInline
         preload="metadata"
+        aria-hidden="true"
       />
+      <div className="pointer-events-none absolute inset-0 z-0 hidden size-full grid-cols-2 md:grid" aria-hidden="true">
+        <div className="relative size-full overflow-hidden">
+          <video
+            ref={leftVideoRef}
+            className="absolute left-[-100%] top-0 h-full w-[200%] max-w-none object-cover"
+            src={heroTransitionVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            onLoadedData={() => playSplitVideos('left')}
+            onCanPlay={() => playSplitVideos('left')}
+          />
+        </div>
+        <div className="relative size-full overflow-hidden">
+          <video
+            ref={rightVideoRef}
+            className="absolute left-0 top-0 h-full w-[200%] max-w-none object-cover"
+            src={heroTransitionVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            onLoadedData={() => playSplitVideos('right')}
+            onCanPlay={() => playSplitVideos('right')}
+          />
+        </div>
+      </div>
+      <div className="absolute inset-0 z-10 bg-white/35" aria-hidden="true" />
+      <div className="relative z-20 flex w-full flex-col gap-4 pb-4 pt-[90px] md:gap-8 md:pb-8 md:pt-[106px]">
+        <div className="mx-auto w-full max-w-[1392px] px-4 md:px-8">
+          <Hero />
+        </div>
+      </div>
     </section>
   );
 }
@@ -174,7 +276,9 @@ function CaseCard({
   return (
     <Wrapper
       onClick={onClick}
-      className={`group flex w-full min-w-0 flex-col items-start gap-3 rounded-[28px] bg-[#f5f5f5] p-5 text-left md:p-8 ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`group flex w-full min-w-0 flex-col items-start gap-3 rounded-[28px] bg-[#f5f5f5] p-5 text-left transition-all duration-300 ease-out md:p-8 ${
+        onClick ? 'cursor-pointer hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_44px_rgba(25,28,29,0.12)]' : ''
+      } ${className}`}
     >
       {children}
       <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] text-[#191c1d] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
@@ -255,7 +359,7 @@ function ExperimentPreview() {
   );
 }
 
-function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel' | 'routes') => void }) {
+function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) => void }) {
   return (
     <div className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col gap-6 px-4 py-4 md:px-8 md:py-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -281,6 +385,20 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: 'admin-panel
           ]}
         >
           <CaseImage src={caseAdminImage} alt="Управление релизами мобильного приложения" />
+        </CaseCard>
+        <CaseCard
+          onClick={() => onProjectClick('pushup-counter')}
+          title="Фитнес-приложение: счётчик отжиманий"
+          description="Собрал Android-приложение в Codex, чтобы камера считала отжимания и помогала держать ежедневный челлендж"
+          tags={[
+            { label: 'Mobile', tone: 'mobile' },
+            { label: 'AI', tone: 'ai' },
+            { label: 'Pet project', tone: 'neutral' },
+          ]}
+        >
+          <div className="flex w-full justify-center rounded-xl bg-[radial-gradient(circle_at_50%_12%,rgba(232,240,255,0.98),transparent_42%),linear-gradient(180deg,#ffffff_0%,#f3f4f4_100%)] py-6 shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
+            <ExperimentPreview />
+          </div>
         </CaseCard>
       </div>
       {false && (
@@ -353,11 +471,11 @@ function CaseStudySection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex w-full flex-col gap-4 py-6 text-[#191c1d]">
+    <section className="flex w-full flex-col gap-4 py-6 text-center text-[#191c1d]">
       <h2 className="font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
         {formatText(title)}
       </h2>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 text-left">
         {children}
       </div>
     </section>
@@ -384,8 +502,8 @@ function CaseStudyImageBlock({
   );
 
   return (
-    <div className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
-      <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
+    <div className="w-full overflow-hidden rounded-[28px]">
+      <div className="aspect-[3840/2136] w-full overflow-hidden">
         {onClick ? (
           <button
             type="button"
@@ -419,24 +537,862 @@ function CaseStudyVideoBlock({ src, label }: { src: string; label: string }) {
   );
 }
 
+function RoutesMedia({
+  src,
+  label,
+  className = '',
+}: {
+  src: string;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <figure className={`flex w-full flex-col ${className}`}>
+      <PortfolioVideo
+        className="aspect-[3840/2136] w-full rounded-2xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]"
+        src={src}
+        label={label}
+        controls
+        preload="metadata"
+      />
+    </figure>
+  );
+}
+
+function getCaseBlockIcon(title: string): LucideIcon {
+  const normalizedTitle = title.toLowerCase();
+
+  if (normalizedTitle.includes('продукт')) return BriefcaseBusiness;
+  if (normalizedTitle.includes('проблем')) return CircleAlert;
+  if (normalizedTitle.includes('вклад')) return Sparkles;
+  if (normalizedTitle.includes('горж')) return Trophy;
+  if (normalizedTitle.includes('карт') || normalizedTitle.includes('таблиц')) return MapPinned;
+  if (normalizedTitle.includes('реестр')) return ToggleLeft;
+  if (normalizedTitle.includes('геозон')) return ScanSearch;
+  if (normalizedTitle.includes('иерарх') || normalizedTitle.includes('вет')) return GitBranch;
+  if (normalizedTitle.includes('групп')) return UsersRound;
+  if (normalizedTitle.includes('управлен')) return Layers3;
+  return Route;
+}
+
+function CaseBlockIcon({ title }: { title: string }) {
+  const Icon = getCaseBlockIcon(title);
+
+  return (
+    <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white text-[#191c1d]">
+      <Icon className="size-5" strokeWidth={1.8} />
+    </span>
+  );
+}
+
+type RoutesContextVisualVariant = 'product' | 'problem' | 'contribution';
+
+function CasePhotoCard({
+  images,
+  label,
+}: {
+  images: string[];
+  label: string;
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [nextIndex, setNextIndex] = useState(1);
+  const [isWiping, setIsWiping] = useState(false);
+
+  useEffect(() => {
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (reducedMotionQuery.matches || images.length < 2) {
+      return;
+    }
+
+    const showDuration = 4600;
+    const wipeDuration = 1400;
+    const interval = window.setInterval(() => {
+      setIsWiping(true);
+
+      window.setTimeout(() => {
+        setCurrentIndex(nextIndex);
+        setNextIndex((nextIndex + 1) % images.length);
+        setIsWiping(false);
+      }, wipeDuration);
+    }, showDuration);
+
+    return () => window.clearInterval(interval);
+  }, [images.length, nextIndex]);
+
+  return (
+    <div className="relative mx-auto aspect-square w-full max-w-[420px] overflow-hidden rounded-[32px]">
+      <img
+        key={images[currentIndex]}
+        className="case-photo-card-image case-photo-card-current absolute inset-0 size-full object-cover"
+        src={images[currentIndex]}
+        alt={label}
+        loading="eager"
+      />
+      {images.length > 1 ? (
+        <img
+          key={images[nextIndex]}
+          className={`case-photo-card-image case-photo-card-next absolute inset-0 size-full object-cover ${isWiping ? 'case-photo-card-next-visible' : ''}`}
+          src={images[nextIndex]}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+        />
+      ) : null}
+      <style>{`
+        .case-photo-card-image {
+          transform: scale(1.25);
+          will-change: transform, clip-path;
+        }
+
+        .case-photo-card-current,
+        .case-photo-card-next-visible {
+          animation: case-photo-card-zoom 7s linear forwards;
+        }
+
+        .case-photo-card-next {
+          filter: blur(8px);
+          clip-path: polygon(0 0, 0 0, 0 0);
+          transition: clip-path 1400ms ease-in-out, filter 1400ms ease-in-out;
+        }
+
+        .case-photo-card-next-visible {
+          filter: blur(0);
+          clip-path: polygon(0 0, 240% 0, 0 240%);
+        }
+
+        @keyframes case-photo-card-zoom {
+          from {
+            transform: scale(1.25);
+          }
+          to {
+            transform: scale(1);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .case-photo-card-image {
+            animation: none;
+            transform: scale(1);
+          }
+
+          .case-photo-card-next {
+            display: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function RoutesContextVisualCard({
+  variant,
+}: {
+  variant: RoutesContextVisualVariant;
+}) {
+  const cards: Record<RoutesContextVisualVariant, { label: string; images: string[] }> = {
+    product: {
+      label: 'Разъездной сотрудник и маршрут',
+      images: [routesDriverImage, routesDashboardImage, routesFuelImage, routesDispatcherImage],
+    },
+    problem: {
+      label: 'Сложность старой системы',
+      images: [routesPrototypeMapImage, routesPrototypeRegistryImage, routesDashboardImage],
+    },
+    contribution: {
+      label: 'Проектирование сценария маршрутов',
+      images: [routesPrototypeRegistryImage, routesPrototypeMapImage, routesPrototypeGeozonesImage],
+    },
+  };
+
+  return <CasePhotoCard images={cards[variant].images} label={cards[variant].label} />;
+}
+
+function RoutesApiPillIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="118" height="48" viewBox="0 0 59 24" fill="none" aria-hidden="true">
+      <path d="M11.976 0.315789H45.5086C51.9484 0.315789 57.1688 5.53619 57.1688 11.9759C57.1688 18.4156 51.9484 23.636 45.5086 23.636H11.976C5.53624 23.636 0.315789 18.4156 0.315789 11.9759C0.315789 5.53619 5.53624 0.315789 11.976 0.315789Z" fill="white" stroke="black" strokeWidth="0.631579" />
+      <path d="M12.105 3.35645C8.2243 3.35645 5.07892 6.50182 5.07892 10.3822C5.07767 11.3048 5.25873 12.2186 5.6117 13.071C5.96466 13.9234 6.48258 14.6977 7.1357 15.3493C8.40716 16.6213 11.4023 18.4621 11.5779 20.394C11.6042 20.684 11.8141 20.921 12.105 20.921C12.3958 20.921 12.6055 20.6838 12.6317 20.394C12.8074 18.4621 15.8028 16.6213 17.074 15.3493C17.7271 14.6977 18.245 13.9234 18.598 13.071C18.951 12.2186 19.132 11.3048 19.1308 10.3822C19.1308 6.50182 15.9854 3.35645 12.105 3.35645Z" fill="#EB5547" />
+      <path d="M12.1054 12.8461C12.5918 12.8461 13.0672 12.7019 13.4716 12.4317C13.8759 12.1615 14.1911 11.7775 14.3772 11.3282C14.5633 10.8789 14.612 10.3845 14.5171 9.90746C14.4223 9.43047 14.1881 8.99233 13.8442 8.64843C13.5003 8.30454 13.0621 8.07035 12.5852 7.97547C12.1082 7.88059 11.6138 7.92929 11.1644 8.1154C10.7151 8.30151 10.3311 8.61668 10.0609 9.02106C9.7907 9.42543 9.64648 9.90084 9.64648 10.3872C9.64648 11.0393 9.90555 11.6648 10.3667 12.1259C10.8278 12.5871 11.4533 12.8461 12.1054 12.8461Z" fill="white" />
+      <path d="M29.5134 5.50635H26.7473C26.633 5.50635 26.5567 5.56353 26.5183 5.67788L21.9399 18.6121C21.8827 18.7458 21.9592 18.8602 22.1117 18.8602H24.0574C24.1721 18.8602 24.2674 18.8221 24.3055 18.6886L25.4502 15.1402H30.6772L31.86 18.6886C31.8981 18.803 31.9746 18.8602 32.089 18.8602H34.0922C34.2446 18.8602 34.3209 18.7458 34.2637 18.6121L29.7424 5.67816C29.7043 5.5638 29.6281 5.50635 29.5134 5.50635ZM30.0667 13.2705H26.0416L28.0254 7.10873L30.0667 13.2705Z" fill="#111111" />
+      <path d="M35.2433 5.716L35.3579 12.0877L35.2433 18.65C35.2433 18.8027 35.3198 18.8599 35.4532 18.8599H37.4564C37.5898 18.8599 37.6661 18.8027 37.6661 18.65L37.5898 13.9572H40.1272C43.1414 13.9572 45.049 12.4692 45.049 9.66492C45.049 6.91786 43.1986 5.50635 40.1272 5.50635H35.4532C35.3198 5.50635 35.2433 5.56325 35.2433 5.716ZM37.647 7.22309H40.2225C41.844 7.22309 42.7787 8.02414 42.7787 9.72209C42.7787 11.5344 41.7105 12.2404 40.2988 12.2404H37.5708L37.647 7.22309Z" fill="#111111" />
+      <path d="M48.7315 12.1073L48.8462 5.71628C48.8462 5.5638 48.7699 5.50635 48.6362 5.50635H46.6521C46.5187 5.50635 46.4424 5.5638 46.4424 5.71628L46.5568 12.107L46.4424 18.6502C46.4424 18.803 46.5187 18.8602 46.6521 18.8602H48.6362C48.7699 18.8602 48.8462 18.803 48.8462 18.6502L48.7315 12.107V12.1073Z" fill="#111111" />
+    </svg>
+  );
+}
+
+function RoutesExternalPlatformCostIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="86" height="86" viewBox="0 0 130 130" fill="none" aria-hidden="true">
+      <g clipPath="url(#routes-cost-icon-clip)">
+        <path d="M130 0H0V130H130V0Z" fill="#FF0032" />
+        <path d="M54.4374 75C61.0649 75 66.4374 69.6274 66.4374 63C66.4374 56.3726 61.0649 51 54.4374 51C47.81 51 42.4374 56.3726 42.4374 63C42.4374 69.6274 47.81 75 54.4374 75Z" fill="white" />
+        <path d="M28.5076 100H80.3674C78.8621 94.2703 75.5015 89.2005 70.8103 85.5826C66.1191 81.9648 60.3617 80.0026 54.4375 80.0026C48.5133 80.0026 42.7559 81.9648 38.0647 85.5826C33.3735 89.2005 30.0129 94.2703 28.5076 100Z" fill="white" />
+        <path d="M100.893 65.8931V45.3828C96.8134 45.3828 92.9007 43.7621 90.0159 40.8773C87.1311 37.9925 85.5104 34.0798 85.5104 30H65C65 39.5194 68.7817 48.649 75.5129 55.3803C82.2442 62.1115 91.3737 65.8931 100.893 65.8931Z" fill="white" />
+      </g>
+      <defs>
+        <clipPath id="routes-cost-icon-clip">
+          <rect width="130" height="130" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+function RoutesProblemOrbitAnimation() {
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const orbitItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const orbitNodesRef = useRef<Array<{ label: string; x: number; y: number; vx: number; vy: number; radius: number }> | null>(null);
+  const orbitItems = [
+    { label: 'legacy', className: 'routes-problem-orbit-center', x: 50, y: 50, radius: 92 },
+    { label: 'platform', className: 'routes-problem-orbit-a', x: 17, y: 25, radius: 74 },
+    { label: 'maps', className: 'routes-problem-orbit-b', x: 83, y: 25, radius: 82 },
+    { label: 'requests', className: 'routes-problem-orbit-c', x: 22, y: 76, radius: 70 },
+    { label: 'mileage', className: 'routes-problem-orbit-d', x: 66, y: 76, radius: 70 },
+    { label: 'statuses', className: 'routes-problem-orbit-e', x: 38, y: 18, radius: 70 },
+    { label: 'time', className: 'routes-problem-orbit-f', x: 58, y: 84, radius: 70 },
+    { label: 'ux', className: 'routes-problem-orbit-g', x: 82, y: 70, radius: 74 },
+  ];
+  useEffect(() => {
+    let frame = 0;
+    const safePadding = 36;
+    const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+    const tick = (time: number) => {
+      const rect = stageRef.current?.getBoundingClientRect();
+
+      if (rect) {
+        const width = rect.width;
+        const height = rect.height;
+
+        if (!orbitNodesRef.current) {
+          orbitNodesRef.current = orbitItems.map((item, index) => ({
+            label: item.label,
+            x: (width * item.x) / 100,
+            y: (height * item.y) / 100,
+            vx: Math.sin(index * 1.7) * 0.22,
+            vy: Math.cos(index * 1.3) * 0.22,
+            radius: item.radius,
+          }));
+        }
+
+        const nodes = orbitNodesRef.current;
+        nodes.forEach((node, index) => {
+          const item = orbitItems[index];
+          const homeX = (width * item.x) / 100;
+          const homeY = (height * item.y) / 100;
+          const phase = index * 1.55;
+          const targetX = homeX + Math.sin(time / 3200 + phase) * (item.label === 'legacy' ? 28 : 40);
+          const targetY = homeY + Math.cos(time / 3800 + phase) * (item.label === 'legacy' ? 18 : 30);
+          const attraction = 0.0042;
+
+          node.vx += (targetX - node.x) * attraction;
+          node.vy += (targetY - node.y) * attraction;
+        });
+
+        for (let iteration = 0; iteration < 5; iteration += 1) {
+          for (let i = 0; i < nodes.length; i += 1) {
+            for (let j = i + 1; j < nodes.length; j += 1) {
+              const a = nodes[i];
+              const b = nodes[j];
+              let dx = b.x - a.x;
+              let dy = b.y - a.y;
+              let distance = Math.hypot(dx, dy);
+              const minDistance = a.radius + b.radius + 12;
+
+              if (distance === 0) {
+                dx = 1;
+                dy = 0;
+                distance = 1;
+              }
+
+              if (distance < minDistance) {
+                const nx = dx / distance;
+                const ny = dy / distance;
+                const overlap = minDistance - distance;
+                const correction = overlap * 0.045;
+                const impulse = overlap * 0.006;
+
+                a.x -= nx * correction;
+                a.y -= ny * correction;
+                b.x += nx * correction;
+                b.y += ny * correction;
+                a.vx -= nx * impulse;
+                a.vy -= ny * impulse;
+                b.vx += nx * impulse;
+                b.vy += ny * impulse;
+              }
+            }
+          }
+        }
+
+        nodes.forEach((node) => {
+          const minX = node.radius + safePadding;
+          const maxX = width - node.radius - safePadding;
+          const minY = node.radius + safePadding;
+          const maxY = height - node.radius - safePadding;
+
+          if (node.x < minX || node.x > maxX) {
+            node.vx += (clamp(node.x, minX, maxX) - node.x) * 0.045;
+          }
+
+          if (node.y < minY || node.y > maxY) {
+            node.vy += (clamp(node.y, minY, maxY) - node.y) * 0.045;
+          }
+
+          node.vx *= 0.92;
+          node.vy *= 0.92;
+          const speed = Math.hypot(node.vx, node.vy);
+          const maxSpeed = 1.4;
+
+          if (speed > maxSpeed) {
+            node.vx = (node.vx / speed) * maxSpeed;
+            node.vy = (node.vy / speed) * maxSpeed;
+          }
+
+          node.x = clamp(node.x + node.vx, minX, maxX);
+          node.y = clamp(node.y + node.vy, minY, maxY);
+        });
+
+        nodes.forEach((node) => {
+          const element = orbitItemRefs.current[node.label];
+          if (!element) {
+            return;
+          }
+
+          element.style.left = '0px';
+          element.style.top = '0px';
+          element.style.transform = `translate3d(${node.x}px, ${node.y}px, 0) translate3d(-50%, -50%, 0)`;
+        });
+      }
+
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  const getOrbitItemStyle = (item: (typeof orbitItems)[number]) => {
+    return {
+      left: `${item.x}%`,
+      top: `${item.y}%`,
+      transform: 'translate3d(-50%, -50%, 0)',
+    } as React.CSSProperties;
+  };
+
+  return (
+    <div
+      ref={stageRef}
+      className="routes-problem-orbit-stage relative mx-auto h-[460px] w-full max-w-[920px] overflow-hidden rounded-[32px] bg-[radial-gradient(circle_at_18%_18%,rgba(233,241,255,0.95),transparent_34%),radial-gradient(circle_at_82%_82%,rgba(223,247,233,0.9),transparent_36%),#f8fafa]"
+    >
+      <div className="absolute inset-x-[18%] top-1/2 h-[1px] -translate-y-1/2 rounded-full bg-black/5" aria-hidden="true" />
+      {orbitItems.map((item) => (
+        <div
+          key={item.label}
+          ref={(node) => {
+            orbitItemRefs.current[item.label] = node;
+          }}
+          className={`routes-problem-orbit-item absolute ${item.className}`}
+          style={getOrbitItemStyle(item)}
+        >
+          {item.label === 'legacy' ? (
+            <span className="flex flex-col items-center justify-center gap-2 rounded-[30px] bg-white px-7 py-5 text-center shadow-[0_18px_36px_rgba(25,28,29,0.13)]" aria-hidden="true">
+              <span className="text-6xl leading-none">{'\u{1F996}'}</span>
+              <span className="font-['Google Sans',sans-serif] text-base font-medium leading-5 text-[#191c1d]">legacy</span>
+            </span>
+          ) : item.label === 'platform' ? (
+            <div className="flex w-32 flex-col items-center gap-2 rounded-[24px] bg-white p-3 text-center font-['Google Sans',sans-serif] text-xs font-medium leading-4 text-[#191c1d] shadow-[0_12px_32px_rgba(25,28,29,0.1)]">
+              <RoutesExternalPlatformCostIcon className="size-14 rounded-[18px]" />
+              <span>Внешняя платформа</span>
+            </div>
+          ) : item.label === 'maps' ? (
+            <div className="flex flex-col items-center gap-2 rounded-[24px] bg-white px-4 py-3 text-center shadow-[0_14px_30px_rgba(25,28,29,0.12)]">
+              <RoutesApiPillIcon />
+              <span className="font-['Google Sans',sans-serif] text-xs font-medium leading-4 text-[#191c1d]">Карты</span>
+            </div>
+          ) : item.label === 'requests' ? (
+            <RoutesOrbitEmoji emoji="📍" label="Заявки" />
+          ) : item.label === 'mileage' ? (
+            <RoutesOrbitEmoji emoji="⛽" label="Пробег" />
+          ) : item.label === 'statuses' ? (
+            <RoutesOrbitEmoji emoji="🚥" label="Статусы" />
+          ) : item.label === 'time' ? (
+            <span className="flex flex-col items-center justify-center gap-1.5 rounded-[24px] bg-white px-5 py-4 text-center shadow-[0_14px_28px_rgba(25,28,29,0.12)]" aria-hidden="true">
+              <span className="text-4xl leading-none">{'\u23F1\uFE0F'}</span>
+              <span className="font-['Google Sans',sans-serif] text-sm font-medium leading-5 text-[#191c1d]">Время</span>
+            </span>
+          ) : item.label === 'ux' ? (
+            <span className="flex flex-col items-center justify-center gap-1 rounded-[24px] bg-white px-5 py-4 text-center shadow-[0_14px_28px_rgba(25,28,29,0.1)]" aria-hidden="true">
+              <span className="text-5xl leading-none">{'\u{1F92F}'}</span>
+              <span className="font-['Google Sans',sans-serif] text-sm font-medium leading-5 text-[#191c1d]">UX</span>
+            </span>
+          ) : (
+            <div className="flex h-14 min-w-24 items-center justify-center rounded-2xl bg-white px-4 font-['Google Sans',sans-serif] text-sm font-medium leading-5 text-[#191c1d] shadow-[0_14px_28px_rgba(25,28,29,0.12)]">
+              {item.label}
+            </div>
+          )}
+        </div>
+      ))}
+      <style>{`
+        .routes-problem-orbit-item {
+          will-change: left, top, transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .routes-problem-orbit-item {
+            will-change: auto;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function RoutesOrbitEmoji({ emoji, label }: { emoji: string; label: string }) {
+  return (
+    <span className="flex flex-col items-center justify-center gap-1.5 rounded-[24px] bg-white px-5 py-4 text-center shadow-[0_14px_28px_rgba(25,28,29,0.12)]" aria-hidden="true">
+      <span className="text-4xl leading-none">{emoji}</span>
+      <span className="font-['Google Sans',sans-serif] text-sm font-medium leading-5 text-[#191c1d]">{label}</span>
+    </span>
+  );
+}
+
+function RoutesContextCard({
+  title,
+  children,
+  preview,
+  previewPosition = 'left',
+}: {
+  title: string;
+  children: React.ReactNode;
+  preview?: React.ReactNode;
+  previewPosition?: 'left' | 'right';
+}) {
+  if (preview) {
+    return (
+      <article className="flex min-w-0 flex-col gap-10 py-8 text-[#191c1d] md:gap-14 md:py-12">
+        <div className="text-center">
+          <h2 className="font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+            {formatText(title)}
+          </h2>
+        </div>
+        <div className="mx-auto grid min-w-0 gap-9 md:w-[66%] md:grid-cols-2 md:items-start md:gap-6 lg:gap-8">
+          <div className={`min-w-0 ${previewPosition === 'right' ? 'md:order-2' : ''}`}>
+            {preview}
+          </div>
+          <div className={`grid min-w-0 gap-5 md:grid-cols-1 md:items-start ${previewPosition === 'right' ? 'md:order-1' : ''}`}>
+            <div className="contents [&>*]:rounded-[28px] [&>*]:bg-[#f3f4f4] [&>*]:p-5 md:[&>*]:p-6">
+              {children}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article className="flex min-w-0 flex-col gap-4 text-[#191c1d]">
+      <div className="flex items-start gap-3">
+        <CaseBlockIcon title={title} />
+        <h2 className="font-['Google Sans',sans-serif] text-2xl font-medium leading-[30px] tracking-[0]">
+          {formatText(title)}
+        </h2>
+      </div>
+      <div className="flex flex-col gap-3">
+        {children}
+      </div>
+    </article>
+  );
+}
+
+function RoutesProblemSection() {
+  return (
+    <article className="flex min-w-0 flex-col gap-10 py-8 text-[#191c1d] md:gap-14 md:py-12">
+      <div className="text-center">
+        <h2 className="font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Проблема')}
+        </h2>
+      </div>
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-8">
+        <RoutesProblemOrbitAnimation />
+        <div className="grid min-w-0 items-stretch gap-5 md:grid-cols-3 md:gap-6">
+          <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+            <RoutesTextPoint title="Данные не складывались в сценарий">
+              <CaseStudyText>Карта, заявки, статусы и пробег жили отдельно. Руководителям приходилось вручную сопоставлять данные и искать спорные участки маршрута.</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+          <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+            <RoutesTextPoint title="Один экран закрывал разные задачи">
+              <CaseStudyText>Анализ маршрута и массовая проверка поездок смешивались в одном интерфейсе. Из-за этого сценарий был перегружен и требовал обучения.</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+          <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+            <RoutesTextPoint title="Внешняя платформа">
+              <CaseStudyText>Геозоны формировались во внешней платформе, от которой команда уже отказывалась.</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function RoutesTextPoint({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-[26px] tracking-[0] text-[#191c1d]">
+        {formatText(title)}
+      </h3>
+      <div className="flex flex-col gap-3">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function RoutesDecisionBlock({
+  title,
+  children,
+  media,
+  reverse = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  media: React.ReactNode;
+  reverse?: boolean;
+}) {
+  return (
+    <section className="grid gap-5 rounded-[28px] bg-white text-[#191c1d] md:grid-cols-2 md:items-start md:gap-8">
+      <div className={`flex flex-col gap-3 md:self-start ${reverse ? 'md:order-2' : ''}`}>
+        <div className="flex items-start gap-3">
+          <CaseBlockIcon title={title} />
+          <CaseDecisionTitle>{title}</CaseDecisionTitle>
+        </div>
+        <div className="flex flex-col gap-3">
+          {children}
+        </div>
+      </div>
+      <div className={reverse ? 'md:order-1' : ''}>
+        {media}
+      </div>
+    </section>
+  );
+}
+
+function RoutesStoryVisual({
+  src,
+  label,
+}: {
+  src: string;
+  label: string;
+}) {
+  return (
+    <div className="relative isolate">
+      <div className="routes-story-visual-card relative overflow-hidden rounded-[32px]">
+        <RoutesMedia src={src} label={label} />
+      </div>
+    </div>
+  );
+}
+
+function RoutesStorySection({
+  eyebrow,
+  title,
+  description,
+  src,
+  label,
+  visualPosition = 'right',
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  src: string;
+  label: string;
+  visualPosition?: 'left' | 'right';
+}) {
+  const visualIsLeft = visualPosition === 'left';
+
+  return (
+    <section className="relative isolate overflow-hidden py-8 text-[#191c1d] md:py-14">
+      <div className="grid gap-7 md:grid-cols-3 md:items-start md:gap-8">
+        <div className={`md:col-span-2 ${visualIsLeft ? 'md:order-1' : 'md:order-2'}`}>
+          <RoutesStoryVisual src={src} label={label} />
+        </div>
+        <div className={`flex flex-col items-start gap-3 md:self-start ${visualIsLeft ? 'md:order-2' : 'md:order-1'}`}>
+          <TagBadge tone="web">{eyebrow}</TagBadge>
+          <div className="flex flex-col items-start gap-3 rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+            <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-[26px] tracking-[0] text-[#191c1d]">
+              {formatText(title)}
+            </h3>
+            <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#3c4043]">
+              {formatText(description)}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AdminStorySection({
+  eyebrow,
+  title,
+  description,
+  media,
+  visualPosition = 'right',
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  media: React.ReactNode;
+  visualPosition?: 'left' | 'right';
+}) {
+  const visualIsLeft = visualPosition === 'left';
+
+  return (
+    <section className="relative isolate overflow-hidden py-8 text-[#191c1d] md:py-14">
+      <div className="grid gap-7 md:grid-cols-3 md:items-start md:gap-8">
+        <div className={`md:col-span-2 ${visualIsLeft ? 'md:order-1' : 'md:order-2'}`}>
+          <div className="routes-story-visual-card relative overflow-hidden rounded-[32px]">
+            {media}
+          </div>
+        </div>
+        <div className={`flex flex-col items-start gap-3 md:self-start ${visualIsLeft ? 'md:order-2' : 'md:order-1'}`}>
+          <TagBadge tone="web">{eyebrow}</TagBadge>
+          <div className="flex flex-col items-start gap-3 rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+            <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-[26px] tracking-[0] text-[#191c1d]">
+              {formatText(title)}
+            </h3>
+            <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#3c4043]">
+              {formatText(description)}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RoutesSolutionsBackground() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+      <div className="routes-solutions-blob absolute left-0 top-0 h-56 w-56 rounded-full blur-2xl md:h-72 md:w-72" />
+      <div className="routes-solutions-blob routes-solutions-blob-delayed absolute left-0 top-0 h-56 w-56 rounded-full blur-2xl md:h-72 md:w-72" />
+      <style>{`
+        .routes-solutions-blob {
+          --blob-main: rgba(147, 197, 253, 0.58);
+          --blob-side: rgba(52, 168, 83, 0.28);
+          background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.92) 0%, var(--blob-main) 34%, var(--blob-side) 68%, rgba(52, 168, 83, 0) 100%);
+          animation: routes-solutions-blob-path 34s ease-in-out infinite;
+          opacity: 0;
+          transition: margin-left 1.8s ease, margin-top 1.8s ease;
+          will-change: transform;
+        }
+
+        .routes-solutions-blob-delayed {
+          animation-delay: 17s;
+        }
+
+        .routes-case-flow:hover .routes-solutions-blob {
+          margin-left: 42px;
+          margin-top: -24px;
+        }
+
+        .routes-story-visual-card::after {
+          content: '';
+          position: absolute;
+          inset: -18%;
+          pointer-events: none;
+          background: radial-gradient(circle, rgba(96, 165, 250, 0.22) 0%, rgba(45, 212, 191, 0.14) 34%, rgba(96, 165, 250, 0) 66%);
+          opacity: 0;
+          transform: scale(0.7);
+          animation: routes-story-visual-wave 17s ease-in-out infinite;
+        }
+
+        @keyframes routes-story-visual-wave {
+          0%, 54%, 100% {
+            opacity: 0;
+            transform: scale(0.7);
+          }
+          62% {
+            opacity: 0.34;
+          }
+          82% {
+            opacity: 0;
+            transform: scale(1.35);
+          }
+        }
+
+        @keyframes routes-solutions-blob-path {
+          0% {
+            --blob-main: rgba(147, 197, 253, 0.58);
+            --blob-side: rgba(52, 168, 83, 0.28);
+            left: 8%;
+            top: 2%;
+            transform: translate3d(-50%, -50%, 0) scale(0.72);
+            opacity: 0;
+          }
+          8% {
+            opacity: 0.34;
+          }
+          18% {
+            --blob-main: rgba(96, 165, 250, 0.62);
+            --blob-side: rgba(45, 212, 191, 0.3);
+            left: 18%;
+            top: 14%;
+            transform: translate3d(-50%, -50%, 0) scale(1);
+          }
+          42% {
+            --blob-main: rgba(56, 189, 248, 0.54);
+            --blob-side: rgba(134, 239, 172, 0.3);
+            left: 78%;
+            top: 34%;
+            transform: translate3d(-50%, -50%, 0) scale(0.92);
+          }
+          68% {
+            --blob-main: rgba(45, 212, 191, 0.48);
+            --blob-side: rgba(59, 130, 246, 0.28);
+            left: 18%;
+            top: 58%;
+            transform: translate3d(-50%, -50%, 0) scale(1.04);
+          }
+          88% {
+            --blob-main: rgba(96, 165, 250, 0.58);
+            --blob-side: rgba(52, 168, 83, 0.26);
+            left: 72%;
+            top: 78%;
+            transform: translate3d(-50%, -50%, 0) scale(0.94);
+          }
+          92% {
+            opacity: 0.34;
+          }
+          100% {
+            --blob-main: rgba(147, 197, 253, 0.58);
+            --blob-side: rgba(52, 168, 83, 0.28);
+            left: 82%;
+            top: 102%;
+            transform: translate3d(-50%, -50%, 0) scale(0.78);
+            opacity: 0;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .routes-solutions-blob {
+            opacity: 0.2;
+            transform: scale(0.72);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .routes-solutions-blob {
+            animation: none;
+            left: 50%;
+            top: 40%;
+            transform: translate3d(-50%, -50%, 0) scale(0.88);
+            opacity: 0.2;
+          }
+
+          .routes-solutions-blob-delayed {
+            display: none;
+          }
+
+          .routes-story-visual-card::after {
+            display: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function CaseDecisionCarousel({ children }: { children: React.ReactNode }) {
+  const slides = Children.toArray(children);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const showPrevious = () => {
+    setActiveSlide((current) => (current - 1 + slides.length) % slides.length);
+  };
+
+  const showNext = () => {
+    setActiveSlide((current) => (current + 1) % slides.length);
+  };
+
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <div className="overflow-hidden">
+        <div
+          className="flex transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+        >
+          {slides.map((slide, index) => (
+            <div key={index} className="w-full shrink-0">
+              {slide}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={showPrevious}
+          className="flex size-11 items-center justify-center rounded-full border border-black/10 bg-white text-[#191c1d] transition-colors hover:bg-black/[0.04]"
+          aria-label="Предыдущее решение"
+        >
+          <ChevronLeft className="size-5" />
+        </button>
+        <div className="flex items-center gap-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => setActiveSlide(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                index === activeSlide ? 'w-7 bg-[#191c1d]' : 'w-2.5 bg-black/15 hover:bg-black/30'
+              }`}
+              aria-label={`Показать решение ${index + 1}`}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={showNext}
+          className="flex size-11 items-center justify-center rounded-full border border-black/10 bg-white text-[#191c1d] transition-colors hover:bg-black/[0.04]"
+          aria-label="Следующее решение"
+        >
+          <ChevronRight className="size-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CaseFooterActions({
   adjacentCaseLabel,
   onAdjacentCase,
+  className = '',
 }: {
   adjacentCaseLabel: string;
   onAdjacentCase: () => void;
+  className?: string;
 }) {
   return (
-    <section className="mt-8 flex flex-col gap-6 rounded-[28px] bg-[#e9f1ff] p-6 text-[#191c1d] md:mt-12 md:flex-row md:items-center md:justify-between md:p-8">
-      <div className="flex max-w-[560px] flex-col gap-2">
-        <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+    <section className={`mt-8 flex flex-col items-center justify-center gap-6 rounded-[28px] bg-[#e9f1ff] p-6 text-center text-[#191c1d] md:mt-12 md:p-8 ${className}`}>
+      <div className="flex max-w-[560px] flex-col items-center gap-2">
+        <h2 className="font-['Google Sans',sans-serif] text-2xl font-medium leading-[30px] tracking-[0]">
           {formatText('Продолжить или связаться')}
         </h2>
-        <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] text-[#5f6368] md:text-xl md:leading-[26px]">
+        <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#5f6368]">
           {formatText('Можно посмотреть соседний кейс или сразу написать мне в Telegram')}
         </p>
       </div>
-      <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:items-center md:justify-end">
+      <div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row md:w-auto">
         <button
           type="button"
           onClick={onAdjacentCase}
@@ -602,7 +1558,7 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
 
   return (
     <>
-      <div ref={slideshowRef} className="w-full rounded-[28px] bg-[#fafbec] p-4 md:p-12 lg:p-16">
+      <div ref={slideshowRef} className="w-full">
         <div className="relative aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
           <button
             type="button"
@@ -749,7 +1705,7 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
 
 function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
   return (
-    <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText('Управление релизами мобильного приложения')}
@@ -765,46 +1721,198 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
 
       <CaseStudyImageBlock alt="Управление релизами мобильного приложения" />
 
-      <CaseStudySection title="Что за продукт">
-        <CaseStudyText>Изначально админ-панель создавалась как альтернатива системе удалённого управления мобильными устройствами (MDM)</CaseStudyText>
-        <CaseStudyText>Через неё команда могла настраивать белые списки приложений и блокировать доступ для отдельных устройств</CaseStudyText>
-        <CaseStudyText>Со временем панель превратилась во внутренний рабочий инструмент команды разработки. В неё начали переносить операции, которые раньше выполнялись напрямую в базе данных, чтобы сделать их быстрее, безопаснее и доступнее без ручной работы с данными. Продукт развивается параллельно с основными бизнес-задачами и помогает команде разработки решать собственные ежедневные задачи</CaseStudyText>
-      </CaseStudySection>
+      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
+        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+          <RoutesTextPoint title="Что за продукт">
+            <CaseStudyText>Изначально админ-панель создавалась как альтернатива системе удалённого управления мобильными устройствами (MDM)</CaseStudyText>
+            <CaseStudyText>Через неё команда могла настраивать белые списки приложений и блокировать доступ для отдельных устройств</CaseStudyText>
+            <CaseStudyText>Со временем панель превратилась во внутренний рабочий инструмент команды разработки. В неё начали переносить операции, которые раньше выполнялись напрямую в базе данных, чтобы сделать их быстрее, безопаснее и доступнее без ручной работы с данными. Продукт развивается параллельно с основными бизнес-задачами и помогает команде разработки решать собственные ежедневные задачи</CaseStudyText>
+          </RoutesTextPoint>
+        </div>
+        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+          <RoutesTextPoint title="Проблема">
+            <CaseStudyText>Для пилотных проектов и бета-тестирования команде периодически нужны отдельные сборки мобильного приложения с новым или ограниченным функционалом. Пользователи не могут самостоятельно переключаться между версиями, поэтому каждую дополнительную сборку приходится создавать и распространять вручную</CaseStudyText>
+            <CaseStudyText>Пока таких релизов было немного, процесс оставался управляемым. Но с ростом числа пилотов стало сложно отслеживать, какая сборка предназначена для конкретной группы пользователей, какой функционал в неё входит и какая версия сейчас актуальна. Команде не хватало единой системы для управления параллельными релизами</CaseStudyText>
+          </RoutesTextPoint>
+        </div>
+      </section>
 
-      <CaseStudySection title="Проблема">
-        <CaseStudyText>Для пилотных проектов и бета-тестирования команде периодически нужны отдельные сборки мобильного приложения с новым или ограниченным функционалом. Пользователи не могут самостоятельно переключаться между версиями, поэтому каждую дополнительную сборку приходится создавать и распространять вручную</CaseStudyText>
-        <CaseStudyText>Пока таких релизов было немного, процесс оставался управляемым. Но с ростом числа пилотов стало сложно отслеживать, какая сборка предназначена для конкретной группы пользователей, какой функционал в неё входит и какая версия сейчас актуальна. Команде не хватало единой системы для управления параллельными релизами</CaseStudyText>
-      </CaseStudySection>
+      <section className="relative flex w-full flex-col gap-8 overflow-hidden rounded-[36px] bg-[radial-gradient(circle_at_10%_8%,rgba(219,234,254,0.95),transparent_34%),radial-gradient(circle_at_88%_42%,rgba(220,252,231,0.82),transparent_36%),linear-gradient(135deg,#fbfdff_0%,#f5f8ff_48%,#f8fbf7_100%)] px-4 py-10 md:gap-12 md:px-8 md:py-14">
+        <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Ключевые решения')}
+        </h2>
 
-      <CaseStudySection title="Мой вклад">
-        <CaseStudyText>Я проектировал интерфейс админ-панели с самого начала. В этой задаче проработал ключевые пользовательские сценарии и согласовал решение с командой</CaseStudyText>
-        <CaseStudyText>Вместо обычной таблицы я предложил древовидную структуру: ветки отображаются на верхнем уровне, а связанные с ними версии — внутри. Такой подход позволяет в одном интерфейсе создавать ветки, добавлять версии и управлять ими, сохраняя понятную связь между релизами</CaseStudyText>
-      </CaseStudySection>
+        <AdminStorySection
+          eyebrow="Решение 1"
+          title="Иерархия веток и версий"
+          description="Древовидная структура показывает ветки на верхнем уровне, а связанные версии раскрывает внутри. Так команда быстрее понимает, к какой ветке относится каждая сборка"
+          media={<CaseStudySlideshow slides={adminTreeSlides} label="Древовидная таблица веток и версий" />}
+          visualPosition="left"
+        />
 
-      <CaseStudySection title="Ключевые решения">
-        <CaseDecisionTitle>1. Иерархия веток и версий</CaseDecisionTitle>
-        <CaseStudySlideshow slides={adminTreeSlides} label="Древовидная таблица веток и версий" />
-        <CaseStudyText>Ветки и версии связаны между собой: одна ветка может содержать несколько последовательных сборок. В обычной таблице эта связь была бы неочевидна, особенно при большом количестве параллельных релизов</CaseStudyText>
-        <CaseStudyText>Я предложил древовидную структуру, в которой ветки находятся на верхнем уровне, а версии раскрываются внутри них. Так пользователь сразу видит иерархию релизов и быстрее понимает, к какой ветке относится каждая сборка</CaseStudyText>
+        <AdminStorySection
+          eyebrow="Решение 2"
+          title="Управление ветками и версиями в одном интерфейсе"
+          description="Создание веток, добавление версий и управление ими собраны в одном рабочем пространстве, чтобы пользователь не терял контекст выбранного релиза"
+          media={<CaseStudySlideshow slides={adminEditSlides} label="Управление ветками и версиями" />}
+          visualPosition="right"
+        />
 
-        <CaseDecisionTitle>2. Управление ветками и версиями в одном интерфейсе</CaseDecisionTitle>
-        <CaseStudySlideshow slides={adminEditSlides} label="Управление ветками и версиями" />
-        <CaseStudyText>Раньше работа с отдельными сборками требовала ручных действий и не давала команде единой картины происходящего</CaseStudyText>
-        <CaseStudyText>Я объединил создание веток, добавление версий и управление ими в одном рабочем пространстве. Пользователю не нужно переключаться между разными разделами или терять контекст выбранного релиза</CaseStudyText>
+        <AdminStorySection
+          eyebrow="Решение 3"
+          title="Отдельная сущность для групп пользователей"
+          description="Группы пользователей вынесены в отдельную вкладку и стали переиспользуемыми. Одну группу бета-тестеров можно назначать разным веткам без повторного заполнения списка"
+          media={<CaseStudySlideshow slides={adminGroupSlides} label="Группы пользователей" />}
+          visualPosition="left"
+        />
+      </section>
 
-        <CaseDecisionTitle>3. Отдельная сущность для групп пользователей</CaseDecisionTitle>
-        <CaseStudySlideshow slides={adminGroupSlides} label="Группы пользователей" />
-        <CaseStudyText>Изначально список пользователей предполагалось хранить внутри каждой ветки. Это означало, что при создании нового пилота или бета-релиза команде пришлось бы заново собирать одну и ту же группу тестировщиков</CaseStudyText>
-        <CaseStudyText>Я предложил вынести группы пользователей в отдельную вкладку и сделать их переиспользуемой сущностью. Системный аналитик поддержал идею, и в результате одну группу бета-тестеров можно назначать разным веткам без повторного заполнения списка</CaseStudyText>
-        <CaseStudyText>Такое решение сокращает ручную работу, снижает риск ошибок и упрощает управление параллельными релизами</CaseStudyText>
-      </CaseStudySection>
+      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
+        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+          <RoutesTextPoint title="Мой вклад">
+            <CaseStudyText>Я проектировал интерфейс админ-панели с самого начала. В этой задаче проработал ключевые пользовательские сценарии и согласовал решение с командой</CaseStudyText>
+            <CaseStudyText>Вместо обычной таблицы я предложил древовидную структуру: ветки отображаются на верхнем уровне, а связанные с ними версии — внутри. Такой подход позволяет в одном интерфейсе создавать ветки, добавлять версии и управлять ими, сохраняя понятную связь между релизами</CaseStudyText>
+          </RoutesTextPoint>
+        </div>
+        <div className="routes-pride-card relative h-full overflow-hidden rounded-[28px] p-5 md:p-6">
+          <div className="relative z-10">
+            <RoutesTextPoint title="Чем я горжусь">
+              <CaseStudyText>В этой задаче было важно снизить риск ошибок: действия администратора могут затронуть большое количество пользователей. Несмотря на высокий уровень экспертизы аудитории, интерфейс не должен требовать лишних усилий и перегружать пользователя деталями</CaseStudyText>
+              <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+          <style>{`
+            .routes-pride-card {
+              background:
+                radial-gradient(circle at 15% 20%, rgba(219, 234, 254, 0.98), transparent 36%),
+                radial-gradient(circle at 82% 78%, rgba(220, 252, 231, 0.9), transparent 38%),
+                linear-gradient(120deg, #f3f4f4, #eef6ff 44%, #f4fbf5);
+              background-size: 140% 140%;
+              animation: routes-pride-gradient 12s ease-in-out infinite alternate;
+            }
 
-      <CaseStudySection title="Чем я горжусь">
-        <CaseStudyText>В этой задаче было важно снизить риск ошибок: действия администратора могут затронуть большое количество пользователей. Несмотря на высокий уровень экспертизы аудитории, интерфейс не должен требовать лишних усилий и перегружать пользователя деталями</CaseStudyText>
-        <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
-      </CaseStudySection>
+            @keyframes routes-pride-gradient {
+              from {
+                background-position: 0% 30%;
+              }
+              to {
+                background-position: 100% 70%;
+              }
+            }
 
-      <CaseFooterActions adjacentCaseLabel="Кейс про маршруты" onAdjacentCase={onNextCase} />
+            @media (prefers-reduced-motion: reduce) {
+              .routes-pride-card {
+                animation: none;
+              }
+            }
+          `}</style>
+        </div>
+      </section>
+
+      <CaseFooterActions
+        adjacentCaseLabel="Продолжить"
+        onAdjacentCase={onNextCase}
+        className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
+      />
+    </div>
+  );
+}
+
+function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
+  return (
+    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+      <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
+        <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Фитнес-приложение: счётчик отжиманий')}
+        </h1>
+        <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
+          {formatText('Pet project для Android, который считает отжимания через камеру и помогает держать ежедневный челлендж без платных подписок')}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <TagBadge tone="mobile">Mobile</TagBadge>
+          <TagBadge tone="ai">AI</TagBadge>
+          <TagBadge tone="neutral">Pet project</TagBadge>
+        </div>
+      </header>
+
+      <section className="grid items-center gap-6 rounded-[36px] bg-[radial-gradient(circle_at_18%_16%,rgba(232,240,255,0.95),transparent_36%),radial-gradient(circle_at_82%_76%,rgba(220,252,231,0.9),transparent_38%),linear-gradient(135deg,#fbfdff_0%,#f7faf7_100%)] p-5 md:grid-cols-[0.9fr_1.1fr] md:p-8 lg:p-12">
+        <div className="flex justify-center">
+          <PortfolioVideo
+            className="aspect-[9/16] max-h-[720px] w-full max-w-[340px] rounded-[30px] shadow-[0_18px_52px_rgba(25,28,29,0.18)]"
+            src={caseExperimentVideo}
+            label="Фитнес-приложение счётчик отжиманий"
+            preload="metadata"
+          />
+        </div>
+        <div className="flex flex-col gap-5 text-[#191c1d]">
+          <RoutesTextPoint title="Идея проекта">
+            <CaseStudyText>Я хотел пройти челлендж и отжиматься каждый день в течение года, но не хотел платить за подписки в приложениях, которые закрывают базовый подсчёт повторений</CaseStudyText>
+            <CaseStudyText>Поэтому собрал собственный Android-прототип в Codex: приложение использует камеру, считает отжимания и помогает держать ритм тренировки</CaseStudyText>
+          </RoutesTextPoint>
+          <div className="flex flex-wrap gap-2">
+            <TagBadge tone="web">Camera</TagBadge>
+            <TagBadge tone="b2b">Voice</TagBadge>
+            <TagBadge tone="data">Fitness data</TagBadge>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
+        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+          <RoutesTextPoint title="Что за продукт">
+            <CaseStudyText>Это мобильное приложение для домашней тренировки: пользователь ставит телефон, включает камеру и выполняет подход, а приложение считает повторения и помогает не сбиться</CaseStudyText>
+          </RoutesTextPoint>
+        </div>
+        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+          <RoutesTextPoint title="Проблема">
+            <CaseStudyText>В похожих приложениях простой сценарий часто спрятан за подпиской, а работа с камерой бывает неудобной: нужно долго подбирать положение телефона и постоянно смотреть на экран</CaseStudyText>
+          </RoutesTextPoint>
+        </div>
+      </section>
+
+      <section className="relative flex w-full flex-col gap-8 overflow-hidden rounded-[36px] bg-[radial-gradient(circle_at_12%_18%,rgba(219,234,254,0.95),transparent_36%),radial-gradient(circle_at_88%_76%,rgba(220,252,231,0.82),transparent_38%),linear-gradient(135deg,#fbfdff_0%,#f6f9ff_48%,#f8fbf7_100%)] px-4 py-10 md:gap-10 md:px-8 md:py-14">
+        <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Ключевые решения')}
+        </h2>
+        <div className="grid gap-5 md:grid-cols-3">
+          <div className="rounded-[28px] bg-white/80 p-5 md:p-6">
+            <RoutesTextPoint title="Подсчёт через камеру">
+              <CaseStudyText>Основной сценарий строится вокруг камеры: пользователь видит себя в кадре, а приложение считывает движение и считает повторения без ручного ввода</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+          <div className="rounded-[28px] bg-white/80 p-5 md:p-6">
+            <RoutesTextPoint title="Голосовые подсказки">
+              <CaseStudyText>Чтобы не смотреть на экран во время подхода, я заложил голосовые подсказки: приложение может сообщать счёт, давать обратную связь и помогать держать темп</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+          <div className="rounded-[28px] bg-white/80 p-5 md:p-6">
+            <RoutesTextPoint title="Связь с браслетом">
+              <CaseStudyText>Интеграция с фитнес-браслетом задумана как способ дополнять камеру данными о тренировке и собирать более полную картину прогресса</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
+        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+          <RoutesTextPoint title="Мой вклад">
+            <CaseStudyText>Я сформулировал сценарий, собрал Android-прототип в Codex, продумал логику тренировки, экран камеры, голосовую поддержку и идею связки с фитнес-браслетом</CaseStudyText>
+          </RoutesTextPoint>
+        </div>
+        <div className="routes-pride-card relative h-full overflow-hidden rounded-[28px] p-5 md:p-6">
+          <div className="relative z-10">
+            <RoutesTextPoint title="Что получилось">
+              <CaseStudyText>Проект помог быстро проверить идею личного фитнес-инструмента: без подписки, с понятным фокусом на ежедневный челлендж и с интерфейсом, который не мешает тренировке</CaseStudyText>
+            </RoutesTextPoint>
+          </div>
+        </div>
+      </section>
+
+      <CaseFooterActions
+        adjacentCaseLabel="Продолжить"
+        onAdjacentCase={onAdjacentCase}
+        className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
+      />
     </div>
   );
 }
@@ -832,15 +1940,20 @@ function RoutesContent({
         </div>
       </div>
 
-      <CaseStudyVideoBlock src={caseRoutesCoverVideo} label="Админ-панель для управления маршрутами" />
+      <div className="overflow-hidden rounded-[28px]">
+        <RoutesMedia
+          src={caseRoutesCoverVideo}
+          label="Админ-панель для управления маршрутами"
+        />
+      </div>
 
-      <div className="flex flex-col gap-3 rounded-[28px] bg-[#e9f1ff] p-5 text-[#191c1d] md:flex-row md:items-center md:justify-between md:p-6">
-        <div className="flex max-w-[680px] flex-col gap-1">
+      <div className="flex w-full flex-col gap-5 rounded-[28px] bg-[#e9f1ff] p-5 text-[#191c1d] md:flex-row md:items-center md:justify-between md:p-6">
+        <div className="flex max-w-[760px] flex-col gap-1">
           <h2 className="font-['Google Sans',sans-serif] text-[24px] font-medium leading-[30px] tracking-[0]">
-            {formatText('Интерактивный прототип маршрута')}
+            {formatText('Посмотреть маршрут в интерактивном прототипе')}
           </h2>
           <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#5f6368]">
-            {formatParagraph('Можно посмотреть, как машина движется по маршруту и как карта помогает считывать поездку в динамике')}
+            {formatText('Можно выбрать поездку, посмотреть маршрут на карте, открыть таблицу заявок и проверить спорные участки так, как это делает руководитель или диспетчер')}
           </p>
         </div>
         <button
@@ -848,48 +1961,128 @@ function RoutesContent({
           onClick={onOpenPrototype}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#191c1d] px-5 font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
         >
-          Открыть прототип
+          К прототипу
           <ArrowRight className="size-5" />
         </button>
       </div>
 
-      <CaseStudySection title="Что за продукт">
-        <CaseStudyText>В компании есть разъездные сотрудники, которые обслуживают заявки на выезде и используют личный транспорт. Компания компенсирует им расходы по пробегу за месяц</CaseStudyText>
-        <CaseStudyText>Для этого используется система, которая автоматически фиксирует поездки и считает пробег. Руководители и диспетчеры проверяют данные, подтверждают компенсации и разбирают спорные ситуации, когда нужно детальнее посмотреть маршрут сотрудника</CaseStudyText>
-      </CaseStudySection>
+      <section className="routes-case-flow relative isolate w-full overflow-hidden text-[#191c1d]">
+        <RoutesSolutionsBackground />
+        <div className="relative z-10 flex flex-col gap-8 md:gap-12">
+          <RoutesContextCard
+            title="Что за продукт"
+            preview={<RoutesContextVisualCard variant="product" />}
+            previewPosition="left"
+          >
+            <RoutesTextPoint title="Разъездные сотрудники">
+              <CaseStudyText>В компании есть разъездные сотрудники, которые обслуживают заявки на выезде и используют личный транспорт. Компания компенсирует им расходы по пробегу за месяц</CaseStudyText>
+            </RoutesTextPoint>
+            <RoutesTextPoint title="Контроль поездок">
+              <CaseStudyText>Для этого используется система, которая автоматически фиксирует поездки и считает пробег. Руководители и диспетчеры проверяют данные, подтверждают компенсации и разбирают спорные ситуации, когда нужно детальнее посмотреть маршрут сотрудника</CaseStudyText>
+            </RoutesTextPoint>
+          </RoutesContextCard>
+          <RoutesProblemSection />
 
-      <CaseStudySection title="Проблема">
-        <CaseStudyText>Старая legacy-система не давала наглядно анализировать маршруты сотрудников и зависела от Google Maps API, который не подходил компании по требованиям лицензирования и надежности. Нужно было с нуля спроектировать новый интерфейс на Яндекс Картах, где карта, таблицы и данные о заявках помогают быстро проверять пробеги и разбирать спорные ситуации</CaseStudyText>
-      </CaseStudySection>
+          <div className="relative flex w-full flex-col gap-8 overflow-hidden rounded-[36px] bg-[radial-gradient(circle_at_10%_8%,rgba(219,234,254,0.95),transparent_34%),radial-gradient(circle_at_88%_42%,rgba(220,252,231,0.82),transparent_36%),linear-gradient(135deg,#fbfdff_0%,#f5f8ff_48%,#f8fbf7_100%)] px-4 py-10 md:gap-12 md:px-8 md:py-14">
+            <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+              {formatText('Ключевые решения')}
+            </h2>
 
-      <CaseStudySection title="Мой вклад">
-        <CaseStudyText>Я подключился к проекту на этапе, когда старую систему решили полностью заменить. Нужно было не просто перерисовать интерфейс, а заново собрать логику продукта: как руководитель проверяет пробег, где видит маршрут, как сопоставляет поездки с заявками и принимает решение по спорным участкам</CaseStudyText>
-        <CaseStudyText>Чтобы не утонуть в объеме данных, я начал с информационной архитектуры: раскладывал каждый раздел на сценарии, сущности и данные, а потом вместе с командой мы отсекали лишнее. Так у всех появилось общее понимание, какой продукт мы строим и что действительно нужно пользователю</CaseStudyText>
-        <CaseStudyText>Главным решением стала связка карты и таблицы. Карта дает быстрый обзор смены и перемещений сотрудника, а таблица помогает спокойно разобрать детали: заявки, статусы и спорные участки маршрута. Параллельно я изучал возможности API Яндекс Карт, чтобы предлагать не абстрактные идеи, а решения, которые команда сможет реализовать</CaseStudyText>
-      </CaseStudySection>
+            <RoutesStorySection
+              eyebrow="Решение 1"
+              title="Карта и таблица в одном сценарии"
+              description="Карта помогает быстро увидеть маршрут за смену, а таблица — проверить заявки, статусы и спорные участки без потери контекста"
+              src={caseRoutesPrototypeDemoVideo}
+              label="Карта и таблица в одном сценарии"
+              visualPosition="left"
+            />
 
-      <CaseStudySection title="Ключевые решения">
-        <CaseDecisionTitle>1. Связал карту и таблицу в одном рабочем сценарии</CaseDecisionTitle>
-        <CaseStudyVideoBlock src={caseRoutesPrototypeDemoVideo} label="Демонстрация прототипа маршрутов" />
-        <CaseStudyText>Проверка маршрута требует одновременно видеть общую картину и детали. Поэтому экран разделён на две зоны: карта показывает перемещения сотрудника за смену, а таблица помогает разобрать заявки, статусы, время и спорные участки</CaseStudyText>
-        <CaseStudyText>Так руководитель не переключается между разными источниками данных и быстрее понимает, где именно возникла проблема</CaseStudyText>
+            <RoutesStorySection
+              eyebrow="Решение 2"
+              title="Два режима под разные задачи"
+              description="Для разбора конкретного маршрута удобнее карта, а для поиска, фильтрации и массовой проверки — реестр"
+              src={caseRoutesPrototypeModesVideo}
+              label="Переключение режимов карта и реестр"
+              visualPosition="right"
+            />
 
-        <CaseDecisionTitle>2. Разделил сценарии через режимы «Карта» и «Реестр»</CaseDecisionTitle>
-        <CaseStudyVideoBlock src={caseRoutesPrototypeModesVideo} label="Демонстрация переключения режимов карты и реестра" />
-        <CaseStudyText>Не все задачи удобно решать на карте. Для анализа конкретного маршрута нужен визуальный режим, а для массовой проверки, поиска и фильтрации — табличный</CaseStudyText>
-        <CaseStudyText>Переключатель «Карта / Реестр» разделяет эти сценарии и не перегружает один экран лишними функциями. Пользователь выбирает режим под задачу, а не адаптируется к универсальному интерфейсу</CaseStudyText>
+            <RoutesStorySection
+              eyebrow="Решение 3"
+              title="Геозоны как рабочий инструмент"
+              description="Пользователь может включать нужные зоны, находить их через дерево и создавать новые прямо на карте"
+              src={caseRoutesPrototypeGeozonesVideo}
+              label="Геозоны как рабочий инструмент"
+              visualPosition="left"
+            />
+          </div>
 
-        <CaseDecisionTitle>3. Спроектировал работу с геозонами</CaseDecisionTitle>
-        <CaseStudyVideoBlock src={caseRoutesPrototypeGeozonesVideo} label="Демонстрация создания и редактирования геозон" />
-        <CaseStudyText>Геозоны нужны не только как технические данные, но и как рабочий инструмент для анализа маршрутов. Поэтому я вынес их в понятный сценарий: существующие зоны можно находить через дерево в фильтрах, а новые — создавать прямо на карте через рисование</CaseStudyText>
-        <CaseStudyText>Это помогает быстрее работать с объектами обслуживания и держать структуру зон понятной даже при большом объёме данных</CaseStudyText>
-      </CaseStudySection>
+          <section className="flex min-w-0 flex-col gap-6 py-8 text-[#191c1d] md:gap-8 md:py-12">
+            <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+              {formatText('Мой вклад')}
+            </h2>
+            <div className="grid items-stretch gap-5 md:grid-cols-3 md:gap-6">
+              <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+                <RoutesTextPoint title="Собрал продуктовую логику">
+                  <CaseStudyText>Я подключился к проекту на этапе, когда старую систему решили полностью заменить. Нужно было не просто перерисовать интерфейс, а заново собрать логику продукта: как руководитель проверяет пробег, где видит маршрут, как сопоставляет поездки с заявками и принимает решение по спорным участкам</CaseStudyText>
+                </RoutesTextPoint>
+              </div>
+              <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+                <RoutesTextPoint title="Разложил данные и сценарии">
+                  <CaseStudyText>Чтобы не утонуть в объеме данных, я начал с информационной архитектуры: раскладывал каждый раздел на сценарии, сущности и данные, а потом вместе с командой мы отсекали лишнее. Так у всех появилось общее понимание, какой продукт мы строим и что действительно нужно пользователю</CaseStudyText>
+                </RoutesTextPoint>
+              </div>
+              <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+                <RoutesTextPoint title="Связал карту и таблицу">
+                  <CaseStudyText>Главным решением стала связка карты и таблицы. Карта дает быстрый обзор смены и перемещений сотрудника, а таблица помогает спокойно разобрать детали: заявки, статусы и спорные участки маршрута. Параллельно я изучал возможности API Яндекс Карт, чтобы предлагать не абстрактные идеи, а решения, которые команда сможет реализовать</CaseStudyText>
+                </RoutesTextPoint>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
 
-      <CaseStudySection title="Чем я горжусь">
-        <CaseStudyText>Горжусь тем, что этот проект стал для меня точкой роста: я не просто рисовал интерфейс, а проектировал систему с нуля — с логикой, сценариями, ограничениями и реальными пользователями. Продукт работает в той структуре, которую мы заложили, и продолжает развиваться, а для меня это стало первым большим подтверждением ценности продуктового подхода</CaseStudyText>
-      </CaseStudySection>
+      <section className="flex min-w-0 flex-col gap-6 py-8 text-[#191c1d] md:gap-8 md:py-12">
+        <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Чем я горжусь')}
+        </h2>
+        <div className="routes-pride-card relative w-full overflow-hidden rounded-[28px] p-5 md:mx-auto md:w-1/3 md:p-6">
+          <div className="relative z-10 max-w-[820px]">
+            <CaseStudyText>Горжусь тем, что этот проект стал для меня точкой роста: я не просто рисовал интерфейс, а проектировал систему с нуля — с логикой, сценариями, ограничениями и реальными пользователями. Продукт работает в той структуре, которую мы заложили, и продолжает развиваться, а для меня это стало первым большим подтверждением ценности продуктового подхода</CaseStudyText>
+          </div>
+          <style>{`
+            .routes-pride-card {
+              background:
+                radial-gradient(circle at 15% 20%, rgba(219, 234, 254, 0.98), transparent 36%),
+                radial-gradient(circle at 82% 78%, rgba(220, 252, 231, 0.9), transparent 38%),
+                linear-gradient(120deg, #f3f4f4, #eef6ff 44%, #f4fbf5);
+              background-size: 140% 140%;
+              animation: routes-pride-gradient 12s ease-in-out infinite alternate;
+            }
 
-      <CaseFooterActions adjacentCaseLabel="Кейс про релизы" onAdjacentCase={onAdjacentCase} />
+            @keyframes routes-pride-gradient {
+              from {
+                background-position: 0% 30%;
+              }
+              to {
+                background-position: 100% 70%;
+              }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+              .routes-pride-card {
+                animation: none;
+              }
+            }
+          `}</style>
+        </div>
+      </section>
+
+      <CaseFooterActions
+        adjacentCaseLabel="Продолжить"
+        onAdjacentCase={onAdjacentCase}
+        className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
+      />
     </div>
   );
 }
+

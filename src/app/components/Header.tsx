@@ -36,13 +36,15 @@ function Left({ showLogo }: { showLogo: boolean }) {
   );
 }
 
-function Buttons() {
+function Buttons({ isScrolled }: { isScrolled: boolean }) {
   return (
     <div className="flex w-full shrink-0 items-center justify-center gap-2 md:w-auto" data-name="Buttons">
       <a
         href="/cv.pdf"
         download="Sergey-Toporkov-CV.pdf"
-        className="flex h-14 min-h-10 min-w-20 flex-1 shrink-0 items-center justify-center rounded-full border border-[#79747e] px-6 py-4 font-['Google Sans',sans-serif] text-base font-medium leading-6 tracking-[0.1px] text-black transition-colors hover:bg-[#f5f5f5] md:flex-none"
+        className={`flex h-14 min-h-10 min-w-20 flex-1 shrink-0 items-center justify-center rounded-full border bg-white px-6 py-4 font-['Google Sans',sans-serif] text-base font-medium leading-6 tracking-[0.1px] text-black transition-colors hover:bg-[#f5f5f5] md:flex-none ${
+          isScrolled ? 'border-[#79747e]' : 'border-transparent'
+        }`}
       >
         Скачать CV
       </a>
@@ -58,10 +60,10 @@ function Buttons() {
   );
 }
 
-function Right() {
+function Right({ isScrolled }: { isScrolled: boolean }) {
   return (
     <div className="flex w-full min-w-px items-center justify-center md:flex-[1_0_0] md:justify-end" data-name="right">
-      <Buttons />
+      <Buttons isScrolled={isScrolled} />
     </div>
   );
 }
@@ -83,16 +85,16 @@ export default function Header({ showAvatar: showAvatarProp }: { showAvatar?: bo
   const showLogo = showAvatarProp !== undefined ? showAvatarProp : isScrolled;
 
   return (
-    <div className="sticky top-4 z-50 mb-0 w-full">
+    <div className="fixed left-0 right-0 top-4 z-[1000] mb-0 w-full">
       <div className="mx-auto max-w-[1392px] px-4 md:px-8">
         <div
-          className={`relative flex h-[70px] items-center justify-between overflow-hidden rounded-[28px] bg-white px-2 transition-all duration-300 md:rounded-[32px] md:px-1 ${
-            isScrolled ? 'shadow-[0_2px_10px_0_rgba(0,0,0,0.15)]' : ''
+          className={`relative flex h-[70px] items-center justify-between overflow-hidden rounded-[28px] px-2 transition-all duration-300 md:rounded-[32px] md:px-1 ${
+            isScrolled ? 'bg-white shadow-[0_2px_10px_0_rgba(0,0,0,0.15)]' : 'bg-transparent'
           }`}
           data-name="Header"
         >
           <Left showLogo={showLogo} />
-          <Right />
+          <Right isScrolled={isScrolled} />
         </div>
       </div>
     </div>
