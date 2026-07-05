@@ -393,7 +393,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
           tags={[
             { label: 'Mobile', tone: 'mobile' },
             { label: 'AI', tone: 'ai' },
-            { label: 'Pet project', tone: 'neutral' },
+            { label: 'Pet project', tone: 'pet' },
           ]}
         >
           <div className="flex w-full justify-center rounded-xl bg-[radial-gradient(circle_at_50%_12%,rgba(232,240,255,0.98),transparent_42%),linear-gradient(180deg,#ffffff_0%,#f3f4f4_100%)] py-6 shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
@@ -1831,7 +1831,7 @@ function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }
         <div className="flex flex-wrap gap-2">
           <TagBadge tone="mobile">Mobile</TagBadge>
           <TagBadge tone="ai">AI</TagBadge>
-          <TagBadge tone="neutral">Pet project</TagBadge>
+          <TagBadge tone="pet">Pet project</TagBadge>
         </div>
       </header>
 

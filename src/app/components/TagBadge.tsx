@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type TagBadgeTone = 'neutral' | 'web' | 'b2b' | 'data' | 'ai' | 'mobile';
+export type TagBadgeTone = 'neutral' | 'web' | 'b2b' | 'data' | 'ai' | 'mobile' | 'pet';
 
 type TagBadgeProps = {
   children: ReactNode;
@@ -17,6 +17,7 @@ const toneClasses: Record<TagBadgeTone, string> = {
   data: 'bg-[#f9eaea] text-[#52170f]',
   ai: 'bg-[#e8f0ff] text-[#0b57d0]',
   mobile: 'bg-[#eee8f9] text-[#490f52]',
+  pet: 'bg-[#fff0d9] text-[#6b3d00]',
 };
 
 const sizeClasses = {
