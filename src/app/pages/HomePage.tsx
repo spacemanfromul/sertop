@@ -45,6 +45,16 @@ import routesPrototypeGeozonesImage from "../../assets/cases/routes-prototype-ge
 import routesPrototypeMapImage from "../../assets/cases/routes-prototype-map.jpg";
 import routesPrototypeRegistryImage from "../../assets/cases/routes-prototype-registry.jpg";
 import heroTransitionVideo from "../../assets/cases/hero-transition.mp4";
+import pushupFrameImage from "../../assets/cases/pushup-frame.webp";
+import pushupPositionImage from "../../assets/cases/pushup-position.webp";
+import pushupCounterImage from "../../assets/cases/pushup-counter.webp";
+import pushupGymBgImage from "../../assets/cases/pushup-gym-bg.webp";
+import pushupLightOnImage from "../../assets/cases/pushup-light-on.png";
+import pushupLightOffImage from "../../assets/cases/pushup-light-off.png";
+import pushupSetupPhotoImage from "../../assets/cases/pushup-setup-photo.png";
+import pushupWaveBgImage from "../../assets/cases/pushup-wave-bg.png";
+import pushupStepsBgImage from "../../assets/cases/pushup-steps-bg.png";
+import phoneMockupImage from "../../assets/cases/phone-mockup.png";
 import caseAdminGroup1 from "../../assets/cases/case-admin-group-1.jpg";
 import caseAdminGroup2 from "../../assets/cases/case-admin-group-2.jpg";
 import caseAdminGroup3 from "../../assets/cases/case-admin-group-3.jpg";
@@ -359,6 +369,293 @@ function ExperimentPreview() {
   );
 }
 
+function PushupScreensPreview() {
+  return (
+    <div className="relative aspect-video w-full overflow-hidden rounded-[24px] shadow-[0_18px_46px_rgba(25,28,29,0.22)]">
+      <img
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 size-full scale-105 object-cover blur-[3px]"
+        src={pushupGymBgImage}
+        loading="lazy"
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative aspect-[928/1962] h-[88%] drop-shadow-[0_22px_36px_rgba(0,0,0,0.45)]">
+          <img
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 size-full"
+            src={phoneMockupImage}
+            loading="lazy"
+            decoding="async"
+          />
+          <div
+            className="absolute left-[4.09%] top-[1.12%] h-[97.66%] w-[92.03%] overflow-hidden bg-black"
+            style={{ borderRadius: '15.46% / 6.89%' }}
+          >
+            <img
+              alt="Экран активного подхода со счётчиком"
+              className="size-full object-cover"
+              src={pushupCounterImage}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PushupPhoneMockup({
+  src,
+  alt,
+  className = '',
+  children,
+}: {
+  src?: string;
+  alt?: string;
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className={`relative aspect-[928/1962] w-full max-w-[320px] drop-shadow-[0_22px_36px_rgba(0,0,0,0.22)] ${className}`}>
+      <img
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 size-full"
+        src={phoneMockupImage}
+        loading="lazy"
+        decoding="async"
+      />
+      <div
+        className="absolute left-[4.09%] top-[1.12%] h-[97.66%] w-[92.03%] overflow-hidden bg-black"
+        style={{ borderRadius: '15.46% / 6.89%' }}
+      >
+        {children ?? (
+          <img
+            alt={alt}
+            className="size-full object-cover"
+            src={src}
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PushupLightingMockup({ className = '' }: { className?: string }) {
+  return (
+    <PushupPhoneMockup className={`mx-auto md:mx-0 ${className}`}>
+      <div className="relative size-full overflow-hidden bg-black">
+        <img
+          alt="Экран тренировки без подсветки"
+          className="absolute inset-0 size-full object-cover"
+          src={pushupLightOffImage}
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          alt="Экран тренировки с включённой подсветкой"
+          className="pushup-light-screen-on absolute inset-0 size-full object-cover"
+          src={pushupLightOnImage}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="pushup-light-glow absolute inset-0 bg-[radial-gradient(circle_at_78%_78%,rgba(82,255,82,0.3),rgba(82,255,82,0)_34%)]" aria-hidden="true" />
+      </div>
+      <style>{`
+        .pushup-light-screen-on {
+          animation: pushup-light-screen 7.2s ease-in-out infinite;
+        }
+
+        .pushup-light-glow {
+          animation: pushup-light-glow 7.2s ease-in-out infinite;
+          mix-blend-mode: screen;
+        }
+
+        @keyframes pushup-light-screen {
+          0%, 38% {
+            opacity: 0;
+          }
+          52%, 84% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @keyframes pushup-light-glow {
+          0%, 40%, 100% {
+            opacity: 0;
+          }
+          58%, 82% {
+            opacity: 1;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .pushup-light-screen-on,
+          .pushup-light-glow {
+            animation: none;
+            opacity: 1;
+          }
+        }
+      `}</style>
+    </PushupPhoneMockup>
+  );
+}
+
+function PushupScreensShowcase() {
+  const StepCard = ({
+    step,
+    title,
+    description,
+    className = '',
+  }: {
+    step: string;
+    title: string;
+    description: string;
+    className?: string;
+  }) => (
+    <div className={`flex min-w-0 flex-col gap-3 rounded-[28px] bg-white/90 p-5 shadow-[0_18px_46px_rgba(25,28,29,0.1)] backdrop-blur md:p-6 ${className}`}>
+      <div className="flex size-10 items-center justify-center rounded-full bg-[#52ff52] font-['Google Sans',sans-serif] text-base font-semibold text-[#111]">
+        {step}
+      </div>
+      <h3 className="font-['Google Sans',sans-serif] text-2xl font-medium leading-[30px] tracking-[0] text-[#191c1d]">
+        {formatText(title)}
+      </h3>
+      <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#3c4043]">
+        {formatText(description)}
+      </p>
+    </div>
+  );
+
+  const steps = [
+    {
+      step: '1',
+      title: 'Поставить телефон на пол',
+      description: 'Пользователь ставит телефон перед собой. Можно использовать обычную бутылку как опору вместо штатива.',
+    },
+    {
+      step: '2',
+      src: pushupFrameImage,
+      alt: 'Пользователь встаёт в кадр',
+      title: 'Встать в рамку',
+      description: 'Пользователь отходит от телефона, пока помещается в рамке. Приложение считывает пользователя и калибруется.',
+    },
+    {
+      step: '3',
+      src: pushupPositionImage,
+      alt: 'Пользователь принимает положение для отжимания',
+      title: 'Начать подход',
+      description: 'Когда пользователь занимает позицию, приложение начинает отслеживать движение. Счётчик работает без нажатий, а интерфейс остаётся крупным и читаемым с расстояния.',
+    },
+    {
+      step: '4',
+      src: pushupCounterImage,
+      alt: 'Активный подход со счётчиком отжиманий',
+      title: 'Не смотреть на экран',
+      description: 'Во время подхода приложение озвучивает повторения и показывает прогресс в отдельном видимом блоке. Пользователю не нужно отвлекаться на экран.',
+    },
+    {
+      step: '5',
+      title: 'Подсветка для плохого освещения',
+      description: 'Если тренировка проходит вечером или в тёмном помещении, можно включить подсветку. Это помогает камере точнее распознавать движение.',
+    },
+  ];
+
+  return (
+    <section className="relative overflow-hidden rounded-[36px] bg-white px-5 py-8 text-[#191c1d] md:overflow-visible md:px-10 md:py-12 lg:px-14">
+      <img
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-70 blur-[3px] md:-inset-x-12 md:-inset-y-16 md:h-[calc(100%+8rem)] md:w-[calc(100%+6rem)] md:opacity-85 md:blur-[6px]"
+        src={pushupStepsBgImage}
+        loading="lazy"
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-white/10" aria-hidden="true" />
+      <div className="relative z-10 flex flex-col gap-24 md:gap-24 lg:gap-24">
+        <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Как это работает')}
+        </h2>
+
+        <article className="grid min-w-0 gap-6 md:grid-cols-2 md:items-center">
+          <StepCard
+            step={steps[0].step}
+            title={steps[0].title}
+            description={steps[0].description}
+            className="md:ml-auto md:mr-8 md:max-w-[360px] md:translate-y-8"
+          />
+          <div className="aspect-square w-full max-w-[300px] justify-self-center overflow-hidden rounded-[28px] shadow-[0_22px_58px_rgba(25,28,29,0.16)] md:ml-8 md:max-w-[340px] md:justify-self-start">
+            <img
+              alt="Пользователь ставит телефон перед тренировкой"
+              className="size-full object-cover"
+              src={pushupSetupPhotoImage}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </article>
+
+        <article className="grid min-w-0 gap-6 md:grid-cols-2 md:items-center">
+          <div className="flex justify-center md:justify-end md:pr-8">
+            <PushupPhoneMockup className="max-w-[230px] md:max-w-[270px]" alt={steps[1].alt ?? ''} src={steps[1].src ?? ''} />
+          </div>
+          <StepCard
+            step={steps[1].step}
+            title={steps[1].title}
+            description={steps[1].description}
+            className="md:ml-8 md:max-w-[360px] md:translate-y-10"
+          />
+        </article>
+
+        <article className="grid min-w-0 gap-6 md:grid-cols-2 md:items-center">
+          <StepCard
+            step={steps[2].step}
+            title={steps[2].title}
+            description={steps[2].description}
+            className="md:ml-auto md:mr-8 md:max-w-[360px] md:-translate-y-10"
+          />
+          <div className="flex justify-center md:justify-start md:pl-8">
+            <PushupPhoneMockup className="max-w-[230px] md:max-w-[270px]" alt={steps[2].alt ?? ''} src={steps[2].src ?? ''} />
+          </div>
+        </article>
+
+        <article className="grid min-w-0 gap-6 md:grid-cols-2 md:items-center">
+          <div className="flex justify-center md:justify-end md:pr-8">
+            <PushupPhoneMockup className="max-w-[230px] md:max-w-[270px]" alt={steps[3].alt ?? ''} src={steps[3].src ?? ''} />
+          </div>
+          <StepCard
+            step={steps[3].step}
+            title={steps[3].title}
+            description={steps[3].description}
+            className="md:ml-8 md:max-w-[360px] md:translate-y-10"
+          />
+        </article>
+
+        <article className="grid min-w-0 gap-6 md:grid-cols-2 md:items-center">
+          <StepCard
+            step={steps[4].step}
+            title={steps[4].title}
+            description={steps[4].description}
+            className="md:ml-auto md:mr-8 md:max-w-[360px] md:-translate-y-10"
+          />
+          <div className="flex justify-center md:justify-start md:pl-8">
+            <PushupLightingMockup className="max-w-[230px] md:mx-0 md:max-w-[270px]" />
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) => void }) {
   return (
     <div className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col gap-6 px-4 py-4 md:px-8 md:py-8">
@@ -388,7 +685,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
         </CaseCard>
         <CaseCard
           onClick={() => onProjectClick('pushup-counter')}
-          title="Фитнес-приложение: счётчик отжиманий"
+          title="Счетчик отжиманий"
           description="Собрал Android-приложение в Codex, чтобы камера считала отжимания и помогала держать ежедневный челлендж"
           tags={[
             { label: 'Mobile', tone: 'mobile' },
@@ -396,9 +693,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
             { label: 'Pet project', tone: 'pet' },
           ]}
         >
-          <div className="flex w-full justify-center rounded-xl bg-[radial-gradient(circle_at_50%_12%,rgba(232,240,255,0.98),transparent_42%),linear-gradient(180deg,#ffffff_0%,#f3f4f4_100%)] py-6 shadow-[0_0_16px_0_rgba(0,0,0,0.12)]">
-            <ExperimentPreview />
-          </div>
+          <PushupScreensPreview />
         </CaseCard>
       </div>
       {false && (
@@ -1377,10 +1672,12 @@ function CaseFooterActions({
   adjacentCaseLabel,
   onAdjacentCase,
   className = '',
+  description = 'Можно посмотреть соседний кейс или сразу написать мне в Telegram',
 }: {
   adjacentCaseLabel: string;
   onAdjacentCase: () => void;
   className?: string;
+  description?: string;
 }) {
   return (
     <section className={`mt-8 flex flex-col items-center justify-center gap-6 rounded-[28px] bg-[#e9f1ff] p-6 text-center text-[#191c1d] md:mt-12 md:p-8 ${className}`}>
@@ -1389,7 +1686,7 @@ function CaseFooterActions({
           {formatText('Продолжить или связаться')}
         </h2>
         <p className="font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 tracking-[0] text-[#5f6368]">
-          {formatText('Можно посмотреть соседний кейс или сразу написать мне в Telegram')}
+          {formatText(description)}
         </p>
       </div>
       <div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row md:w-auto">
@@ -1823,10 +2120,10 @@ function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }
     <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-          {formatText('Фитнес-приложение: счётчик отжиманий')}
+          {formatText('Счетчик отжиманий')}
         </h1>
         <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
-          {formatText('Pet project для Android, который считает отжимания через камеру и помогает держать ежедневный челлендж без платных подписок')}
+          {formatText('Android-приложение, которое с помощью камеры распознаёт движение тела, считает повторения и помогает проходить ежедневный челлендж с постепенным увеличением нагрузки.')}
         </p>
         <div className="flex flex-wrap gap-2">
           <TagBadge tone="mobile">Mobile</TagBadge>
@@ -1835,82 +2132,183 @@ function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }
         </div>
       </header>
 
-      <section className="grid items-center gap-6 rounded-[36px] bg-[radial-gradient(circle_at_18%_16%,rgba(232,240,255,0.95),transparent_36%),radial-gradient(circle_at_82%_76%,rgba(220,252,231,0.9),transparent_38%),linear-gradient(135deg,#fbfdff_0%,#f7faf7_100%)] p-5 md:grid-cols-[0.9fr_1.1fr] md:p-8 lg:p-12">
-        <div className="flex justify-center">
-          <PortfolioVideo
-            className="aspect-[9/16] max-h-[720px] w-full max-w-[340px] rounded-[30px] shadow-[0_18px_52px_rgba(25,28,29,0.18)]"
-            src={caseExperimentVideo}
-            label="Фитнес-приложение счётчик отжиманий"
-            preload="metadata"
-          />
+      <section className="relative grid items-center gap-8 overflow-hidden rounded-[36px] bg-[#f8fbff] p-5 md:grid-cols-[0.82fr_1.18fr] md:gap-10 md:p-8 lg:p-12">
+        <img
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover opacity-95 blur-[3px]"
+          src={pushupWaveBgImage}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="absolute inset-0 bg-white/18" aria-hidden="true" />
+        <div className="relative z-10 flex justify-center">
+          <PushupPhoneMockup className="max-w-[280px] md:max-w-[320px]" alt="Экран активного подхода со счётчиком" src={pushupCounterImage} />
         </div>
-        <div className="flex flex-col gap-5 text-[#191c1d]">
+        <div className="relative z-10 flex flex-col gap-5 rounded-[32px] bg-white/88 p-5 text-[#191c1d] shadow-[0_18px_56px_rgba(25,28,29,0.12)] backdrop-blur md:p-7 lg:p-8">
           <RoutesTextPoint title="Идея проекта">
-            <CaseStudyText>Я хотел пройти челлендж и отжиматься каждый день в течение года, но не хотел платить за подписки в приложениях, которые закрывают базовый подсчёт повторений</CaseStudyText>
-            <CaseStudyText>Поэтому собрал собственный Android-прототип в Codex: приложение использует камеру, считает отжимания и помогает держать ритм тренировки</CaseStudyText>
+            <CaseStudyText>Я хотел сделать простой инструмент для личного челленджа: отжиматься каждый день и постепенно увеличивать нагрузку. Главная проблема была в том, что во время подхода неудобно считать повторения и следить за прогрессом.</CaseStudyText>
           </RoutesTextPoint>
-          <div className="flex flex-wrap gap-2">
-            <TagBadge tone="web">Camera</TagBadge>
-            <TagBadge tone="b2b">Voice</TagBadge>
-            <TagBadge tone="data">Fitness data</TagBadge>
-          </div>
+          <RoutesTextPoint title="Реализация">
+            <CaseStudyText>Я собрал Android-приложение с ML-счётчиком отжиманий. Камера отслеживает положение тела, приложение определяет фазы движения, считает повторения без ручного ввода и ведёт пользователя через ежедневный челлендж.</CaseStudyText>
+            <CaseStudyText>В интерфейсе я сделал крупный счётчик, голосовые подсказки и режимы для разных условий тренировки, чтобы во время подхода не нужно было смотреть в экран.</CaseStudyText>
+          </RoutesTextPoint>
+          <a
+            href="https://github.com/spacemanfromul/PushupCounter/tree/main"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-full bg-[#191c1d] px-5 font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
+          >
+            GitHub и APK
+            <ArrowRight className="size-5" />
+          </a>
         </div>
       </section>
 
-      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
-        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
-          <RoutesTextPoint title="Что за продукт">
-            <CaseStudyText>Это мобильное приложение для домашней тренировки: пользователь ставит телефон, включает камеру и выполняет подход, а приложение считает повторения и помогает не сбиться</CaseStudyText>
-          </RoutesTextPoint>
-        </div>
-        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
-          <RoutesTextPoint title="Проблема">
-            <CaseStudyText>В похожих приложениях простой сценарий часто спрятан за подпиской, а работа с камерой бывает неудобной: нужно долго подбирать положение телефона и постоянно смотреть на экран</CaseStudyText>
-          </RoutesTextPoint>
+      <section className="flex flex-col gap-6 py-8 text-[#191c1d] md:gap-8 md:py-12">
+        <div className="relative rounded-[36px]">
+          <PushupScreensShowcase />
         </div>
       </section>
 
-      <section className="relative flex w-full flex-col gap-8 overflow-hidden rounded-[36px] bg-[radial-gradient(circle_at_12%_18%,rgba(219,234,254,0.95),transparent_36%),radial-gradient(circle_at_88%_76%,rgba(220,252,231,0.82),transparent_38%),linear-gradient(135deg,#fbfdff_0%,#f6f9ff_48%,#f8fbf7_100%)] px-4 py-10 md:gap-10 md:px-8 md:py-14">
+      <section className="relative overflow-hidden rounded-[36px] bg-[#f3f4f4] px-5 py-10 text-[#191c1d] md:px-8 md:py-12 lg:px-12 lg:py-16">
         <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-          {formatText('Ключевые решения')}
+          {formatText('С какими ограничениями столкнулся')}
         </h2>
-        <div className="grid gap-5 md:grid-cols-3">
-          <div className="rounded-[28px] bg-white/80 p-5 md:p-6">
-            <RoutesTextPoint title="Подсчёт через камеру">
-              <CaseStudyText>Основной сценарий строится вокруг камеры: пользователь видит себя в кадре, а приложение считывает движение и считает повторения без ручного ввода</CaseStudyText>
-            </RoutesTextPoint>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.82fr_1fr] lg:items-center lg:gap-10">
+          <div className="flex flex-col gap-6 lg:-translate-y-6">
+            {[
+              ['Быстрый концепт оказался недостаточным', 'Первый прототип удалось собрать быстро, но стабильное считывание потребовало отдельной работы с режимами камеры и состояниями интерфейса'],
+              ['Ложные срабатывания портили результат', 'Пришлось добавить паузу между подходами и отсекать случайные движения, чтобы приложение не засчитывало их как повторения'],
+            ].map(([title, description]) => (
+              <div key={title} className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(25,28,29,0.08)] md:p-6">
+                <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-7 text-[#191c1d]">
+                  {formatText(title)}
+                </h3>
+                <p className="mt-4 font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 text-[#5f6368]">
+                  {formatText(description)}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="rounded-[28px] bg-white/80 p-5 md:p-6">
-            <RoutesTextPoint title="Голосовые подсказки">
-              <CaseStudyText>Чтобы не смотреть на экран во время подхода, я заложил голосовые подсказки: приложение может сообщать счёт, давать обратную связь и помогать держать темп</CaseStudyText>
-            </RoutesTextPoint>
+
+          <div className="flex justify-center">
+            <PushupPhoneMockup className="max-w-[280px] lg:max-w-[340px]">
+              <PortfolioVideo
+                className="size-full bg-black"
+                videoClassName="object-cover"
+                src={caseExperimentVideo}
+                label="Первый прототип счётчика отжиманий"
+                preload="metadata"
+              />
+            </PushupPhoneMockup>
           </div>
-          <div className="rounded-[28px] bg-white/80 p-5 md:p-6">
-            <RoutesTextPoint title="Связь с браслетом">
-              <CaseStudyText>Интеграция с фитнес-браслетом задумана как способ дополнять камеру данными о тренировке и собирать более полную картину прогресса</CaseStudyText>
-            </RoutesTextPoint>
+
+          <div className="flex flex-col gap-6 lg:translate-y-24">
+            {[
+              ['UX нужно было упростить', 'Пользователь не должен смотреть в экран во время подхода, поэтому появились голосовые подсказки, крупный счётчик и понятные состояния'],
+              ['Фитнес-браслет не отдаёт данные сразу', 'Данные с браслета нельзя стабильно получать в реальном времени, поэтому эту часть пришлось оставить для будущих версий'],
+            ].map(([title, description]) => (
+              <div key={title} className="rounded-[28px] bg-white p-5 shadow-[0_18px_50px_rgba(25,28,29,0.08)] md:p-6">
+                <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-7 text-[#191c1d]">
+                  {formatText(title)}
+                </h3>
+                <p className="mt-4 font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 text-[#5f6368]">
+                  {formatText(description)}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
-        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
-          <RoutesTextPoint title="Мой вклад">
-            <CaseStudyText>Я сформулировал сценарий, собрал Android-прототип в Codex, продумал логику тренировки, экран камеры, голосовую поддержку и идею связки с фитнес-браслетом</CaseStudyText>
-          </RoutesTextPoint>
-        </div>
-        <div className="routes-pride-card relative h-full overflow-hidden rounded-[28px] p-5 md:p-6">
-          <div className="relative z-10">
-            <RoutesTextPoint title="Что получилось">
-              <CaseStudyText>Проект помог быстро проверить идею личного фитнес-инструмента: без подписки, с понятным фокусом на ежедневный челлендж и с интерфейсом, который не мешает тренировке</CaseStudyText>
-            </RoutesTextPoint>
+      <section className="grid gap-6 text-[#191c1d] md:grid-cols-2">
+        <div className="rounded-[36px] bg-[#f3f4f4] p-6 md:p-10 lg:p-14">
+          <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+            {formatText('Что уже работает')}
+          </h2>
+          <div className="mt-8 rounded-[28px] bg-white p-5 md:p-7 lg:p-8">
+            {[
+              ['Автоматический счёт', 'Приложение считает повторения через камеру без ручного ввода'],
+              ['Настройки экрана', 'Можно включить подсветку и выбрать размер счётчика'],
+              ['Озвучка повторений', 'Приложение проговаривает счёт, чтобы не смотреть на экран'],
+              ['Пауза между подходами', 'Случайные движения не засчитываются как повторения'],
+            ].map(([title, description], index) => (
+              <div key={title} className={index === 0 ? '' : 'mt-5'}>
+                <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-7 text-[#191c1d] md:text-[22px] md:leading-7">
+                  {formatText(title)}
+                </h3>
+                <p className="mt-2 font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 text-[#5f6368] md:text-[18px] md:leading-7">
+                  {formatText(description)}
+                </p>
+              </div>
+            ))}
           </div>
+        </div>
+        <div className="rounded-[36px] bg-[#fff7ed] p-6 md:p-10 lg:p-14">
+          <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+            {formatText('Что предстоит сделать')}
+          </h2>
+          <div className="mt-8 rounded-[28px] bg-white p-5 md:p-7 lg:p-8">
+            {[
+              ['Боковой режим камеры', 'Добавить точную оценку амплитуды движения и положения корпуса сбоку'],
+              ['ИИ-тренер и техника', 'Научить приложение замечать ошибки и давать короткие подсказки во время тренировки'],
+              ['Экспорт в соцсети', 'Сохранять видео подхода и делиться прогрессом'],
+            ].map(([title, description], index) => (
+              <div key={title} className={index === 0 ? '' : 'mt-5'}>
+                <h3 className="font-['Google Sans',sans-serif] text-xl font-medium leading-7 text-[#191c1d] md:text-[22px] md:leading-7">
+                  {formatText(title)}
+                </h3>
+                <p className="mt-2 font-['Google Sans Flex','Google Sans',sans-serif] text-base font-normal leading-6 text-[#5f6368] md:text-[18px] md:leading-7">
+                  {formatText(description)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="text-[#191c1d]">
+        <div className="pushup-pride-card relative mx-auto w-full overflow-hidden rounded-[36px] px-5 py-10 md:w-[74%] md:px-12 md:py-14 lg:px-16 lg:py-16">
+          <div className="relative z-10 mx-auto flex max-w-[860px] flex-col gap-7">
+            <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+              {formatText('Чем я горжусь')}
+            </h2>
+            <CaseStudyText>Я начал этот pet project без опыта в мобильной разработке и довёл идею до рабочего прототипа: приложение считает отжимания, помогает проходить подход и показывает, как из личной задачи можно собрать работающий продукт.</CaseStudyText>
+            <CaseStudyText>Для меня это был способ проверить, как быстро можно пройти путь от идеи до MVP: разобраться в ML-счётчике, ограничениях камеры, состояниях интерфейса и сценарии тренировки.</CaseStudyText>
+          </div>
+          <style>{`
+            .pushup-pride-card {
+              background:
+                radial-gradient(circle at 12% 12%, rgba(219, 234, 254, 0.98), transparent 34%),
+                radial-gradient(circle at 86% 18%, rgba(220, 252, 231, 0.95), transparent 38%),
+                linear-gradient(120deg, #f5f9ff, #eef6ff 44%, #f1fff6);
+              background-size: 140% 140%;
+              animation: pushup-pride-gradient 12s ease-in-out infinite alternate;
+            }
+
+            @keyframes pushup-pride-gradient {
+              from {
+                background-position: 0% 30%;
+              }
+              to {
+                background-position: 100% 70%;
+              }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+              .pushup-pride-card {
+                animation: none;
+              }
+            }
+          `}</style>
         </div>
       </section>
 
       <CaseFooterActions
-        adjacentCaseLabel="Продолжить"
+        adjacentCaseLabel="Следующий кейс"
         onAdjacentCase={onAdjacentCase}
+        description="Можно посмотреть следующий кейс или написать мне в Telegram"
         className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
       />
     </div>
