@@ -128,11 +128,11 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-4 md:p-8"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-0 md:p-8"
       onClick={onClose}
     >
       <div
-        className="relative flex h-[calc(100dvh-32px)] w-full max-w-[1392px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_2px_10px_0_rgba(0,0,0,0.15)] md:h-[calc(100dvh-64px)] md:rounded-[32px]"
+        className="relative flex h-dvh w-full max-w-[1392px] flex-col overflow-hidden bg-white shadow-[0_2px_10px_0_rgba(0,0,0,0.15)] md:h-[calc(100dvh-64px)] md:rounded-[32px]"
         onClick={(e) => e.stopPropagation()}
       >
         <style>{`

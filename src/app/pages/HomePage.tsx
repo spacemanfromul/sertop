@@ -571,7 +571,7 @@ function PushupScreensShowcase() {
   ];
 
   return (
-    <section className="relative overflow-hidden rounded-[36px] bg-white px-5 py-8 text-[#191c1d] md:overflow-visible md:px-10 md:py-12 lg:px-14">
+    <section className="relative -mx-4 overflow-hidden rounded-none bg-transparent px-5 py-8 text-[#191c1d] md:mx-0 md:overflow-visible md:rounded-[36px] md:bg-white md:px-10 md:py-12 lg:px-14">
       <img
         alt=""
         aria-hidden="true"
