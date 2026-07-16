@@ -85,6 +85,9 @@ const challengesCaseMeta: {
   ],
 };
 
+const challengesCoverClassName =
+  'relative aspect-video w-full overflow-hidden rounded-[24px] shadow-[0_18px_46px_rgba(25,28,29,0.22)]';
+
 export default function HomePage() {
   const [activeModal, setActiveModal] = useState<ProjectId | null>(null);
 
@@ -328,9 +331,17 @@ function CaseCard({
   );
 }
 
-function CaseImage({ src, alt }: { src: string; alt: string }) {
+function CaseImage({
+  src,
+  alt,
+  className = 'aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)]',
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
   return (
-    <div className="aspect-[3840/2136] w-full overflow-hidden rounded-xl shadow-[0_0_16px_0_rgba(0,0,0,0.18)]">
+    <div className={className}>
       <img
         alt={alt}
         className="size-full object-cover"
@@ -721,7 +732,11 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
           description={challengesCaseMeta.description}
           tags={challengesCaseMeta.tags}
         >
-          <CaseImage src={caseChallengesImage} alt="Коллаж дизайн-челленджей" />
+          <CaseImage
+            src={caseChallengesImage}
+            alt="Коллаж дизайн-челленджей"
+            className={challengesCoverClassName}
+          />
         </CaseCard>
       </div>
       {false && (
@@ -2348,7 +2363,7 @@ function ChallengesContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
     {
       title: 'Product Design Challenge',
       description: 'Портрет покупателя для продавцов Ozon с аналитикой аудитории и сегментов.',
-      dates: 'Результаты: 24 июля — объявление финалистов',
+      dates: 'Результаты 24.07',
       status: 'Отправлено',
       image: challengeOzonCustomerPortraitImage,
       href: '/ozon-customer-portrait',
@@ -2385,7 +2400,11 @@ function ChallengesContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
               { label: challenge.dates, tone: 'neutral' },
             ]}
           >
-            <CaseImage src={challenge.image} alt={challenge.title} />
+            <CaseImage
+              src={challenge.image}
+              alt={challenge.title}
+              className={challengesCoverClassName}
+            />
           </CaseCard>
         ))}
       </section>
