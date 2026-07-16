@@ -1,0 +1,376 @@
+/* buttons 1: Назад */
+.reference-buttons-1 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 183px;
+  height: 56px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(55, 175, 255, 0.098);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 12px;
+  box-shadow: none;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 2: Далее */
+.reference-buttons-2 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 183px;
+  height: 56px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: normal;
+  color: rgb(248, 250, 253);
+  background-color: rgb(0, 91, 255);
+  background-image: none;
+  border: 0px none rgb(248, 250, 253);
+  border-radius: 12px;
+  box-shadow: none;
+  outline: rgb(248, 250, 253) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 3: Помощь */
+.reference-buttons-3 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 55.2969px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 4: Условия обработки персональных данных */
+.reference-buttons-4 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 282.531px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 5: Сохранить стили */
+.reference-buttons-5 {
+  display: inline-block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 200px;
+  height: 38px;
+  min-height: 0px;
+  padding-top: 1px;
+  padding-right: 6px;
+  padding-bottom: 1px;
+  padding-left: 6px;
+  font-family: Onest, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgb(255, 255, 255);
+  background-color: rgb(0, 91, 255);
+  background-image: none;
+  border: 0px none rgb(255, 255, 255);
+  border-radius: 8px;
+  box-shadow: none;
+  outline: rgb(255, 255, 255) none 3px;
+  opacity: 0.65;
+  cursor: pointer;
+}
+
+/* buttons 6: Закрыть */
+.reference-buttons-6 {
+  display: inline-block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 200px;
+  height: 32px;
+  min-height: 0px;
+  padding-top: 1px;
+  padding-right: 6px;
+  padding-bottom: 1px;
+  padding-left: 6px;
+  font-family: Onest, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  background-image: none;
+  border: 1px solid rgb(216, 221, 228);
+  border-radius: 8px;
+  box-shadow: none;
+  outline: rgb(0, 0, 0) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 1: Федеральной налоговой службы */
+.reference-links-1 {
+  display: inline;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: auto;
+  height: auto;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* inputs 1: input */
+.reference-inputs-1 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 336px;
+  height: 20px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: text;
+}
+
+/* inputs 2: input */
+.reference-inputs-2 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 308px;
+  height: 20px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: text;
+}
+
+/* inputs 3: input */
+.reference-inputs-3 {
+  display: grid;
+  align-items: center;
+  justify-content: normal;
+  gap: normal;
+  width: 20px;
+  height: 20px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15.015px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgb(0, 0, 0);
+  background-color: rgba(55, 175, 255, 0.098);
+  background-image: none;
+  border: 1px solid rgba(124, 155, 181, 0.227);
+  border-radius: 6px;
+  box-shadow: none;
+  outline: rgb(0, 0, 0) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* inputs 4: input */
+.reference-inputs-4 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 364px;
+  height: 20px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: text;
+}
+
+/* inputs 5: input */
+.reference-inputs-5 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 161.688px;
+  height: 20px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* headings 1: Пройдите регистрацию */
+.reference-headings-1 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 386px;
+  height: 30px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 30px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: auto;
+}

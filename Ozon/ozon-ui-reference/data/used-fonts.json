@@ -1,0 +1,86 @@
+[
+  {
+    "value": "\"Times New Roman\" | 16px | 400 | normal",
+    "count": 440
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 15px | 400 | 24px",
+    "count": 353
+  },
+  {
+    "value": "Arial | 13.3333px | 400 | normal",
+    "count": 326
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 13px | 400 | 16px",
+    "count": 129
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 13px | 400 | 20px",
+    "count": 51
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 15px | 600 | 24px",
+    "count": 43
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 15px | 700 | 24px",
+    "count": 24
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 32px | 700 | 40px",
+    "count": 23
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 15px | 400 | 20px",
+    "count": 8
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 11px | 600 | 16px",
+    "count": 6
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 17px | 600 | 22px",
+    "count": 3
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 19px | 600 | 24px",
+    "count": 3
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 13px | 600 | 16px",
+    "count": 3
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 40px | 700 | 48px",
+    "count": 1
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 17px | 400 | 28px",
+    "count": 1
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 26px | 700 | 30px",
+    "count": 1
+  },
+  {
+    "value": "Onest, Arial, Helvetica, sans-serif | 10px | 600 | 16px",
+    "count": 1
+  },
+  {
+    "value": "Arial, sans-serif | 14px | 400 | 20px",
+    "count": 1
+  },
+  {
+    "value": "Arial, sans-serif | 14px | 700 | 20px",
+    "count": 1
+  },
+  {
+    "value": "Arial | 13.3333px | 600 | normal",
+    "count": 1
+  },
+  {
+    "value": "Arial, sans-serif | 12px | 400 | 16px",
+    "count": 1
+  }
+]

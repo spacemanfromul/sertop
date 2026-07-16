@@ -1,0 +1,52 @@
+export const sellerNavItems = [
+  'Главная',
+  'Товары',
+  'FBO',
+  'FBS',
+  'Финансы',
+  'Аналитика',
+  'Покупатели',
+  'Продвижение',
+  'Банк',
+] as const;
+
+export const customerPortraitData = {
+  reach: '54 820',
+  age: [
+    { label: '18-24', value: 12, male: 6, female: 6 },
+    { label: '25-34', value: 30, male: 17, female: 13 },
+    { label: '35-44', value: 41, male: 25, female: 16 },
+    { label: '45-54', value: 12, male: 7, female: 5 },
+    { label: '55+', value: 5, male: 3, female: 2 },
+  ],
+  geography: [
+    { label: 'Москва', value: 15 },
+    { label: 'Санкт-Петербург', value: 10 },
+    { label: 'Свердловская обл.', value: 11 },
+    { label: 'Краснодарский край', value: 10 },
+    { label: 'Красноярский край', value: 8 },
+    { label: 'Республика Татарстан', value: 5 },
+    { label: 'Другие регионы', value: 41 },
+  ],
+  averageCheck: [
+    { label: 'до 1 000 ₽', value: 7 },
+    { label: '1-3 тыс. ₽', value: 17 },
+    { label: '3-10 тыс. ₽', value: 38 },
+    { label: '10-20 тыс. ₽', value: 24 },
+    { label: '20-30 тыс. ₽', value: 9 },
+    { label: '30-50 тыс. ₽', value: 4 },
+    { label: 'от 50 тыс. ₽', value: 1 },
+  ],
+  categories: [
+    'Рюкзаки',
+    'Палатки',
+    'Велоаксессуары',
+    'Одежда',
+    'Спальники',
+    'Мебель для туризма',
+    'Фонари',
+    'Термосы',
+    'Навигаторы',
+    'Трекинговые палки',
+  ],
+} as const;

@@ -1,0 +1,811 @@
+/* buttons 1: Стать продавцом */
+.reference-buttons-1 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 155.781px;
+  height: 32px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 148, 255, 0.157);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 1px inset;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 2: Войти */
+.reference-buttons-2 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 72.5156px;
+  height: 32px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: normal;
+  color: rgb(248, 250, 253);
+  background-color: rgb(0, 91, 255);
+  background-image: none;
+  border: 0px none rgb(248, 250, 253);
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 1px inset;
+  outline: rgb(248, 250, 253) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 3: button */
+.reference-buttons-3 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 32px;
+  height: 32px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 1px inset;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 4: Начало работы на Ozon */
+.reference-buttons-4 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 263px;
+  height: 32px;
+  min-height: 0px;
+  padding-top: 4px;
+  padding-right: 6px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  font-family: Arial;
+  font-size: 13.3333px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(75, 102, 126, 0.53);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgba(75, 102, 126, 0.53);
+  border-radius: 8px;
+  box-shadow: none;
+  outline: rgba(75, 102, 126, 0.53) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 5: button */
+.reference-buttons-5 {
+  display: flex;
+  align-items: center;
+  justify-content: normal;
+  gap: normal;
+  width: 24px;
+  height: 24px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Arial;
+  font-size: 13.3333px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(75, 102, 126, 0.53);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgba(75, 102, 126, 0.53);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgba(75, 102, 126, 0.53) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 6: Выкуплено товаров */
+.reference-buttons-6 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 263px;
+  height: 32px;
+  min-height: 0px;
+  padding-top: 4px;
+  padding-right: 6px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  font-family: Arial;
+  font-size: 13.3333px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(75, 102, 126, 0.53);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgba(75, 102, 126, 0.53);
+  border-radius: 8px;
+  box-shadow: rgb(81, 179, 252) 0px 0px 0px 2px inset;
+  outline: rgba(75, 102, 126, 0.53) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 7: Свернуть всё */
+.reference-buttons-7 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 115.234px;
+  height: 24px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 8px;
+  padding-bottom: 0px;
+  padding-left: 8px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 1px inset;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* buttons 8: button */
+.reference-buttons-8 {
+  display: grid;
+  align-items: stretch;
+  justify-content: normal;
+  gap: normal;
+  width: 24px;
+  height: 24px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 1px inset;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 1: a */
+.reference-links-1 {
+  display: inline;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: auto;
+  height: auto;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 2: Стать продавцом */
+.reference-links-2 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 155.781px;
+  height: 32px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 91, 255);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 91, 255);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 91, 255) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 3: Главная */
+.reference-links-3 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 69.3125px;
+  height: 44px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 238);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 238);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 238) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 4: База знаний */
+.reference-links-4 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 113.188px;
+  height: 44px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 238);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 238);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 238) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 5: Курсы и тренажёры */
+.reference-links-5 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 166.297px;
+  height: 44px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 238);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 238);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 238) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 6: Вебинары */
+.reference-links-6 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 96.1875px;
+  height: 44px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 238);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 238);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 238) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 7: Видео */
+.reference-links-7 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 69.1875px;
+  height: 44px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 238);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 238);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 238) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* links 8: Календарь */
+.reference-links-8 {
+  display: flex;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 101.078px;
+  height: 44px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 238);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 238);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 238) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* inputs 1: input */
+.reference-inputs-1 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 796px;
+  height: 20px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: text;
+}
+
+/* headings 1: Выкуплено товаров */
+.reference-headings-1 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 800px;
+  height: 48px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 48px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: auto;
+}
+
+/* headings 2: Как рассчитываем показатели */
+.reference-headings-2 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 800px;
+  height: 40px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: normal;
+  color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 0);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 0) none 3px;
+  opacity: 1;
+  cursor: auto;
+}
+
+/* headings 3: Какие причины отмен и возвратов могут быть */
+.reference-headings-3 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 800px;
+  height: 80px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: normal;
+  color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 0);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 0) none 3px;
+  opacity: 1;
+  cursor: auto;
+}
+
+/* headings 4: Помогла эта информация? */
+.reference-headings-4 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 816px;
+  height: 30px;
+  min-height: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 30px;
+  letter-spacing: normal;
+  color: rgb(7, 7, 7);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(7, 7, 7);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(7, 7, 7) none 3px;
+  opacity: 1;
+  cursor: auto;
+}
+
+/* navigation 1: Главная ... Продажи моих товаров */
+.reference-navigation-1 {
+  display: flex;
+  align-items: center;
+  justify-content: normal;
+  gap: 4px normal;
+  width: 293.766px;
+  height: 24px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Times New Roman";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgb(0, 0, 0);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgb(0, 0, 0) none 3px;
+  opacity: 1;
+  cursor: auto;
+}
+
+/* badges 1: Видео */
+.reference-badges-1 {
+  display: grid;
+  align-items: center;
+  justify-content: normal;
+  gap: normal;
+  width: 45.6562px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 6px;
+  padding-bottom: 0px;
+  padding-left: 6px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgba(0, 26, 51, 0.6);
+  background-color: rgba(124, 155, 181, 0.227);
+  background-image: none;
+  border: 0px none rgba(0, 26, 51, 0.6);
+  border-radius: 4px;
+  box-shadow: none;
+  outline: rgba(0, 26, 51, 0.6) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* badges 2: Видео */
+.reference-badges-2 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 33.6562px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgba(0, 26, 51, 0.6);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgba(0, 26, 51, 0.6);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgba(0, 26, 51, 0.6) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* badges 3: Курс */
+.reference-badges-3 {
+  display: grid;
+  align-items: center;
+  justify-content: normal;
+  gap: normal;
+  width: 38.0938px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 6px;
+  padding-bottom: 0px;
+  padding-left: 6px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgba(0, 26, 51, 0.6);
+  background-color: rgba(124, 155, 181, 0.227);
+  background-image: none;
+  border: 0px none rgba(0, 26, 51, 0.6);
+  border-radius: 4px;
+  box-shadow: none;
+  outline: rgba(0, 26, 51, 0.6) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* badges 4: Курс */
+.reference-badges-4 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 26.0938px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgba(0, 26, 51, 0.6);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgba(0, 26, 51, 0.6);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgba(0, 26, 51, 0.6) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* badges 5: Статья */
+.reference-badges-5 {
+  display: grid;
+  align-items: center;
+  justify-content: normal;
+  gap: normal;
+  width: 48.9062px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 6px;
+  padding-bottom: 0px;
+  padding-left: 6px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgba(0, 26, 51, 0.6);
+  background-color: rgba(124, 155, 181, 0.227);
+  background-image: none;
+  border: 0px none rgba(0, 26, 51, 0.6);
+  border-radius: 4px;
+  box-shadow: none;
+  outline: rgba(0, 26, 51, 0.6) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* badges 6: Статья */
+.reference-badges-6 {
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+  gap: normal;
+  width: 36.9062px;
+  height: 16px;
+  min-height: auto;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: Onest, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: rgba(0, 26, 51, 0.6);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  border: 0px none rgba(0, 26, 51, 0.6);
+  border-radius: 0px;
+  box-shadow: none;
+  outline: rgba(0, 26, 51, 0.6) none 3px;
+  opacity: 1;
+  cursor: pointer;
+}

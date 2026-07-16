@@ -1,0 +1,46 @@
+{
+  "source": "https://seller-edu.ozon.ru/libra/analytics-and-metrics/graphs/prodaji/vykupleno-tovarov",
+  "sourceTitle": "Выкуплено товаров",
+  "exportedAt": "2026-07-10T11:31:17.513Z",
+  "stylesheets": [
+    "https://seller-edu.ozon.ru/_nuxt/entry.DHklsSPE.css",
+    "inline-2",
+    "https://seller-edu.ozon.ru/_nuxt/search-input-widget.7nXX80wM.css",
+    "https://seller-edu.ozon.ru/_nuxt/recommendations-widget.B16Fb-ay.css",
+    "https://seller-edu.ozon.ru/_nuxt/skeleton-grid.CW8761Ke.css",
+    "https://seller-edu.ozon.ru/_nuxt/libra-document.C5IbhtdK.css",
+    "https://seller-edu.ozon.ru/_nuxt/welcome-banner.C-gS_y4t.css",
+    "https://seller-edu.ozon.ru/_nuxt/libra-layout.CZPnM5LO.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/use-responsive-injection-CZd9eS4p.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/link-pseudo-DVjJGvy1.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/tooltip-4PRSmx9d.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/notification-cBvm-B5g.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/index-Dug_Qwl4.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/responsive-provider-CjtE9lLe.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/overflowing-text-Ccxw-GZz.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/libra-navigation-sidepage-hgANM74R.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/main-Dd9Bbn8p.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/dialog-B0c7_kWt.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/textarea-BZ0_QXI9.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/island-CzR9ol3b.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/actual-links-C5ehSeFx.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/document-render-BFTX21P9.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/libra-document-render-C5bs9z47.css",
+    "https://st.ozone.ru/s3/libra-core-bucket/release-2026-05-22-01-c4f4255cf8c0c285bfd9c01269918b1a580646af/libra-redirect-to-global-DB7gIwcv.css",
+    "inline-25",
+    "inline-26"
+  ],
+  "skippedStylesheets": [],
+  "downloadedFonts": [
+    {
+      "url": "https://seller-edu.ozon.ru/_nuxt/Onest-2.0.NZdKB65a.woff2",
+      "file": "002-Onest-2.0.NZdKB65a.woff2"
+    }
+  ],
+  "failedFonts": [
+    {
+      "url": "https://st.ozone.ru/s3/fe-core-fonts/Onest-2.0.woff2",
+      "reason": "Failed to fetch (st.ozone.ru)"
+    }
+  ]
+}

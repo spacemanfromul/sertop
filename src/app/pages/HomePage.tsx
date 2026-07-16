@@ -66,8 +66,24 @@ import caseAdminEdit1 from "../../assets/cases/case-admin-edit-1.jpg";
 import caseAdminEdit2 from "../../assets/cases/case-admin-edit-2.jpg";
 import caseAdminEdit3 from "../../assets/cases/case-admin-edit-3.jpg";
 import caseAdminEdit4 from "../../assets/cases/case-admin-edit-4.jpg";
+import caseChallengesImage from "../../assets/cases/case-challenges.webp";
+import challengeOzonCustomerPortraitImage from "../../assets/cases/challenge-ozon-customer-portrait.webp";
 
-type ProjectId = 'admin-panel' | 'routes' | 'pushup-counter';
+type ProjectId = 'admin-panel' | 'routes' | 'pushup-counter' | 'challenges';
+
+const challengesCaseMeta: {
+  title: string;
+  description: string;
+  tags: Array<{ label: string; tone: TagBadgeTone }>;
+} = {
+  title: 'Дизайн-челленджи',
+  description: 'Челленджи, эксперименты и личные проекты для развития UI/UX-навыков',
+  tags: [
+    { label: 'UI/UX', tone: 'web' },
+    { label: 'Experiments', tone: 'data' },
+    { label: 'Challenge', tone: 'challenge' },
+  ],
+};
 
 export default function HomePage() {
   const [activeModal, setActiveModal] = useState<ProjectId | null>(null);
@@ -126,7 +142,7 @@ export default function HomePage() {
       <HeroStage />
       <SectionIntro
         title="Кейсы"
-        description="B2B-интерфейсы для маршрутов, администрирования и управления версиями"
+        description="B2B-интерфейсы для маршрутов, администрирования, ML-приложения и дизайн-челленджей"
       />
       <CasesBlock onProjectClick={setActiveModal} />
       <SectionIntro
@@ -149,6 +165,10 @@ export default function HomePage() {
 
       <Modal isOpen={activeModal === 'pushup-counter'} onClose={() => setActiveModal(null)}>
         <PushupCounterContent onAdjacentCase={() => setActiveModal('routes')} />
+      </Modal>
+
+      <Modal isOpen={activeModal === 'challenges'} onClose={() => setActiveModal(null)}>
+        <ChallengesContent onAdjacentCase={() => setActiveModal('routes')} />
       </Modal>
     </div>
   );
@@ -694,6 +714,14 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
           ]}
         >
           <PushupScreensPreview />
+        </CaseCard>
+        <CaseCard
+          onClick={() => onProjectClick('challenges')}
+          title={challengesCaseMeta.title}
+          description={challengesCaseMeta.description}
+          tags={challengesCaseMeta.tags}
+        >
+          <CaseImage src={caseChallengesImage} alt="Коллаж дизайн-челленджей" />
         </CaseCard>
       </div>
       {false && (
@@ -2309,6 +2337,63 @@ function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }
         adjacentCaseLabel="Следующий кейс"
         onAdjacentCase={onAdjacentCase}
         description="Можно посмотреть следующий кейс или написать мне в Telegram"
+        className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
+      />
+    </div>
+  );
+}
+
+function ChallengesContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
+  const challenges = [
+    {
+      title: 'Product Design Challenge',
+      description: 'Портрет покупателя для продавцов Ozon с аналитикой аудитории и сегментов.',
+      dates: 'Результаты: 24 июля — объявление финалистов',
+      status: 'Отправлено',
+      image: challengeOzonCustomerPortraitImage,
+      href: '/ozon-customer-portrait',
+    },
+  ];
+
+  return (
+    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+      <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
+        <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText(challengesCaseMeta.title)}
+        </h1>
+        <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
+          {formatText(challengesCaseMeta.description)}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {challengesCaseMeta.tags.map((tag) => (
+            <TagBadge key={tag.label} tone={tag.tone}>
+              {tag.label}
+            </TagBadge>
+          ))}
+        </div>
+      </header>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        {challenges.map((challenge) => (
+          <CaseCard
+            key={challenge.title}
+            onClick={() => window.open(challenge.href, '_blank', 'noopener,noreferrer')}
+            title={challenge.title}
+            description={challenge.description}
+            tags={[
+              { label: challenge.status, tone: 'data' },
+              { label: challenge.dates, tone: 'neutral' },
+            ]}
+          >
+            <CaseImage src={challenge.image} alt={challenge.title} />
+          </CaseCard>
+        ))}
+      </section>
+
+      <CaseFooterActions
+        adjacentCaseLabel="Продолжить"
+        onAdjacentCase={onAdjacentCase}
+        description="Можно посмотреть соседний кейс или написать мне в Telegram"
         className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
       />
     </div>
