@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router';
 import Header from '../components/Header';
 import {
   AdminPanelContent,
@@ -91,9 +93,19 @@ export default function CasePage({ slug }: { slug: CaseSlug }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header showAvatar />
+      <div className="hidden md:block">
+        <Header showAvatar />
+      </div>
 
-      <main className="px-4 pb-8 pt-28 md:px-8 md:pb-12 md:pt-32">
+      <Link
+        to="/"
+        aria-label="Вернуться на главную"
+        className="fixed left-4 top-4 z-50 flex size-12 items-center justify-center rounded-full border border-black/10 bg-white/90 text-[#191c1d] shadow-[0_6px_20px_rgba(25,28,29,0.16)] backdrop-blur-md transition-transform active:scale-95 md:hidden"
+      >
+        <ArrowLeft className="size-5" strokeWidth={2.2} />
+      </Link>
+
+      <main className="px-4 pb-8 pt-20 md:px-8 md:pb-12 md:pt-32">
         {currentCase.content()}
       </main>
     </div>
