@@ -132,7 +132,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative flex h-dvh w-full max-w-[1392px] flex-col overflow-hidden bg-white shadow-[0_2px_10px_0_rgba(0,0,0,0.15)] md:h-[calc(100dvh-64px)] md:rounded-[32px]"
+        className="relative flex h-dvh w-full max-w-[1280px] flex-col overflow-hidden bg-white shadow-[0_2px_10px_0_rgba(0,0,0,0.15)] md:h-[calc(100dvh-64px)] md:rounded-[32px]"
         onClick={(e) => e.stopPropagation()}
       >
         <style>{`

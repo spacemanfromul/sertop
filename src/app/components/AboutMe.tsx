@@ -18,7 +18,7 @@ function TextBlock() {
 
 export default function AboutMe() {
   return (
-    <div className="content-stretch relative w-full max-w-[1392px] mx-auto px-4 md:px-8 py-8">
+    <div className="content-stretch relative mx-auto w-full max-w-[1280px] px-4 py-8 md:px-0">
       {/* Мобильная версия (< 1280px) */}
       <div className="flex xl:hidden flex-col gap-[24px] items-center">
         {/* Первая строка: (видео + маленькое фото) + вертикальное фото */}

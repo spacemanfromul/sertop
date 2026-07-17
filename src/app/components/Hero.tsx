@@ -69,7 +69,7 @@ function HeroText() {
 export default function Hero() {
   return (
     <section
-      className="mx-auto flex w-full max-w-[1392px] flex-col items-center gap-5 px-4 py-4 md:gap-6 md:px-8 md:py-8"
+      className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-5 px-4 py-4 md:gap-6 md:px-0 md:py-8"
       data-name="HERO"
     >
       <PhotoCard />

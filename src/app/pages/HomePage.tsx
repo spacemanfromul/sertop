@@ -1,12 +1,13 @@
 ﻿import { Children, useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
+import { Link } from 'react-router';
 import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
-import Modal from '../components/Modal';
 import PortfolioVideo from '../components/PortfolioVideo';
 import TagBadge, { type TagBadgeTone } from '../components/TagBadge';
 import {
   ArrowRight,
+  Box,
   BriefcaseBusiness,
   ChevronLeft,
   ChevronRight,
@@ -15,6 +16,8 @@ import {
   GitBranch,
   Layers3,
   MapPinned,
+  MessageSquareText,
+  Palette,
   Pause,
   Play,
   RotateCcw,
@@ -68,8 +71,9 @@ import caseAdminEdit3 from "../../assets/cases/case-admin-edit-3.jpg";
 import caseAdminEdit4 from "../../assets/cases/case-admin-edit-4.jpg";
 import caseChallengesImage from "../../assets/cases/case-challenges.webp";
 import challengeOzonCustomerPortraitImage from "../../assets/cases/challenge-ozon-customer-portrait.webp";
-
-type ProjectId = 'admin-panel' | 'routes' | 'pushup-counter' | 'challenges';
+import challengeCommunicationDesignImage from "../../assets/cases/challenge-communication-design.webp";
+import challengeIdentityImage from "../../assets/cases/challenge-identity.webp";
+import challenge3dPrintingVideo from "../../assets/cases/challenge-3d-printing.mp4";
 
 const challengesCaseMeta: {
   title: string;
@@ -89,11 +93,12 @@ const challengesCoverClassName =
   'relative aspect-video w-full overflow-hidden rounded-[24px] shadow-[0_18px_46px_rgba(25,28,29,0.22)]';
 
 export default function HomePage() {
-  const [activeModal, setActiveModal] = useState<ProjectId | null>(null);
-
   useEffect(() => {
     // SEO метатеги для главной страницы
-    document.title = 'Сергей Топорков — UX/UI дизайнер портфолио';
+    const seoTitle = 'Сергей Топорков — продуктовый дизайнер B2B';
+    const seoDescription = 'Портфолио продуктового дизайнера Сергея Топоркова. Проектирую B2B-интерфейсы, data-heavy системы, админ-панели, карты, таблицы и внутренние инструменты.';
+
+    document.title = seoTitle;
     
     const setMetaTag = (name: string, content: string) => {
       let meta = document.querySelector(`meta[name="${name}"]`);
@@ -115,28 +120,32 @@ export default function HomePage() {
       meta.setAttribute('content', content);
     };
 
-    setMetaTag('description', 'Портфолио UX/UI дизайнера Сергея Топоркова. Превращаю сложные системы в понятный пользовательский опыт. Кейсы: админ-панель, маршруты доставки.');
-    setMetaTag('keywords', 'UX дизайнер, UI дизайнер, портфолио дизайнера, Сергей Топорков, веб-дизайн, интерфейсы, UX/UI');
+    setMetaTag('description', seoDescription);
+    setMetaTag('keywords', 'продуктовый дизайнер, UX дизайнер, UI дизайнер, портфолио дизайнера, Сергей Топорков, B2B, интерфейсы, data-heavy системы');
     setMetaTag('author', 'Сергей Топорков');
     
     // Open Graph для соцсетей
-    setPropertyTag('og:title', 'Сергей Топорков — UX/UI дизайнер');
-    setPropertyTag('og:description', 'Превращаю сложные системы в понятный пользовательский опыт');
+    setPropertyTag('og:title', seoTitle);
+    setPropertyTag('og:description', seoDescription);
     setPropertyTag('og:type', 'website');
-    setPropertyTag('og:url', window.location.href);
+    setPropertyTag('og:url', 'https://toporkovdsgnr.ru/');
+    setPropertyTag('og:image', 'https://toporkovdsgnr.ru/og-image.jpg');
+    setPropertyTag('og:image:width', '1200');
+    setPropertyTag('og:image:height', '630');
+
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = 'https://toporkovdsgnr.ru/';
     
     // Twitter Card
     setMetaTag('twitter:card', 'summary_large_image');
-    setMetaTag('twitter:title', 'Сергей Топорков — UX/UI дизайнер');
-    setMetaTag('twitter:description', 'Превращаю сложные системы в понятный пользовательский опыт');
-    document.title = 'Сергей Топорков - Продуктовый дизайнер';
-    setMetaTag('description', 'Портфолио продуктового дизайнера Сергея Топоркова. Проектирую сложные B2B-системы, интерфейсы для админ-панелей, карт и AI-сценариев.');
-    setMetaTag('keywords', 'продуктовый дизайнер, UX дизайнер, UI дизайнер, портфолио дизайнера, Сергей Топорков, B2B, интерфейсы, AI');
-    setMetaTag('author', 'Сергей Топорков');
-    setPropertyTag('og:title', 'Сергей Топорков - Продуктовый дизайнер');
-    setPropertyTag('og:description', 'Проектирую сложные B2B-системы, интерфейсы для админ-панелей, карт и AI-сценариев.');
-    setMetaTag('twitter:title', 'Сергей Топорков - Продуктовый дизайнер');
-    setMetaTag('twitter:description', 'Проектирую сложные B2B-системы, интерфейсы для админ-панелей, карт и AI-сценариев.');
+    setMetaTag('twitter:title', seoTitle);
+    setMetaTag('twitter:description', seoDescription);
+    setMetaTag('twitter:image', 'https://toporkovdsgnr.ru/og-image.jpg');
   }, []);
 
   return (
@@ -147,7 +156,7 @@ export default function HomePage() {
         title="Кейсы"
         description="B2B-интерфейсы для маршрутов, администрирования, ML-приложения и дизайн-челленджей"
       />
-      <CasesBlock onProjectClick={setActiveModal} />
+      <CasesBlock />
       <SectionIntro
         title="Обо мне"
         description="Чем я живу вне работы и что помогает возвращаться к продуктовым задачам со свежей головой"
@@ -155,24 +164,6 @@ export default function HomePage() {
       <AboutMe />
       <ThankYou />
 
-      <Modal isOpen={activeModal === 'admin-panel'} onClose={() => setActiveModal(null)}>
-        <AdminPanelContent onNextCase={() => setActiveModal('pushup-counter')} />
-      </Modal>
-
-      <Modal isOpen={activeModal === 'routes'} onClose={() => setActiveModal(null)}>
-        <RoutesContent
-          onAdjacentCase={() => setActiveModal('admin-panel')}
-          onOpenPrototype={() => window.open('/#routes-prototype', '_blank', 'noopener,noreferrer')}
-        />
-      </Modal>
-
-      <Modal isOpen={activeModal === 'pushup-counter'} onClose={() => setActiveModal(null)}>
-        <PushupCounterContent onAdjacentCase={() => setActiveModal('routes')} />
-      </Modal>
-
-      <Modal isOpen={activeModal === 'challenges'} onClose={() => setActiveModal(null)}>
-        <ChallengesContent onAdjacentCase={() => setActiveModal('routes')} />
-      </Modal>
     </div>
   );
 }
@@ -185,7 +176,7 @@ function SectionIntro({
   description: string;
 }) {
   return (
-    <section className="mx-auto flex w-full max-w-[1392px] flex-col items-center gap-3 px-4 pb-2 pt-12 text-center md:px-8 md:pb-4 md:pt-20">
+    <section className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-3 px-4 pb-2 pt-12 text-center md:px-0 md:pb-4 md:pt-20">
       <div className="flex max-w-[760px] flex-col items-center gap-3">
         <h2 className="font-['Google Sans',sans-serif] text-[40px] font-medium leading-[46px] tracking-[-0.5px] text-[#191c1d] md:text-[64px] md:leading-[72px]">
           {formatText(title)}
@@ -281,7 +272,7 @@ function HeroStage() {
       </div>
       <div className="absolute inset-0 z-10 bg-white/35" aria-hidden="true" />
       <div className="relative z-20 flex w-full flex-col gap-4 pb-4 pt-[90px] md:gap-8 md:pb-8 md:pt-[106px]">
-        <div className="mx-auto w-full max-w-[1392px] px-4 md:px-8">
+        <div className="mx-auto w-full max-w-[1280px] px-4 md:px-0">
           <Hero />
         </div>
       </div>
@@ -293,26 +284,22 @@ function CaseCard({
   title,
   description,
   tags,
-  onClick,
+  to,
   children,
   className = '',
 }: {
   title: string;
   description: string;
   tags: Array<{ label: string; tone: TagBadgeTone }>;
-  onClick?: () => void;
+  to?: string;
   children: React.ReactNode;
   className?: string;
 }) {
-  const Wrapper = onClick ? 'button' : 'div';
-
-  return (
-    <Wrapper
-      onClick={onClick}
-      className={`group flex w-full min-w-0 flex-col items-start gap-3 rounded-[28px] bg-[#f5f5f5] p-5 text-left transition-all duration-300 ease-out md:p-8 ${
-        onClick ? 'cursor-pointer hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_44px_rgba(25,28,29,0.12)]' : ''
-      } ${className}`}
-    >
+  const cardClassName = `group flex w-full min-w-0 flex-col items-start gap-3 rounded-[28px] bg-[#f5f5f5] p-5 text-left transition-all duration-300 ease-out md:p-8 ${
+    to ? 'cursor-pointer hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_44px_rgba(25,28,29,0.12)]' : ''
+  } ${className}`;
+  const content = (
+    <>
       {children}
       <h2 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.5px] text-[#191c1d] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
         {formatText(title)}
@@ -327,7 +314,15 @@ function CaseCard({
           </TagBadge>
         ))}
       </div>
-    </Wrapper>
+    </>
+  );
+
+  return to ? (
+    <Link to={to} className={cardClassName}>
+      {content}
+    </Link>
+  ) : (
+    <div className={cardClassName}>{content}</div>
   );
 }
 
@@ -687,13 +682,13 @@ function PushupScreensShowcase() {
   );
 }
 
-function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) => void }) {
+function CasesBlock() {
   return (
-    <div className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col gap-6 px-4 py-4 md:px-8 md:py-8">
+    <div className="mx-auto flex w-full max-w-[1280px] shrink-0 flex-col gap-6 px-4 py-4 md:px-0 md:py-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CaseCard
-          onClick={() => onProjectClick('routes')}
-          title="Система контроля транспортных расходов"
+          to="/cases/routes"
+          title="Контроль поездок"
           description="Собрал карту перемещений, чтобы быстрее находить поездки и контролировать спорные расходы"
           tags={[
             { label: 'WEB', tone: 'web' },
@@ -704,8 +699,8 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
           <CaseVideoPreview src={caseRoutesCoverVideo} label="Система контроля транспортных расходов" />
         </CaseCard>
         <CaseCard
-          onClick={() => onProjectClick('admin-panel')}
-          title="Управление релизами мобильного приложения"
+          to="/cases/releases"
+          title="Ветки и версии"
           description="Сделал сложную логику проще через дерево в таблице, чтобы команда легко и быстро управляла бета-версиями"
           tags={[
             { label: 'WEB', tone: 'web' },
@@ -715,7 +710,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
           <CaseImage src={caseAdminImage} alt="Управление релизами мобильного приложения" />
         </CaseCard>
         <CaseCard
-          onClick={() => onProjectClick('pushup-counter')}
+          to="/cases/pushup-counter"
           title="Счетчик отжиманий"
           description="Собрал Android-приложение в Codex, чтобы камера считала отжимания и помогала держать ежедневный челлендж"
           tags={[
@@ -727,8 +722,8 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
           <PushupScreensPreview />
         </CaseCard>
         <CaseCard
-          onClick={() => onProjectClick('challenges')}
-          title={challengesCaseMeta.title}
+          to="/cases/design-challenges"
+          title="Дизайн-челленджи"
           description={challengesCaseMeta.description}
           tags={challengesCaseMeta.tags}
         >
@@ -771,7 +766,7 @@ function CasesBlock({ onProjectClick }: { onProjectClick: (project: ProjectId) =
 
 function ThankYou() {
   return (
-    <footer className="mx-auto flex w-full max-w-[1392px] shrink-0 flex-col items-center px-4 pb-6 pt-8 text-center md:px-8 md:pb-8 md:pt-12">
+    <footer className="mx-auto flex w-full max-w-[1280px] shrink-0 flex-col items-center px-4 pb-6 pt-8 text-center md:px-0 md:pb-8 md:pt-12">
       <p className="font-['Google Sans',sans-serif] text-[13px] font-normal leading-[18px] text-[#999]">
         © Сергей Топорков 2026
       </p>
@@ -1713,12 +1708,12 @@ function CaseDecisionCarousel({ children }: { children: React.ReactNode }) {
 
 function CaseFooterActions({
   adjacentCaseLabel,
-  onAdjacentCase,
+  adjacentCaseHref,
   className = '',
   description = 'Можно посмотреть соседний кейс или сразу написать мне в Telegram',
 }: {
   adjacentCaseLabel: string;
-  onAdjacentCase: () => void;
+  adjacentCaseHref: string;
   className?: string;
   description?: string;
 }) {
@@ -1733,13 +1728,12 @@ function CaseFooterActions({
         </p>
       </div>
       <div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row md:w-auto">
-        <button
-          type="button"
-          onClick={onAdjacentCase}
+        <Link
+          to={adjacentCaseHref}
           className="flex h-14 min-w-[176px] items-center justify-center rounded-full bg-[#191c1d] px-6 text-center font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
         >
           {formatText(adjacentCaseLabel)}
-        </button>
+        </Link>
         <a
           href="https://t.me/spacemanfromul"
           target="_blank"
@@ -2043,9 +2037,9 @@ function CaseStudySlideshow({ slides, label }: { slides: string[]; label: string
   );
 }
 
-function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
+export function AdminPanelContent() {
   return (
-    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText('Управление релизами мобильного приложения')}
@@ -2151,16 +2145,16 @@ function AdminPanelContent({ onNextCase }: { onNextCase: () => void }) {
 
       <CaseFooterActions
         adjacentCaseLabel="Продолжить"
-        onAdjacentCase={onNextCase}
+        adjacentCaseHref="/cases/pushup-counter"
         className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
       />
     </div>
   );
 }
 
-function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
+export function PushupCounterContent() {
   return (
-    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText('Счетчик отжиманий')}
@@ -2349,8 +2343,8 @@ function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }
       </section>
 
       <CaseFooterActions
-        adjacentCaseLabel="Следующий кейс"
-        onAdjacentCase={onAdjacentCase}
+        adjacentCaseLabel="Дизайн-челленджи"
+        adjacentCaseHref="/cases/design-challenges"
         description="Можно посмотреть следующий кейс или написать мне в Telegram"
         className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
       />
@@ -2358,7 +2352,27 @@ function PushupCounterContent({ onAdjacentCase }: { onAdjacentCase: () => void }
   );
 }
 
-function ChallengesContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
+function ChallengePlaceholderCover({ variant, title }: { variant: 'printing' | 'identity' | 'communication'; title: string }) {
+  const styles = {
+    printing: { Icon: Box, background: 'bg-[#e8f0ff]', color: 'text-[#0b57d0]' },
+    identity: { Icon: Palette, background: 'bg-[#eee8f9]', color: 'text-[#6b2f78]' },
+    communication: { Icon: MessageSquareText, background: 'bg-[#eaf9ec]', color: 'text-[#146c2e]' },
+  };
+  const { Icon, background, color } = styles[variant];
+
+  return (
+    <div className={`${challengesCoverClassName} flex items-center justify-center ${background}`}>
+      <div className={`flex flex-col items-center gap-4 ${color}`}>
+        <div className="flex size-20 items-center justify-center rounded-full bg-white/75 shadow-[0_8px_30px_rgba(25,28,29,0.1)]">
+          <Icon className="size-10" strokeWidth={1.8} />
+        </div>
+        <span className="font-['Google Sans',sans-serif] text-xl font-medium text-[#191c1d]">{title}</span>
+      </div>
+    </div>
+  );
+}
+
+export function ChallengesContent() {
   const challenges = [
     {
       title: 'Product Design Challenge',
@@ -2368,10 +2382,34 @@ function ChallengesContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
       image: challengeOzonCustomerPortraitImage,
       href: '/ozon-customer-portrait',
     },
+    {
+      title: '3D-печать',
+      description: 'Эксперименты с формой, прототипированием и созданием физических объектов.',
+      dates: 'Скоро',
+      status: 'В планах',
+      variant: 'printing' as const,
+      video: challenge3dPrintingVideo,
+    },
+    {
+      title: 'Айдентика',
+      description: 'Практика в создании визуального языка, знаков и системы носителей.',
+      dates: 'Скоро',
+      status: 'В планах',
+      variant: 'identity' as const,
+      image: challengeIdentityImage,
+    },
+    {
+      title: 'Коммуникационный дизайн',
+      description: 'Эксперименты с визуальной подачей сообщений и информационных материалов.',
+      dates: 'Скоро',
+      status: 'В планах',
+      variant: 'communication' as const,
+      image: challengeCommunicationDesignImage,
+    },
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6">
       <header className="flex w-full flex-col items-start gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText(challengesCaseMeta.title)}
@@ -2379,55 +2417,44 @@ function ChallengesContent({ onAdjacentCase }: { onAdjacentCase: () => void }) {
         <p className="font-['Google Sans',sans-serif] text-base font-medium leading-[22px] md:text-xl md:leading-[26px]">
           {formatText(challengesCaseMeta.description)}
         </p>
-        <div className="flex flex-wrap gap-2">
-          {challengesCaseMeta.tags.map((tag) => (
-            <TagBadge key={tag.label} tone={tag.tone}>
-              {tag.label}
-            </TagBadge>
-          ))}
-        </div>
       </header>
 
       <section className="grid gap-6 lg:grid-cols-2">
         {challenges.map((challenge) => (
           <CaseCard
             key={challenge.title}
-            onClick={() => window.open(challenge.href, '_blank', 'noopener,noreferrer')}
+            to={'href' in challenge ? challenge.href : undefined}
             title={challenge.title}
             description={challenge.description}
-            tags={[
-              { label: challenge.status, tone: 'data' },
-              { label: challenge.dates, tone: 'neutral' },
-            ]}
+            tags={[]}
           >
-            <CaseImage
-              src={challenge.image}
-              alt={challenge.title}
-              className={challengesCoverClassName}
-            />
+            {'video' in challenge ? (
+              <PortfolioVideo
+                className={challengesCoverClassName}
+                src={challenge.video}
+                label={challenge.title}
+                preload="metadata"
+              />
+            ) : 'image' in challenge ? (
+              <CaseImage
+                src={challenge.image}
+                alt={challenge.title}
+                className={challengesCoverClassName}
+              />
+            ) : (
+              <ChallengePlaceholderCover variant={challenge.variant} title={challenge.title} />
+            )}
           </CaseCard>
         ))}
       </section>
 
-      <CaseFooterActions
-        adjacentCaseLabel="Продолжить"
-        onAdjacentCase={onAdjacentCase}
-        description="Можно посмотреть соседний кейс или написать мне в Telegram"
-        className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
-      />
     </div>
   );
 }
 
-function RoutesContent({
-  onAdjacentCase,
-  onOpenPrototype,
-}: {
-  onAdjacentCase: () => void;
-  onOpenPrototype: () => void;
-}) {
+export function RoutesContent() {
   return (
-    <div className="mx-auto flex w-full max-w-[1392px] flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6">
       <div className="flex flex-col gap-3 text-[#191c1d]">
         <h1 className="font-['Google Sans',sans-serif] text-[28px] font-medium leading-[34px] tracking-[-0.3px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText('Система контроля транспортных расходов')}
@@ -2458,14 +2485,13 @@ function RoutesContent({
             {formatText('Можно выбрать поездку, посмотреть маршрут на карте, открыть таблицу заявок и проверить спорные участки так, как это делает руководитель или диспетчер')}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onOpenPrototype}
+        <Link
+          to="/routes-prototype"
           className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#191c1d] px-5 font-['Google Sans',sans-serif] text-base font-semibold leading-5 text-white transition-colors hover:bg-[#303437]"
         >
           К прототипу
           <ArrowRight className="size-5" />
-        </button>
+        </Link>
       </div>
 
       <section className="routes-case-flow relative isolate w-full overflow-hidden text-[#191c1d]">
@@ -2581,7 +2607,7 @@ function RoutesContent({
 
       <CaseFooterActions
         adjacentCaseLabel="Продолжить"
-        onAdjacentCase={onAdjacentCase}
+        adjacentCaseHref="/cases/releases"
         className="w-full md:mx-auto md:w-[56%] md:max-w-[760px]"
       />
     </div>
