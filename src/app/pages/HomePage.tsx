@@ -5,6 +5,7 @@ import Hero from '../components/Hero';
 import AboutMe from '../components/AboutMe';
 import PortfolioVideo from '../components/PortfolioVideo';
 import TagBadge, { type TagBadgeTone } from '../components/TagBadge';
+import { setJsonLd } from '../utils/structuredData';
 import {
   ArrowRight,
   Box,
@@ -146,6 +147,18 @@ export default function HomePage() {
     setMetaTag('twitter:title', seoTitle);
     setMetaTag('twitter:description', seoDescription);
     setMetaTag('twitter:image', 'https://toporkovdsgnr.ru/og-image.jpg');
+
+    const removePersonSchema = setJsonLd('person', {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'Сергей Топорков',
+      jobTitle: 'Продуктовый дизайнер B2B',
+      description: seoDescription,
+      url: 'https://toporkovdsgnr.ru',
+      sameAs: ['https://t.me/spacemanfromul'],
+    });
+
+    return removePersonSchema;
   }, []);
 
   return (
@@ -153,6 +166,7 @@ export default function HomePage() {
       <Header />
       <HeroStage />
       <SectionIntro
+        id="cases"
         title="Кейсы"
         description="B2B-интерфейсы для маршрутов, администрирования, ML-приложения и дизайн-челленджей"
       />
@@ -169,14 +183,16 @@ export default function HomePage() {
 }
 
 function SectionIntro({
+  id,
   title,
   description,
 }: {
+  id?: string;
   title: string;
   description: string;
 }) {
   return (
-    <section className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-3 px-4 pb-2 pt-12 text-center md:px-0 md:pb-4 md:pt-20">
+    <section id={id} className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-3 px-4 pb-2 pt-12 text-center md:px-0 md:pb-4 md:pt-20">
       <div className="flex max-w-[760px] flex-col items-center gap-3">
         <h2 className="font-['Google Sans',sans-serif] text-[40px] font-medium leading-[46px] tracking-[-0.5px] text-[#191c1d] md:text-[64px] md:leading-[72px]">
           {formatText(title)}

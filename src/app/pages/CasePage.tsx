@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router';
 import Header from '../components/Header';
+import { setJsonLd } from '../utils/structuredData';
 import {
   AdminPanelContent,
   ChallengesContent,
@@ -72,7 +73,7 @@ export default function CasePage({ slug }: { slug: CaseSlug }) {
     setMetaTag('description', currentCase.description);
     setPropertyTag('og:title', currentCase.title);
     setPropertyTag('og:description', currentCase.description);
-    setPropertyTag('og:type', 'article');
+    setPropertyTag('og:type', 'website');
     setPropertyTag('og:url', currentCase.canonical);
     setPropertyTag('og:image', 'https://toporkovdsgnr.ru/og-image.jpg');
     setPropertyTag('og:image:width', '1200');
@@ -89,6 +90,53 @@ export default function CasePage({ slug }: { slug: CaseSlug }) {
       document.head.appendChild(canonical);
     }
     canonical.href = currentCase.canonical;
+
+    const caseName = document.querySelector<HTMLElement>('main h1')?.textContent
+      ?.replace(/\s+/g, ' ')
+      .trim() || currentCase.title;
+
+    const removeCreativeWorkSchema = setJsonLd('creative-work', {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      name: caseName,
+      description: currentCase.description,
+      url: currentCase.canonical,
+      image: 'https://toporkovdsgnr.ru/og-image.jpg',
+      author: {
+        '@type': 'Person',
+        name: 'Сергей Топорков',
+      },
+    });
+
+    const removeBreadcrumbSchema = setJsonLd('breadcrumbs', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Главная',
+          item: 'https://toporkovdsgnr.ru/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Кейсы',
+          item: 'https://toporkovdsgnr.ru/#cases',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: caseName,
+          item: currentCase.canonical,
+        },
+      ],
+    });
+
+    return () => {
+      removeCreativeWorkSchema();
+      removeBreadcrumbSchema();
+    };
   }, [currentCase]);
 
   return (
