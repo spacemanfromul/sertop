@@ -7,6 +7,7 @@ import pushupCounterImage from '../../assets/cases/pushup-counter.webp';
 import pushupGymBgImage from '../../assets/cases/pushup-gym-bg.webp';
 import phoneMockupImage from '../../assets/cases/phone-mockup.png';
 import caseChallengesImage from '../../assets/cases/case-challenges.webp';
+import serviceSprintCoverImage from '../../assets/cases/service-sprint-cover.png';
 import aboutAdventureImage from '../../imports/Frame270989289-4/02203f4f61aa30d19120aa7df16dae07061dd01f.jpg';
 import aboutPortraitImage from '../../imports/Frame270989289-4/a83d6113c61a6a5429e4b85d05513e17e34b7d3a.jpg';
 import aboutWorkshopImage from '../../imports/Frame270989289-4/5dfcbac1716ed4b7f6d200a9779b11a60077d470.jpg';
@@ -74,6 +75,7 @@ function CaseIdentity({ caseInfo, show }: { caseInfo: CaseHeaderInfo; show: bool
 }
 
 const caseItems = [
+  { title: 'Сервисные команды', description: 'Задачи и контроль выездных работ', to: '/cases/service-sprint', cover: 'service' },
   { title: 'Контроль поездок', description: 'Контроль транспортных расходов', to: '/cases/routes', cover: 'routes' },
   { title: 'Ветки и версии', description: 'Управление версиями приложения', to: '/cases/releases', cover: 'releases' },
   { title: 'Счетчик отжиманий', description: 'ML-счётчик отжиманий', to: '/cases/pushup-counter', cover: 'pushup' },
@@ -102,6 +104,10 @@ function MainNavigation({ openMenu, setOpenMenu }: { openMenu: OpenMenu; setOpen
 }
 
 function CaseMenuCover({ cover }: { cover: string }) {
+  if (cover === 'service') {
+    return <img src={serviceSprintCoverImage} alt="" className="size-full object-cover" />;
+  }
+
   if (cover === 'routes') {
     return <video src={caseRoutesVideo} className="size-full object-cover" autoPlay muted loop playsInline preload="metadata" />;
   }
@@ -129,7 +135,7 @@ function CaseMenuCover({ cover }: { cover: string }) {
 
 function CasesMegaMenu({ closeMenu }: { closeMenu: () => void }) {
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-5 gap-3">
       {caseItems.map((item) => (
         <Link key={item.to} to={item.to} onClick={closeMenu} className="group rounded-[24px] bg-[#f7f8f9] p-3 transition-colors hover:bg-[#eff1f2]">
           <div className="aspect-video overflow-hidden rounded-[18px] bg-[#e8edf3]">
@@ -211,7 +217,9 @@ export default function Header({ showAvatar: showAvatarProp }: { showAvatar?: bo
         ? { title: 'Счетчик отжиманий', subtitle: 'Пет-проект' }
         : pathname === '/cases/design-challenges'
           ? { title: 'Дизайн-челленджи' }
-          : undefined;
+          : pathname === '/cases/service-sprint'
+            ? { title: 'Сервисные команды', subtitle: 'Продуктовый кейс' }
+            : undefined;
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);

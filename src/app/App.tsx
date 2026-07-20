@@ -28,6 +28,7 @@ function AppRoutes() {
         <Route path="/cases/routes" element={<CasePage slug="routes" />} />
         <Route path="/cases/pushup-counter" element={<CasePage slug="pushup-counter" />} />
         <Route path="/cases/design-challenges" element={<CasePage slug="design-challenges" />} />
+        <Route path="/cases/service-sprint" element={<CasePage slug="service-sprint" />} />
         <Route path="/og-preview" element={<OgPreviewPage />} />
         <Route path="/admin-panel" element={<Navigate to="/cases/releases" replace />} />
         <Route path="/routes" element={<Navigate to="/cases/routes" replace />} />

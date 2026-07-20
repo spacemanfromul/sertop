@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router';
 import Header from '../components/Header';
 import { setJsonLd } from '../utils/structuredData';
+import ServiceSprintContent from './ServiceSprintContent';
 import {
   AdminPanelContent,
   ChallengesContent,
@@ -10,7 +11,7 @@ import {
   RoutesContent,
 } from './HomePage';
 
-export type CaseSlug = 'releases' | 'routes' | 'pushup-counter' | 'design-challenges';
+export type CaseSlug = 'releases' | 'routes' | 'pushup-counter' | 'design-challenges' | 'service-sprint';
 
 const cases: Record<CaseSlug, {
   title: string;
@@ -41,6 +42,12 @@ const cases: Record<CaseSlug, {
     description: 'UI/UX-челленджи, эксперименты и личные проекты для развития продуктового дизайна, интерфейсов и прототипирования.',
     canonical: 'https://toporkovdsgnr.ru/cases/design-challenges',
     content: () => <ChallengesContent />,
+  },
+  'service-sprint': {
+    title: 'Мобильное приложение для управления сервисными командами — Сергей Топорков',
+    description: 'Спроектировал мобильный инструмент для постановки задач, управления исполнителями и контроля выполнения работ в сервисных компаниях',
+    canonical: 'https://toporkovdsgnr.ru/cases/service-sprint',
+    content: () => <ServiceSprintContent />,
   },
 };
 

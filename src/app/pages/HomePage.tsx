@@ -75,6 +75,7 @@ import challengeOzonCustomerPortraitImage from "../../assets/cases/challenge-ozo
 import challengeCommunicationDesignImage from "../../assets/cases/challenge-communication-design.webp";
 import challengeIdentityImage from "../../assets/cases/challenge-identity.webp";
 import challenge3dPrintingVideo from "../../assets/cases/challenge-3d-printing.mp4";
+import { ServiceSprintCover } from './ServiceSprintContent';
 
 const challengesCaseMeta: {
   title: string;
@@ -702,6 +703,18 @@ function CasesBlock() {
   return (
     <div className="mx-auto flex w-full max-w-[1280px] shrink-0 flex-col gap-6 px-4 py-4 md:px-0 md:py-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <CaseCard
+          to="/cases/service-sprint"
+          title="Сервисные команды"
+          description="Приложение для постановки задач и контроля выездных работ"
+          tags={[
+            { label: 'Концепт', tone: 'ai' },
+            { label: 'PWA', tone: 'web' },
+            { label: 'FSM', tone: 'b2b' },
+          ]}
+        >
+          <ServiceSprintCover />
+        </CaseCard>
         <CaseCard
           to="/cases/routes"
           title="Контроль поездок"
@@ -2117,45 +2130,22 @@ export function AdminPanelContent() {
         />
       </section>
 
-      <section className="grid items-stretch gap-5 md:grid-cols-2 md:gap-6">
-        <div className="h-full rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
+      <section>
+        <div className="rounded-[28px] bg-[#f3f4f4] p-5 md:p-6">
           <RoutesTextPoint title="Мой вклад">
             <CaseStudyText>Я проектировал интерфейс админ-панели с самого начала. В этой задаче проработал ключевые пользовательские сценарии и согласовал решение с командой</CaseStudyText>
             <CaseStudyText>Вместо обычной таблицы я предложил древовидную структуру: ветки отображаются на верхнем уровне, а связанные с ними версии — внутри. Такой подход позволяет в одном интерфейсе создавать ветки, добавлять версии и управлять ими, сохраняя понятную связь между релизами</CaseStudyText>
           </RoutesTextPoint>
         </div>
-        <div className="routes-pride-card relative h-full overflow-hidden rounded-[28px] p-5 md:p-6">
-          <div className="relative z-10">
-            <RoutesTextPoint title="Чем я горжусь">
-              <CaseStudyText>В этой задаче было важно снизить риск ошибок: действия администратора могут затронуть большое количество пользователей. Несмотря на высокий уровень экспертизы аудитории, интерфейс не должен требовать лишних усилий и перегружать пользователя деталями</CaseStudyText>
-              <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
-            </RoutesTextPoint>
-          </div>
-          <style>{`
-            .routes-pride-card {
-              background:
-                radial-gradient(circle at 15% 20%, rgba(219, 234, 254, 0.98), transparent 36%),
-                radial-gradient(circle at 82% 78%, rgba(220, 252, 231, 0.9), transparent 38%),
-                linear-gradient(120deg, #f3f4f4, #eef6ff 44%, #f4fbf5);
-              background-size: 140% 140%;
-              animation: routes-pride-gradient 12s ease-in-out infinite alternate;
-            }
+      </section>
 
-            @keyframes routes-pride-gradient {
-              from {
-                background-position: 0% 30%;
-              }
-              to {
-                background-position: 100% 70%;
-              }
-            }
-
-            @media (prefers-reduced-motion: reduce) {
-              .routes-pride-card {
-                animation: none;
-              }
-            }
-          `}</style>
+      <section className="flex flex-col gap-6 pt-8 text-[#191c1d] md:gap-8 md:pt-12">
+        <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Чем я горжусь')}
+        </h2>
+        <div className="w-full overflow-hidden rounded-[28px] bg-[#f3f4f4] p-6 md:mx-auto md:w-[56%] md:max-w-[760px] md:p-8">
+          <CaseStudyText>В этой задаче было важно снизить риск ошибок: действия администратора могут затронуть большое количество пользователей. Несмотря на высокий уровень экспертизы аудитории, интерфейс не должен требовать лишних усилий и перегружать пользователя деталями</CaseStudyText>
+          <CaseStudyText>Я горжусь тем, что удалось сохранить сложную логику управления релизами, но представить её в простой и однозначной форме. Древовидная структура помогает быстро понимать связь между ветками и версиями, а сценарии управления остаются предсказуемыми и интуитивными</CaseStudyText>
         </div>
       </section>
 
@@ -2321,40 +2311,15 @@ export function PushupCounterContent() {
         </div>
       </section>
 
-      <section className="text-[#191c1d]">
-        <div className="pushup-pride-card relative mx-auto w-full overflow-hidden rounded-[36px] px-5 py-10 md:w-[74%] md:px-12 md:py-14 lg:px-16 lg:py-16">
-          <div className="relative z-10 mx-auto flex max-w-[860px] flex-col gap-7">
-            <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
-              {formatText('Чем я горжусь')}
-            </h2>
+      <section className="flex flex-col gap-6 pt-8 text-[#191c1d] md:gap-8 md:pt-12">
+        <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
+          {formatText('Чем я горжусь')}
+        </h2>
+        <div className="mx-auto w-full overflow-hidden rounded-[28px] bg-[#f3f4f4] p-6 md:w-[56%] md:max-w-[760px] md:p-8">
+          <div className="flex flex-col gap-4">
             <CaseStudyText>Я начал этот pet project без опыта в мобильной разработке и довёл идею до рабочего прототипа: приложение считает отжимания, помогает проходить подход и показывает, как из личной задачи можно собрать работающий продукт.</CaseStudyText>
             <CaseStudyText>Для меня это был способ проверить, как быстро можно пройти путь от идеи до MVP: разобраться в ML-счётчике, ограничениях камеры, состояниях интерфейса и сценарии тренировки.</CaseStudyText>
           </div>
-          <style>{`
-            .pushup-pride-card {
-              background:
-                radial-gradient(circle at 12% 12%, rgba(219, 234, 254, 0.98), transparent 34%),
-                radial-gradient(circle at 86% 18%, rgba(220, 252, 231, 0.95), transparent 38%),
-                linear-gradient(120deg, #f5f9ff, #eef6ff 44%, #f1fff6);
-              background-size: 140% 140%;
-              animation: pushup-pride-gradient 12s ease-in-out infinite alternate;
-            }
-
-            @keyframes pushup-pride-gradient {
-              from {
-                background-position: 0% 30%;
-              }
-              to {
-                background-position: 100% 70%;
-              }
-            }
-
-            @media (prefers-reduced-motion: reduce) {
-              .pushup-pride-card {
-                animation: none;
-              }
-            }
-          `}</style>
         </div>
       </section>
 
@@ -2589,35 +2554,10 @@ export function RoutesContent() {
         <h2 className="text-center font-['Google Sans',sans-serif] text-[32px] font-medium leading-[38px] tracking-[-0.5px] md:text-[40px] md:leading-[48px] md:tracking-[-1px]">
           {formatText('Чем я горжусь')}
         </h2>
-        <div className="routes-pride-card relative w-full overflow-hidden rounded-[28px] p-5 md:mx-auto md:w-1/3 md:p-6">
-          <div className="relative z-10 max-w-[820px]">
+        <div className="relative w-full overflow-hidden rounded-[28px] bg-[#f3f4f4] p-6 md:mx-auto md:w-[56%] md:max-w-[760px] md:p-8">
+          <div>
             <CaseStudyText>Горжусь тем, что этот проект стал для меня точкой роста: я не просто рисовал интерфейс, а проектировал систему с нуля — с логикой, сценариями, ограничениями и реальными пользователями. Продукт работает в той структуре, которую мы заложили, и продолжает развиваться, а для меня это стало первым большим подтверждением ценности продуктового подхода</CaseStudyText>
           </div>
-          <style>{`
-            .routes-pride-card {
-              background:
-                radial-gradient(circle at 15% 20%, rgba(219, 234, 254, 0.98), transparent 36%),
-                radial-gradient(circle at 82% 78%, rgba(220, 252, 231, 0.9), transparent 38%),
-                linear-gradient(120deg, #f3f4f4, #eef6ff 44%, #f4fbf5);
-              background-size: 140% 140%;
-              animation: routes-pride-gradient 12s ease-in-out infinite alternate;
-            }
-
-            @keyframes routes-pride-gradient {
-              from {
-                background-position: 0% 30%;
-              }
-              to {
-                background-position: 100% 70%;
-              }
-            }
-
-            @media (prefers-reduced-motion: reduce) {
-              .routes-pride-card {
-                animation: none;
-              }
-            }
-          `}</style>
         </div>
       </section>
 
