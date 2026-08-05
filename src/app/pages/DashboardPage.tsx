@@ -245,20 +245,31 @@ export default function DashboardPage() {
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {filtered.length === 0 ? <SellerCard className="col-span-full px-5 py-16 text-center text-[#6f8091]">Ничего не найдено</SellerCard> : filtered.map((item) => (
               <SellerCard key={item.id} className="flex min-h-[280px] min-w-0 flex-col overflow-hidden p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3"><CompanyLogo application={item} large /><div className="min-w-0"><p className="text-[12px] font-medium text-[#6f8091]">{formatDate(item.date)}</p><h2 className="mt-1 truncate text-[20px] font-bold">{item.company}</h2></div></div>
-                  <StatusBadge status={item.status} />
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[12px] font-medium text-[#6f8091]">{formatDate(item.date)}</span>
+                  <div className="flex shrink-0 gap-1">
+                    <button onClick={() => setEditing(item)} className="grid size-9 place-items-center rounded-lg hover:bg-[#edf1f5]" aria-label="Редактировать"><Pencil className="size-4" /></button>
+                    {item.link && <a href={item.link} target="_blank" rel="noreferrer" className="grid size-9 place-items-center rounded-lg hover:bg-[#edf1f5]" aria-label="Открыть вакансию"><ExternalLink className="size-4" /></a>}
+                    <button onClick={() => remove(item)} className="grid size-9 place-items-center rounded-lg text-[#c7352b] hover:bg-[#ffe8e5]" aria-label="Удалить"><Trash2 className="size-4" /></button>
+                  </div>
                 </div>
-                <p className="mt-3 text-[14px] leading-5 text-[#42566b]">{item.position || 'Должность не указана'}</p>
-                <div className="mt-3 flex items-center gap-2"><span className="rounded-md bg-[#edf1f5] px-2 py-1 text-[12px] font-semibold">{item.segment}</span>{item.salary && <span className="text-[12px] text-[#6f8091]">{item.salary}</span>}</div>
+                <div className="mt-3 flex min-w-0 items-center gap-3">
+                  <CompanyLogo application={item} large />
+                  <div className="min-w-0">
+                    <h2 className="truncate text-[20px] font-bold">{item.company}</h2>
+                    <p className="mt-1 line-clamp-2 text-[13px] leading-5 text-[#42566b]">{item.position || 'Должность не указана'}</p>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <StatusBadge status={item.status} />
+                  <span className="rounded-md bg-[#edf1f5] px-2 py-1 text-[12px] font-semibold">{item.segment}</span>
+                  {item.salary && <span className="text-[12px] text-[#6f8091]">{item.salary}</span>}
+                </div>
                 <div className="mt-4 grid gap-2">
                   {item.rejectionReason && <div className="min-w-0 overflow-hidden rounded-xl bg-[#fff1ef] px-3 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-[#c7352b]">Причина отказа</p><p className="mt-1 line-clamp-3 break-words text-[13px] leading-5 text-[#5d2723] [overflow-wrap:anywhere]"><LinkifiedText>{item.rejectionReason}</LinkifiedText></p></div>}
                   {item.notes && <div className="min-w-0 overflow-hidden rounded-xl bg-[#edf4ff] px-3 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-[#005bff]">Заметки</p><p className="mt-1 line-clamp-3 break-words text-[13px] leading-5 text-[#29435f] [overflow-wrap:anywhere]"><LinkifiedText>{item.notes}</LinkifiedText></p></div>}
                 </div>
-                <div className="mt-auto flex items-end justify-between pt-4">
-                  <p className="max-w-[65%] truncate text-[12px] text-[#7f91a3]">{item.contact || 'Контакт не указан'}</p>
-                  <div className="flex gap-1"><button onClick={() => setEditing(item)} className="grid size-9 place-items-center rounded-lg hover:bg-[#edf1f5]" aria-label="Редактировать"><Pencil className="size-4" /></button>{item.link && <a href={item.link} target="_blank" rel="noreferrer" className="grid size-9 place-items-center rounded-lg hover:bg-[#edf1f5]" aria-label="Открыть вакансию"><ExternalLink className="size-4" /></a>}<button onClick={() => remove(item)} className="grid size-9 place-items-center rounded-lg text-[#c7352b] hover:bg-[#ffe8e5]" aria-label="Удалить"><Trash2 className="size-4" /></button></div>
-                </div>
+                <p className="mt-auto truncate pt-4 text-[12px] text-[#7f91a3]">{item.contact || 'Контакт не указан'}</p>
               </SellerCard>
             ))}
           </div>
