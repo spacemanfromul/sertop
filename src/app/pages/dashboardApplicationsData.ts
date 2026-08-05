@@ -13,10 +13,11 @@ export type JobApplication = {
   link: string;
   contact: string;
   notes: string;
+  logo: string;
 };
 
 const row = (id: string, date: string, company: string, segment: 'B2B' | 'B2C', position: string, status: ApplicationStatus, extras: Partial<JobApplication> = {}): JobApplication => ({
-  id, date, company, segment, position, status, rejectionStage: '', rejectionReason: '', salary: '', link: '', contact: '', notes: '', ...extras,
+  id, date, company, segment, position, status, rejectionStage: '', rejectionReason: '', salary: '', link: '', contact: '', notes: '', logo: '', ...extras,
 });
 
 export const initialApplications: JobApplication[] = [

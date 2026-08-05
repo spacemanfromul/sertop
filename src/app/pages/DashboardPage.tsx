@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { BriefcaseBusiness, ExternalLink, LayoutGrid, List, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { BriefcaseBusiness, ExternalLink, ImagePlus, LayoutGrid, List, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { SellerButton, SellerCard } from '../components/SellerUi';
 import { AnalyticsWidget } from '../components/analytics/AnalyticsWidget';
+import { WeeklyGoalCard } from '../components/dashboard/WeeklyGoalCard';
 import { initialApplications, type ApplicationStatus, type JobApplication } from './dashboardApplicationsData';
 
 const STORAGE_KEY = 'toporkov-job-applications-v1';
 const statuses: ApplicationStatus[] = ['Черновик', 'Отправлено', 'Интервью', 'Тестовое', 'Оффер', 'Отказ'];
 const emptyApplication: JobApplication = {
   id: '', date: new Date().toISOString().slice(0, 10), company: '', segment: 'B2B', position: '', status: 'Отправлено',
-  rejectionStage: '', rejectionReason: '', salary: '', link: '', contact: '', notes: '',
+  rejectionStage: '', rejectionReason: '', salary: '', link: '', contact: '', notes: '', logo: '',
 };
 
 const statusClasses: Record<ApplicationStatus, string> = {
@@ -25,12 +26,48 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat('ru-RU').format(new Date(`${value}T12:00:00`));
 }
 
+function persistApplications(applications: JobApplication[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
+}
+
 function StatusBadge({ status }: { status: ApplicationStatus }) {
   return <span className={`inline-flex rounded-full px-2.5 py-1 text-[12px] font-semibold ${statusClasses[status]}`}>{status}</span>;
 }
 
+function CompanyLogo({ application, large = false }: { application: JobApplication; large?: boolean }) {
+  const classes = large ? 'size-12 rounded-2xl text-[18px]' : 'size-10 rounded-xl text-[15px]';
+  return application.logo
+    ? <img src={application.logo} alt="" className={`${classes} shrink-0 border border-[#e2e7ec] bg-white object-contain p-1`} />
+    : <span className={`${classes} grid shrink-0 place-items-center bg-[#e9f2ff] font-bold text-[#005bff]`}>{application.company.trim().charAt(0).toUpperCase() || '—'}</span>;
+}
+
+function LinkifiedText({ children }: { children: string }) {
+  return <>{children.split(/(https?:\/\/[^\s]+)/g).map((part, index) => part.startsWith('http') ? <a key={index} href={part} target="_blank" rel="noreferrer" className="font-medium text-[#005bff] underline decoration-[#005bff55] underline-offset-2 hover:decoration-[#005bff]">{part}</a> : part)}</>;
+}
+
+function prepareLogo(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    if (file.size > 3 * 1024 * 1024) { reject(new Error('Максимальный размер файла — 3 МБ')); return; }
+    const image = new Image();
+    const source = URL.createObjectURL(file);
+    image.onload = () => {
+      const canvas = document.createElement('canvas'); canvas.width = 160; canvas.height = 160;
+      const context = canvas.getContext('2d');
+      if (!context) { URL.revokeObjectURL(source); reject(new Error('Не удалось обработать изображение')); return; }
+      context.fillStyle = '#ffffff'; context.fillRect(0, 0, 160, 160);
+      const scale = Math.min(144 / image.width, 144 / image.height);
+      const width = image.width * scale; const height = image.height * scale;
+      context.drawImage(image, (160 - width) / 2, (160 - height) / 2, width, height);
+      URL.revokeObjectURL(source); resolve(canvas.toDataURL('image/webp', 0.82));
+    };
+    image.onerror = () => { URL.revokeObjectURL(source); reject(new Error('Не удалось открыть изображение')); };
+    image.src = source;
+  });
+}
+
 function ApplicationDialog({ application, onClose, onSave }: { application: JobApplication; onClose: () => void; onSave: (item: JobApplication) => void }) {
   const [form, setForm] = useState(application);
+  const [logoError, setLogoError] = useState('');
   const set = (key: keyof JobApplication, value: string) => setForm((current) => ({ ...current, [key]: value }));
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -45,6 +82,16 @@ function ApplicationDialog({ application, onClose, onSave }: { application: JobA
           <button type="button" onClick={onClose} className="grid size-11 place-items-center rounded-full bg-[#eef1f4]" aria-label="Закрыть"><X className="size-5" /></button>
         </div>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="flex items-center gap-4 md:col-span-2">
+            <CompanyLogo application={form} large />
+            <div>
+              <label htmlFor="company-logo-upload" className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl bg-[#edf1f5] px-3 text-[13px] font-semibold text-[#42566b] hover:bg-[#e2e8ee]"><ImagePlus className="size-4" />{form.logo ? 'Заменить логотип' : 'Добавить логотип'}</label>
+              <input id="company-logo-upload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="sr-only" onChange={async (event) => { const file = event.target.files?.[0]; if (!file) return; try { setLogoError(''); set('logo', await prepareLogo(file)); } catch (error) { setLogoError(error instanceof Error ? error.message : 'Не удалось загрузить логотип'); } event.target.value = ''; }} />
+              {form.logo && <button type="button" onClick={() => set('logo', '')} className="ml-2 text-[12px] font-medium text-[#c7352b]">Удалить</button>}
+              {logoError && <p className="mt-1 text-[12px] text-[#c7352b]">{logoError}</p>}
+              <p className="mt-1 text-[11px] text-[#7f91a3]">PNG, JPG, WebP или SVG до 3 МБ</p>
+            </div>
+          </div>
           <Field label="Компания *"><input required value={form.company} onChange={(e) => set('company', e.target.value)} /></Field>
           <Field label="Должность"><input value={form.position} onChange={(e) => set('position', e.target.value)} /></Field>
           <Field label="Дата"><input type="date" value={form.date} onChange={(e) => set('date', e.target.value)} /></Field>
@@ -78,9 +125,9 @@ export default function DashboardPage() {
   const [status, setStatus] = useState('Все статусы');
   const [segment, setSegment] = useState('Все типы');
   const [editing, setEditing] = useState<JobApplication | null>(null);
+  const [storageError, setStorageError] = useState('');
   const [view, setView] = useState<'cards' | 'table'>(() => localStorage.getItem('toporkov-dashboard-view') === 'table' ? 'table' : 'cards');
 
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(applications)); }, [applications]);
   useEffect(() => { localStorage.setItem('toporkov-dashboard-view', view); }, [view]);
   useEffect(() => {
     document.title = 'Трекер откликов';
@@ -97,8 +144,30 @@ export default function DashboardPage() {
     .filter((item) => `${item.company} ${item.position} ${item.contact} ${item.notes}`.toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => b.date.localeCompare(a.date)), [applications, query, status, segment]);
   const count = (value: ApplicationStatus) => applications.filter((item) => item.status === value).length;
-  const save = (item: JobApplication) => { setApplications((current) => current.some((entry) => entry.id === item.id) ? current.map((entry) => entry.id === item.id ? item : entry) : [item, ...current]); setEditing(null); };
-  const remove = (item: JobApplication) => { if (window.confirm(`Удалить отклик в «${item.company}»?`)) setApplications((current) => current.filter((entry) => entry.id !== item.id)); };
+  const save = (item: JobApplication) => {
+    const next = applications.some((entry) => entry.id === item.id)
+      ? applications.map((entry) => entry.id === item.id ? item : entry)
+      : [item, ...applications];
+    try {
+      persistApplications(next);
+      setApplications(next);
+      setStorageError('');
+      setEditing(null);
+    } catch {
+      setStorageError('Не удалось сохранить изменения. Хранилище браузера переполнено — удалите несколько логотипов и повторите попытку.');
+    }
+  };
+  const remove = (item: JobApplication) => {
+    if (!window.confirm(`Удалить отклик в «${item.company}»?`)) return;
+    const next = applications.filter((entry) => entry.id !== item.id);
+    try {
+      persistApplications(next);
+      setApplications(next);
+      setStorageError('');
+    } catch {
+      setStorageError('Не удалось сохранить изменения в браузере.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f4f6f8] font-['Onest',Arial,sans-serif] text-[#001122f2]">
@@ -108,9 +177,13 @@ export default function DashboardPage() {
           <SellerButton onClick={() => setEditing({ ...emptyApplication })} className="flex w-full items-center justify-center gap-2 !bg-[#005bff] !text-white shadow-[0_6px_18px_rgba(0,91,255,0.24)] hover:!bg-[#004ed6] active:scale-[0.98] active:!bg-[#003ead] md:w-auto"><Plus className="size-5" />Добавить отклик</SellerButton>
         </header>
 
+        {storageError && <div role="alert" className="mt-4 rounded-2xl border border-[#ffc9c3] bg-[#fff1ef] px-4 py-3 text-[13px] font-medium text-[#9f2f27]">{storageError}</div>}
+
         <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-5">
           {[['Всего', applications.length, 'text-[#001122f2]'], ['Отправлено', count('Отправлено'), 'text-[#005bff]'], ['Интервью', count('Интервью'), 'text-[#9b6500]'], ['Офферы', count('Оффер'), 'text-[#087c31]'], ['Отказы', count('Отказ'), 'text-[#c7352b]']].map(([label, value, color]) => <SellerCard key={String(label)} className="p-4 md:p-5"><p className="text-[13px] font-medium text-[#6f8091]">{label}</p><p className={`mt-1 text-[30px] font-bold ${color}`}>{value}</p></SellerCard>)}
         </div>
+
+        <WeeklyGoalCard applications={applications} />
 
         <AnalyticsWidget />
 
@@ -129,16 +202,16 @@ export default function DashboardPage() {
         {view === 'cards' ? (
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {filtered.length === 0 ? <SellerCard className="col-span-full px-5 py-16 text-center text-[#6f8091]">Ничего не найдено</SellerCard> : filtered.map((item) => (
-              <SellerCard key={item.id} className="flex min-h-[280px] flex-col p-5">
+              <SellerCard key={item.id} className="flex min-h-[280px] min-w-0 flex-col overflow-hidden p-5">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0"><p className="text-[12px] font-medium text-[#6f8091]">{formatDate(item.date)}</p><h2 className="mt-1 truncate text-[20px] font-bold">{item.company}</h2></div>
+                  <div className="flex min-w-0 items-center gap-3"><CompanyLogo application={item} large /><div className="min-w-0"><p className="text-[12px] font-medium text-[#6f8091]">{formatDate(item.date)}</p><h2 className="mt-1 truncate text-[20px] font-bold">{item.company}</h2></div></div>
                   <StatusBadge status={item.status} />
                 </div>
                 <p className="mt-3 text-[14px] leading-5 text-[#42566b]">{item.position || 'Должность не указана'}</p>
                 <div className="mt-3 flex items-center gap-2"><span className="rounded-md bg-[#edf1f5] px-2 py-1 text-[12px] font-semibold">{item.segment}</span>{item.salary && <span className="text-[12px] text-[#6f8091]">{item.salary}</span>}</div>
                 <div className="mt-4 grid gap-2">
-                  {item.rejectionReason && <div className="rounded-xl bg-[#fff1ef] px-3 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-[#c7352b]">Причина отказа</p><p className="mt-1 line-clamp-3 text-[13px] leading-5 text-[#5d2723]">{item.rejectionReason}</p></div>}
-                  {item.notes && <div className="rounded-xl bg-[#edf4ff] px-3 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-[#005bff]">Заметки</p><p className="mt-1 line-clamp-3 text-[13px] leading-5 text-[#29435f]">{item.notes}</p></div>}
+                  {item.rejectionReason && <div className="min-w-0 overflow-hidden rounded-xl bg-[#fff1ef] px-3 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-[#c7352b]">Причина отказа</p><p className="mt-1 line-clamp-3 break-words text-[13px] leading-5 text-[#5d2723] [overflow-wrap:anywhere]"><LinkifiedText>{item.rejectionReason}</LinkifiedText></p></div>}
+                  {item.notes && <div className="min-w-0 overflow-hidden rounded-xl bg-[#edf4ff] px-3 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-[#005bff]">Заметки</p><p className="mt-1 line-clamp-3 break-words text-[13px] leading-5 text-[#29435f] [overflow-wrap:anywhere]"><LinkifiedText>{item.notes}</LinkifiedText></p></div>}
                 </div>
                 <div className="mt-auto flex items-end justify-between pt-4">
                   <p className="max-w-[65%] truncate text-[12px] text-[#7f91a3]">{item.contact || 'Контакт не указан'}</p>
@@ -153,7 +226,7 @@ export default function DashboardPage() {
             <article key={item.id} className="border-b border-[#e8ebef] p-4 last:border-0 md:px-5">
               <div className="grid gap-3 md:grid-cols-[100px_minmax(160px,1fr)_minmax(210px,1.5fr)_90px_120px_84px] md:items-center">
                 <span className="text-[13px] text-[#6f8091]">{formatDate(item.date)}</span>
-                <div className="min-w-0"><p className="truncate text-[16px] font-semibold">{item.company}</p>{item.contact && <p className="truncate text-[12px] text-[#7f91a3]">{item.contact}</p>}</div>
+                <div className="flex min-w-0 items-center gap-2.5"><CompanyLogo application={item} /><div className="min-w-0"><p className="truncate text-[16px] font-semibold">{item.company}</p>{item.contact && <p className="truncate text-[12px] text-[#7f91a3]">{item.contact}</p>}</div></div>
                 <div className="min-w-0"><p className="truncate text-[14px]">{item.position || 'Должность не указана'}</p></div>
                 <span className="w-fit rounded-md bg-[#edf1f5] px-2 py-1 text-[12px] font-semibold">{item.segment}</span>
                 <StatusBadge status={item.status} />
@@ -161,8 +234,8 @@ export default function DashboardPage() {
               </div>
               {(item.rejectionReason || item.notes) && (
                 <div className="mt-3 grid gap-2 md:ml-[112px] md:grid-cols-2">
-                  {item.rejectionReason && <div className="rounded-xl bg-[#fff1ef] px-3 py-2.5"><p className="text-[11px] font-semibold uppercase tracking-wide text-[#c7352b]">Причина отказа</p><p className="mt-1 text-[13px] leading-5 text-[#5d2723]">{item.rejectionReason}</p></div>}
-                  {item.notes && <div className="rounded-xl bg-[#edf4ff] px-3 py-2.5"><p className="text-[11px] font-semibold uppercase tracking-wide text-[#005bff]">Заметки</p><p className="mt-1 text-[13px] leading-5 text-[#29435f]">{item.notes}</p></div>}
+                  {item.rejectionReason && <div className="min-w-0 overflow-hidden rounded-xl bg-[#fff1ef] px-3 py-2.5"><p className="text-[11px] font-semibold uppercase tracking-wide text-[#c7352b]">Причина отказа</p><p className="mt-1 break-words text-[13px] leading-5 text-[#5d2723] [overflow-wrap:anywhere]"><LinkifiedText>{item.rejectionReason}</LinkifiedText></p></div>}
+                  {item.notes && <div className="min-w-0 overflow-hidden rounded-xl bg-[#edf4ff] px-3 py-2.5"><p className="text-[11px] font-semibold uppercase tracking-wide text-[#005bff]">Заметки</p><p className="mt-1 break-words text-[13px] leading-5 text-[#29435f] [overflow-wrap:anywhere]"><LinkifiedText>{item.notes}</LinkifiedText></p></div>}
                 </div>
               )}
             </article>
