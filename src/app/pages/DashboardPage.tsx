@@ -57,7 +57,7 @@ function ApplicationDialog({ application, onClose, onSave }: { application: JobA
           <Field label="Контакт"><input value={form.contact} onChange={(e) => set('contact', e.target.value)} /></Field>
           <Field label="Заметки" className="md:col-span-2"><textarea rows={4} value={form.notes} onChange={(e) => set('notes', e.target.value)} /></Field>
         </div>
-        <div className="mt-6 flex justify-end gap-3"><SellerButton onClick={onClose}>Отмена</SellerButton><SellerButton className="bg-[#005bff] text-white hover:bg-[#0045c7]">Сохранить</SellerButton></div>
+        <div className="mt-6 flex justify-end gap-3"><SellerButton onClick={onClose}>Отмена</SellerButton><SellerButton type="submit" className="!bg-[#005bff] !text-white hover:!bg-[#0045c7]">Сохранить</SellerButton></div>
       </form>
     </div>
   );
