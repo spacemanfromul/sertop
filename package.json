@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run generate:og && vite build",
     "dev": "vite",
+    "analytics:serve": "node --env-file-if-exists=.env.local server/analytics-server.mjs",
     "generate:og": "node scripts/generate-og-image.mjs",
     "setup:og": "playwright install chromium",
     "demo:video": "node scripts/demo-video.mjs"

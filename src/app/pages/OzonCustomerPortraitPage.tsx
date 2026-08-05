@@ -20,6 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import ReactECharts from 'echarts-for-react';
 import { useIsMobile } from '../components/ui/use-mobile';
+import { SellerButton, SellerCard } from '../components/SellerUi';
 import * as echarts from 'echarts';
 import { ChevronDown, ChevronLeft, CircleHelp, FileSpreadsheet, FileText, GripVertical, Map as MapIcon, MoreHorizontal, Sparkles, X } from 'lucide-react';
 import ozonSellerLogo from '../../assets/ozon-seller-logo.svg';
@@ -521,9 +522,7 @@ function MobileBottomNav() {
   </nav>;
 }
 
-function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border-0 bg-white md:border md:border-[#d8dde4] ${className}`}>{children}</section>;
-}
+const Card = SellerCard;
 
 type CardDragHandleContextValue = Pick<ReturnType<typeof useSortable>, 'attributes' | 'isDragging' | 'listeners'>;
 
@@ -564,7 +563,7 @@ function CardTitle({ children }: { children: React.ReactNode }) {
 }
 
 function SmallButton({ children }: { children: React.ReactNode }) {
-  return <button type="button" className="h-10 shrink-0 rounded-lg bg-[#95a6b62d] px-3 text-[14px] font-semibold leading-5 text-[#001122f2] transition-colors hover:bg-[#7c9bb53a] md:h-11 md:px-4 md:text-[15px] md:leading-6">{formatText(children)}</button>;
+  return <SellerButton className="h-10 shrink-0 rounded-lg px-3 text-[14px] leading-5 md:h-11 md:px-4 md:text-[15px] md:leading-6">{formatText(children)}</SellerButton>;
 }
 
 function downloadExcelReport() {
