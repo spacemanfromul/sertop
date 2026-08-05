@@ -71,6 +71,7 @@ export default defineConfig(({ mode }) => {
   server: {
     proxy: {
       '/api/analytics': 'http://127.0.0.1:8787',
+      '/api/dashboard': 'http://127.0.0.1:8787',
     },
   },
   }

@@ -6,6 +6,7 @@ import { WeeklyGoalCard } from '../components/dashboard/WeeklyGoalCard';
 import { initialApplications, type ApplicationStatus, type JobApplication } from './dashboardApplicationsData';
 
 const STORAGE_KEY = 'toporkov-job-applications-v1';
+const STORAGE_BACKUP_KEY = 'toporkov-job-applications-backup-before-server-sync-v1';
 const statuses: ApplicationStatus[] = ['Черновик', 'Отправлено', 'Интервью', 'Тестовое', 'Оффер', 'Отказ'];
 const emptyApplication: JobApplication = {
   id: '', date: new Date().toISOString().slice(0, 10), company: '', segment: 'B2B', position: '', status: 'Отправлено',
@@ -28,6 +29,15 @@ function formatDate(value: string) {
 
 function persistApplications(applications: JobApplication[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
+}
+
+async function saveApplicationsToServer(applications: JobApplication[]) {
+  const response = await fetch('/api/dashboard/applications', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ applications }),
+  });
+  if (!response.ok) throw new Error('server_save_failed');
 }
 
 function StatusBadge({ status }: { status: ApplicationStatus }) {
@@ -126,9 +136,38 @@ export default function DashboardPage() {
   const [segment, setSegment] = useState('Все типы');
   const [editing, setEditing] = useState<JobApplication | null>(null);
   const [storageError, setStorageError] = useState('');
+  const [isLoadingApplications, setIsLoadingApplications] = useState(true);
   const [view, setView] = useState<'cards' | 'table'>(() => localStorage.getItem('toporkov-dashboard-view') === 'table' ? 'table' : 'cards');
 
   useEffect(() => { localStorage.setItem('toporkov-dashboard-view', view); }, [view]);
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const localSnapshot = localStorage.getItem(STORAGE_KEY);
+        if (localSnapshot && !localStorage.getItem(STORAGE_BACKUP_KEY)) {
+          localStorage.setItem(STORAGE_BACKUP_KEY, localSnapshot);
+        }
+        const response = await fetch('/api/dashboard/applications', { cache: 'no-store' });
+        if (!response.ok) throw new Error('server_load_failed');
+        const data = await response.json() as { applications: JobApplication[] | null };
+        if (cancelled) return;
+        if (Array.isArray(data.applications)) {
+          setApplications(data.applications);
+          persistApplications(data.applications);
+        } else {
+          await saveApplicationsToServer(applications);
+        }
+        setStorageError('');
+      } catch {
+        if (!cancelled) setStorageError('Серверное хранилище недоступно. Показана локальная копия — изменения между устройствами пока не синхронизируются.');
+      } finally {
+        if (!cancelled) setIsLoadingApplications(false);
+      }
+    };
+    void load();
+    return () => { cancelled = true; };
+  }, []);
   useEffect(() => {
     document.title = 'Трекер откликов';
     let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
@@ -144,28 +183,30 @@ export default function DashboardPage() {
     .filter((item) => `${item.company} ${item.position} ${item.contact} ${item.notes}`.toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => b.date.localeCompare(a.date)), [applications, query, status, segment]);
   const count = (value: ApplicationStatus) => applications.filter((item) => item.status === value).length;
-  const save = (item: JobApplication) => {
+  const save = async (item: JobApplication) => {
     const next = applications.some((entry) => entry.id === item.id)
       ? applications.map((entry) => entry.id === item.id ? item : entry)
       : [item, ...applications];
     try {
+      await saveApplicationsToServer(next);
       persistApplications(next);
       setApplications(next);
       setStorageError('');
       setEditing(null);
     } catch {
-      setStorageError('Не удалось сохранить изменения. Хранилище браузера переполнено — удалите несколько логотипов и повторите попытку.');
+      setStorageError('Не удалось сохранить изменения на сервере. Проверьте соединение и повторите попытку.');
     }
   };
-  const remove = (item: JobApplication) => {
+  const remove = async (item: JobApplication) => {
     if (!window.confirm(`Удалить отклик в «${item.company}»?`)) return;
     const next = applications.filter((entry) => entry.id !== item.id);
     try {
+      await saveApplicationsToServer(next);
       persistApplications(next);
       setApplications(next);
       setStorageError('');
     } catch {
-      setStorageError('Не удалось сохранить изменения в браузере.');
+      setStorageError('Не удалось удалить отклик на сервере. Проверьте соединение и повторите попытку.');
     }
   };
 
@@ -178,6 +219,7 @@ export default function DashboardPage() {
         </header>
 
         {storageError && <div role="alert" className="mt-4 rounded-2xl border border-[#ffc9c3] bg-[#fff1ef] px-4 py-3 text-[13px] font-medium text-[#9f2f27]">{storageError}</div>}
+        {isLoadingApplications && <div className="mt-4 rounded-2xl bg-white px-4 py-3 text-[13px] font-medium text-[#526579]">Синхронизирую отклики с сервером…</div>}
 
         <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-5">
           {[['Всего', applications.length, 'text-[#001122f2]'], ['Отправлено', count('Отправлено'), 'text-[#005bff]'], ['Интервью', count('Интервью'), 'text-[#9b6500]'], ['Офферы', count('Оффер'), 'text-[#087c31]'], ['Отказы', count('Отказ'), 'text-[#c7352b]']].map(([label, value, color]) => <SellerCard key={String(label)} className="p-4 md:p-5"><p className="text-[13px] font-medium text-[#6f8091]">{label}</p><p className={`mt-1 text-[30px] font-bold ${color}`}>{value}</p></SellerCard>)}

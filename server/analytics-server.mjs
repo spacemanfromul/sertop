@@ -1,5 +1,6 @@
 import http from 'node:http';
 import path from 'node:path';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
 const PORT = Number(process.env.ANALYTICS_PORT || 8787);
@@ -7,6 +8,7 @@ const API_URL = 'https://api-metrika.yandex.net/stat/v1/data';
 const CACHE_TTL = 15 * 60 * 1000;
 const cache = new Map();
 const pendingRequests = new Map();
+const DASHBOARD_DATA_FILE = process.env.DASHBOARD_DATA_FILE || path.resolve('data/dashboard-applications.json');
 const PERIODS = {
   today: { current: [0, 0], previous: [1, 1] },
   yesterday: { current: [1, 1], previous: [2, 2] },
@@ -90,9 +92,59 @@ export async function analyticsHandler(request, response) {
   }
 }
 
+async function readDashboardApplications() {
+  try {
+    const value = JSON.parse(await readFile(DASHBOARD_DATA_FILE, 'utf8'));
+    return Array.isArray(value) ? value : null;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    throw error;
+  }
+}
+
+async function writeDashboardApplications(applications) {
+  await mkdir(path.dirname(DASHBOARD_DATA_FILE), { recursive: true });
+  const temporaryFile = `${DASHBOARD_DATA_FILE}.tmp`;
+  await writeFile(temporaryFile, JSON.stringify(applications, null, 2), 'utf8');
+  await rename(temporaryFile, DASHBOARD_DATA_FILE);
+}
+
+export async function dashboardApplicationsHandler(request, response) {
+  response.setHeader('Content-Type', 'application/json; charset=utf-8');
+  response.setHeader('Cache-Control', 'no-store');
+  try {
+    if (request.method === 'GET') {
+      response.writeHead(200);
+      response.end(JSON.stringify({ applications: await readDashboardApplications() }));
+      return;
+    }
+    if (request.method === 'PUT') {
+      let body = '';
+      for await (const chunk of request) {
+        body += chunk;
+        if (body.length > 10 * 1024 * 1024) throw new Error('request_too_large');
+      }
+      const applications = JSON.parse(body).applications;
+      if (!Array.isArray(applications)) throw new Error('invalid_applications');
+      await writeDashboardApplications(applications);
+      response.writeHead(200);
+      response.end(JSON.stringify({ applications }));
+      return;
+    }
+    response.writeHead(405, { Allow: 'GET, PUT' });
+    response.end(JSON.stringify({ error: 'method_not_allowed' }));
+  } catch (error) {
+    console.error(error);
+    response.writeHead(error?.message === 'request_too_large' ? 413 : 400);
+    response.end(JSON.stringify({ error: 'dashboard_storage_unavailable' }));
+  }
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   http.createServer((request, response) => {
-    if (new URL(request.url, `http://${request.headers.host}`).pathname === '/api/analytics') return analyticsHandler(request, response);
+    const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+    if (pathname === '/api/analytics') return analyticsHandler(request, response);
+    if (pathname === '/api/dashboard/applications') return dashboardApplicationsHandler(request, response);
     response.writeHead(404); response.end('Not found');
   }).listen(PORT, '127.0.0.1', () => console.log(`Analytics API: http://127.0.0.1:${PORT}/api/analytics`));
 }
