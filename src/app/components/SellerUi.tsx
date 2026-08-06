@@ -1,7 +1,7 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, HTMLAttributes } from 'react';
 
-export function SellerCard({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border-0 bg-white md:border md:border-[#d8dde4] ${className}`}>{children}</section>;
+export function SellerCard({ children, className = '', ...props }: HTMLAttributes<HTMLElement>) {
+  return <section className={`rounded-2xl border-0 bg-white md:border md:border-[#d8dde4] ${className}`} {...props}>{children}</section>;
 }
 
 export function SellerButton({

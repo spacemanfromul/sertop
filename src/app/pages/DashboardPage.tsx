@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { BriefcaseBusiness, ExternalLink, ImagePlus, LayoutGrid, List, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { SellerButton, SellerCard } from '../components/SellerUi';
 import { AnalyticsWidget } from '../components/analytics/AnalyticsWidget';
@@ -137,6 +137,11 @@ export default function DashboardPage() {
   const [editing, setEditing] = useState<JobApplication | null>(null);
   const [storageError, setStorageError] = useState('');
   const [isLoadingApplications, setIsLoadingApplications] = useState(true);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [batchStatus, setBatchStatus] = useState<ApplicationStatus>('Отправлено');
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef(false);
   const [view, setView] = useState<'cards' | 'table'>(() => localStorage.getItem('toporkov-dashboard-view') === 'table' ? 'table' : 'cards');
 
   useEffect(() => { localStorage.setItem('toporkov-dashboard-view', view); }, [view]);
@@ -209,6 +214,45 @@ export default function DashboardPage() {
       setStorageError('Не удалось удалить отклик на сервере. Проверьте соединение и повторите попытку.');
     }
   };
+  const stopLongPress = () => {
+    if (longPressTimer.current !== null) window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = null;
+  };
+  const startLongPress = (itemId: string, event: ReactPointerEvent<HTMLElement>) => {
+    if ((event.target as HTMLElement).closest('button, a, input, select, textarea')) return;
+    stopLongPress();
+    longPressTriggered.current = false;
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      setSelectionMode(true);
+      setSelectedIds((current) => new Set(current).add(itemId));
+    }, 550);
+  };
+  const toggleSelected = (itemId: string) => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(itemId)) next.delete(itemId); else next.add(itemId);
+      return next;
+    });
+  };
+  const closeSelection = () => {
+    stopLongPress();
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+  const applyBatchStatus = async () => {
+    if (!selectedIds.size) return;
+    const next = applications.map((item) => selectedIds.has(item.id) ? { ...item, status: batchStatus } : item);
+    try {
+      await saveApplicationsToServer(next);
+      persistApplications(next);
+      setApplications(next);
+      setStorageError('');
+      closeSelection();
+    } catch {
+      setStorageError('Не удалось массово изменить статус. Проверьте соединение и повторите попытку.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f4f6f8] font-['Onest',Arial,sans-serif] text-[#001122f2]">
@@ -241,17 +285,47 @@ export default function DashboardPage() {
           </div>
         </SellerCard>
 
+        {selectionMode && <SellerCard className="sticky top-3 z-40 mt-4 border border-[#b9d2ff] p-3 shadow-[0_12px_32px_rgba(0,45,110,0.16)] md:p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[14px] font-semibold text-[#001122f2]">Выбрано: {selectedIds.size}</p>
+              <button type="button" onClick={() => setSelectedIds(new Set(filtered.map((item) => item.id)))} className="text-[13px] font-semibold text-[#005bff] hover:text-[#0045c7]">Выбрать все</button>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <select value={batchStatus} onChange={(event) => setBatchStatus(event.target.value as ApplicationStatus)} className="h-11 rounded-xl bg-[#f3f5f7] px-3 text-[14px] font-medium outline-none ring-[#005bff] focus:ring-2">{statuses.map((item) => <option key={item}>{item}</option>)}</select>
+              <SellerButton onClick={() => void applyBatchStatus()} disabled={!selectedIds.size} className="!bg-[#005bff] !text-white hover:!bg-[#004ed6] disabled:opacity-50">Сменить статус</SellerButton>
+              <SellerButton onClick={closeSelection}>Отмена</SellerButton>
+            </div>
+          </div>
+        </SellerCard>}
+
         {view === 'cards' ? (
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {filtered.length === 0 ? <SellerCard className="col-span-full px-5 py-16 text-center text-[#6f8091]">Ничего не найдено</SellerCard> : filtered.map((item) => (
-              <SellerCard key={item.id} className="flex min-h-[280px] min-w-0 flex-col overflow-hidden p-5">
+              <SellerCard
+                key={item.id}
+                onPointerDown={(event) => startLongPress(item.id, event)}
+                onPointerUp={stopLongPress}
+                onPointerCancel={stopLongPress}
+                onPointerLeave={stopLongPress}
+                onContextMenu={(event) => event.preventDefault()}
+                onClick={() => {
+                  if (longPressTriggered.current) {
+                    longPressTriggered.current = false;
+                    return;
+                  }
+                  if (selectionMode) toggleSelected(item.id);
+                }}
+                className={`relative flex min-h-[280px] min-w-0 select-none flex-col overflow-hidden p-5 transition-[box-shadow,border-color,transform] ${selectedIds.has(item.id) ? '!border-[#005bff] shadow-[0_0_0_3px_rgba(0,91,255,0.16)]' : ''}`}
+              >
+                {selectionMode && <span className={`absolute right-3 top-3 z-10 grid size-6 place-items-center rounded-full border-2 text-[13px] font-bold ${selectedIds.has(item.id) ? 'border-[#005bff] bg-[#005bff] text-white' : 'border-[#b7c2ce] bg-white text-transparent'}`}>✓</span>}
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[12px] font-medium text-[#6f8091]">{formatDate(item.date)}</span>
-                  <div className="flex shrink-0 gap-1">
+                  {!selectionMode && <div className="flex shrink-0 gap-1" onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
                     <button onClick={() => setEditing(item)} className="grid size-9 place-items-center rounded-lg hover:bg-[#edf1f5]" aria-label="Редактировать"><Pencil className="size-4" /></button>
                     {item.link && <a href={item.link} target="_blank" rel="noreferrer" className="grid size-9 place-items-center rounded-lg hover:bg-[#edf1f5]" aria-label="Открыть вакансию"><ExternalLink className="size-4" /></a>}
-                    <button onClick={() => remove(item)} className="grid size-9 place-items-center rounded-lg text-[#c7352b] hover:bg-[#ffe8e5]" aria-label="Удалить"><Trash2 className="size-4" /></button>
-                  </div>
+                    <button onClick={() => void remove(item)} className="grid size-9 place-items-center rounded-lg text-[#c7352b] hover:bg-[#ffe8e5]" aria-label="Удалить"><Trash2 className="size-4" /></button>
+                  </div>}
                 </div>
                 <div className="mt-3 flex min-w-0 items-center gap-3">
                   <CompanyLogo application={item} large />
