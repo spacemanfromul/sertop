@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from 'react';
-import { BriefcaseBusiness, ExternalLink, ImagePlus, LayoutGrid, List, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { BriefcaseBusiness, ExternalLink, ImagePlus, LayoutGrid, List, LoaderCircle, Pencil, Plus, Search, Sparkles, Trash2, X } from 'lucide-react';
 import { SellerButton, SellerCard } from '../components/SellerUi';
 import { AnalyticsWidget } from '../components/analytics/AnalyticsWidget';
 import { WeeklyGoalCard } from '../components/dashboard/WeeklyGoalCard';
 import { initialApplications, type ApplicationStatus, type JobApplication } from './dashboardApplicationsData';
+import { importVacancy, VacancyImportError } from '../../services/vacanciesApi';
 
 const STORAGE_KEY = 'toporkov-job-applications-v1';
 const STORAGE_BACKUP_KEY = 'toporkov-job-applications-backup-before-server-sync-v1';
@@ -78,7 +79,36 @@ function prepareLogo(file: File) {
 function ApplicationDialog({ application, onClose, onSave }: { application: JobApplication; onClose: () => void; onSave: (item: JobApplication) => void }) {
   const [form, setForm] = useState(application);
   const [logoError, setLogoError] = useState('');
+  const [importStatus, setImportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [importMessage, setImportMessage] = useState('');
   const set = (key: keyof JobApplication, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const autofill = async () => {
+    setImportStatus('loading');
+    setImportMessage('');
+    try {
+      const vacancy = await importVacancy(form.link);
+      setForm((current) => ({
+        ...current,
+        company: vacancy.company || current.company,
+        position: vacancy.title || current.position,
+        salary: vacancy.salary || current.salary,
+        link: vacancy.url || current.link,
+        logo: vacancy.companyLogo || current.logo,
+      }));
+      setImportStatus('success');
+      setImportMessage('Данные вакансии добавлены. Их можно отредактировать перед сохранением.');
+    } catch (error) {
+      const code = error instanceof VacancyImportError ? error.code : 'backend_unavailable';
+      const messages = {
+        invalid_url: 'Укажите корректную ссылку на вакансию HH.ru.',
+        vacancy_not_found: 'Вакансия не найдена или больше недоступна.',
+        backend_unavailable: 'Сервис автозаполнения временно недоступен.',
+        not_configured: 'API автозаполнения не настроен.',
+      };
+      setImportStatus('error');
+      setImportMessage(messages[code]);
+    }
+  };
   const submit = (event: FormEvent) => {
     event.preventDefault();
     onSave({ ...form, id: form.id || globalThis.crypto?.randomUUID?.() || String(Date.now()) });
@@ -102,6 +132,14 @@ function ApplicationDialog({ application, onClose, onSave }: { application: JobA
               <p className="mt-1 text-[11px] text-[#7f91a3]">PNG, JPG, WebP или SVG до 3 МБ</p>
             </div>
           </div>
+          <div className="grid gap-2 md:col-span-2 md:grid-cols-[1fr_auto] md:items-end">
+            <Field label="Ссылка на вакансию"><input type="url" value={form.link} onChange={(e) => { set('link', e.target.value); setImportStatus('idle'); setImportMessage(''); }} placeholder="https://hh.ru/vacancy/…" /></Field>
+            <SellerButton type="button" onClick={() => void autofill()} disabled={importStatus === 'loading' || !form.link.trim()} className="flex items-center justify-center gap-2 !bg-[#e9f2ff] !text-[#005bff] hover:!bg-[#dbe9ff]">
+              {importStatus === 'loading' ? <LoaderCircle className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+              {importStatus === 'loading' ? 'Заполняю…' : 'Заполнить автоматически'}
+            </SellerButton>
+            {importMessage && <p role={importStatus === 'error' ? 'alert' : 'status'} className={`text-[12px] md:col-span-2 ${importStatus === 'error' ? 'text-[#c7352b]' : 'text-[#087c31]'}`}>{importMessage}</p>}
+          </div>
           <Field label="Компания *"><input required value={form.company} onChange={(e) => set('company', e.target.value)} /></Field>
           <Field label="Должность"><input value={form.position} onChange={(e) => set('position', e.target.value)} /></Field>
           <Field label="Дата"><input type="date" value={form.date} onChange={(e) => set('date', e.target.value)} /></Field>
@@ -110,7 +148,6 @@ function ApplicationDialog({ application, onClose, onSave }: { application: JobA
           <Field label="Зарплата"><input value={form.salary} onChange={(e) => set('salary', e.target.value)} placeholder="Например, 250 000 ₽" /></Field>
           <Field label="Этап отказа"><input value={form.rejectionStage} onChange={(e) => set('rejectionStage', e.target.value)} /></Field>
           <Field label="Причина отказа"><input value={form.rejectionReason} onChange={(e) => set('rejectionReason', e.target.value)} /></Field>
-          <Field label="Ссылка"><input type="url" value={form.link} onChange={(e) => set('link', e.target.value)} placeholder="https://" /></Field>
           <Field label="Контакт"><input value={form.contact} onChange={(e) => set('contact', e.target.value)} /></Field>
           <Field label="Заметки" className="md:col-span-2"><textarea rows={4} value={form.notes} onChange={(e) => set('notes', e.target.value)} /></Field>
         </div>
