@@ -6,6 +6,7 @@ import CasePage from './pages/CasePage';
 import OgPreviewPage from './pages/OgPreviewPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
+import TranscriptionPage from './pages/TranscriptionPage';
 
 const OzonCustomerPortraitPage = lazy(() => import('./pages/OzonCustomerPortraitPage'));
 
@@ -32,6 +33,7 @@ function AppRoutes() {
         <Route path="/cases/service-sprint" element={<CasePage slug="service-sprint" />} />
         <Route path="/og-preview" element={<OgPreviewPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/transcribe" element={<TranscriptionPage />} />
         <Route path="/admin-panel" element={<Navigate to="/cases/releases" replace />} />
         <Route path="/routes" element={<Navigate to="/cases/routes" replace />} />
         <Route path="/routes-prototype" element={<RoutesPrototypePage />} />

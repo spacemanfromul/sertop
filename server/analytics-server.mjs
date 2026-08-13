@@ -2,13 +2,18 @@ import http from 'node:http';
 import path from 'node:path';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+import { Readable, Transform } from 'node:stream';
 
 const PORT = Number(process.env.ANALYTICS_PORT || 8787);
 const API_URL = 'https://api-metrika.yandex.net/stat/v1/data';
+const TRANSCRIPTION_API_URL = 'https://transcribe.toporkovdsgnr.ru/api/transcribe';
+const MAX_TRANSCRIPTION_REQUEST_SIZE = 101 * 1024 * 1024;
 const CACHE_TTL = 15 * 60 * 1000;
 const cache = new Map();
 const pendingRequests = new Map();
 const DASHBOARD_DATA_FILE = process.env.DASHBOARD_DATA_FILE || path.resolve('data/dashboard-applications.json');
+const TRANSCRIPTION_HISTORY_FILE = process.env.TRANSCRIPTION_HISTORY_FILE || path.resolve('data/transcription-history.json');
+const MAX_TRANSCRIPTION_HISTORY_ITEMS = 100;
 const PERIODS = {
   today: { current: [0, 0], previous: [1, 1] },
   yesterday: { current: [1, 1], previous: [2, 2] },
@@ -140,11 +145,155 @@ export async function dashboardApplicationsHandler(request, response) {
   }
 }
 
+export async function transcriptionHandler(request, response) {
+  response.setHeader('Cache-Control', 'no-store');
+  if (request.method !== 'POST') {
+    response.writeHead(405, { Allow: 'POST', 'Content-Type': 'application/json; charset=utf-8' });
+    response.end(JSON.stringify({ detail: 'Метод не поддерживается' }));
+    return;
+  }
+
+  const apiKey = process.env.TRANSCRIPTION_API_KEY;
+  if (!apiKey) {
+    console.error('TRANSCRIPTION_API_KEY is not configured');
+    response.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
+    response.end(JSON.stringify({ detail: 'Сервис транскрибации не настроен' }));
+    return;
+  }
+
+  const contentType = request.headers['content-type'] || '';
+  const contentLength = Number(request.headers['content-length'] || 0);
+  if (!contentType.startsWith('multipart/form-data')) {
+    response.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+    response.end(JSON.stringify({ detail: 'Ожидается multipart/form-data' }));
+    return;
+  }
+  if (contentLength > MAX_TRANSCRIPTION_REQUEST_SIZE) {
+    response.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8' });
+    response.end(JSON.stringify({ detail: 'Файл превышает допустимый размер 100 МБ' }));
+    return;
+  }
+
+  const controller = new AbortController();
+  request.on('aborted', () => controller.abort());
+  response.on('close', () => { if (!response.writableEnded) controller.abort(); });
+
+  let received = 0;
+  const limiter = new Transform({
+    transform(chunk, encoding, callback) {
+      received += chunk.length;
+      if (received > MAX_TRANSCRIPTION_REQUEST_SIZE) {
+        callback(new Error('request_too_large'));
+        return;
+      }
+      callback(null, chunk);
+    },
+  });
+  request.pipe(limiter);
+
+  try {
+    const upstream = await fetch(TRANSCRIPTION_API_URL, {
+      method: 'POST',
+      headers: {
+        'X-API-Key': apiKey,
+        'Content-Type': contentType,
+        ...(contentLength ? { 'Content-Length': String(contentLength) } : {}),
+      },
+      body: Readable.toWeb(limiter),
+      duplex: 'half',
+      signal: controller.signal,
+    });
+    const responseContentType = upstream.headers.get('content-type') || 'application/json; charset=utf-8';
+    if (upstream.ok) {
+      const result = await upstream.json();
+      const encodedFileName = String(request.headers['x-transcription-file-name'] || 'Запись');
+      let fileName = 'Запись';
+      try { fileName = decodeURIComponent(encodedFileName).slice(0, 255) || 'Запись'; } catch {}
+      const fileSize = Math.max(0, Number(request.headers['x-transcription-file-size'] || 0));
+      await addTranscriptionHistoryItem({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        fileName,
+        fileSize,
+        createdAt: new Date().toISOString(),
+        language: String(result.language || ''),
+        duration: Number(result.duration || 0),
+        text: String(result.text || ''),
+        segments: Array.isArray(result.segments) ? result.segments : [],
+      });
+      response.writeHead(upstream.status, { 'Content-Type': responseContentType, 'Cache-Control': 'no-store' });
+      response.end(JSON.stringify(result));
+      return;
+    }
+    response.writeHead(upstream.status, {
+      'Content-Type': responseContentType,
+      'Cache-Control': 'no-store',
+    });
+    if (upstream.body) Readable.fromWeb(upstream.body).pipe(response);
+    else response.end();
+  } catch (error) {
+    if (response.headersSent || response.writableEnded) return;
+    const tooLarge = error?.message === 'request_too_large' || error?.cause?.message === 'request_too_large';
+    if (!controller.signal.aborted) console.error('Transcription proxy:', error);
+    response.writeHead(tooLarge ? 413 : 503, { 'Content-Type': 'application/json; charset=utf-8' });
+    response.end(JSON.stringify({ detail: tooLarge ? 'Файл превышает допустимый размер 100 МБ' : 'Сервис транскрибации временно недоступен' }));
+  }
+}
+
+async function readTranscriptionHistory() {
+  try {
+    const value = JSON.parse(await readFile(TRANSCRIPTION_HISTORY_FILE, 'utf8'));
+    return Array.isArray(value) ? value : [];
+  } catch (error) {
+    if (error?.code === 'ENOENT') return [];
+    throw error;
+  }
+}
+
+async function writeTranscriptionHistory(items) {
+  await mkdir(path.dirname(TRANSCRIPTION_HISTORY_FILE), { recursive: true });
+  const temporaryFile = `${TRANSCRIPTION_HISTORY_FILE}.tmp`;
+  await writeFile(temporaryFile, JSON.stringify(items, null, 2), 'utf8');
+  await rename(temporaryFile, TRANSCRIPTION_HISTORY_FILE);
+}
+
+async function addTranscriptionHistoryItem(item) {
+  const items = await readTranscriptionHistory();
+  await writeTranscriptionHistory([item, ...items].slice(0, MAX_TRANSCRIPTION_HISTORY_ITEMS));
+}
+
+export async function transcriptionHistoryHandler(request, response, itemId = '') {
+  response.setHeader('Content-Type', 'application/json; charset=utf-8');
+  response.setHeader('Cache-Control', 'no-store');
+  try {
+    if (request.method === 'GET' && !itemId) {
+      response.writeHead(200);
+      response.end(JSON.stringify({ items: await readTranscriptionHistory() }));
+      return;
+    }
+    if (request.method === 'DELETE' && itemId) {
+      const items = await readTranscriptionHistory();
+      await writeTranscriptionHistory(items.filter((item) => item.id !== itemId));
+      response.writeHead(200);
+      response.end(JSON.stringify({ ok: true }));
+      return;
+    }
+    response.writeHead(405, { Allow: 'GET, DELETE' });
+    response.end(JSON.stringify({ detail: 'Метод не поддерживается' }));
+  } catch (error) {
+    console.error('Transcription history:', error);
+    response.writeHead(503);
+    response.end(JSON.stringify({ detail: 'История временно недоступна' }));
+  }
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   http.createServer((request, response) => {
     const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
     if (pathname === '/api/analytics') return analyticsHandler(request, response);
     if (pathname === '/api/dashboard/applications') return dashboardApplicationsHandler(request, response);
+    if (pathname === '/api/transcribe') return transcriptionHandler(request, response);
+    if (pathname === '/api/transcriptions') return transcriptionHistoryHandler(request, response);
+    if (pathname.startsWith('/api/transcriptions/')) return transcriptionHistoryHandler(request, response, decodeURIComponent(pathname.slice('/api/transcriptions/'.length)));
     response.writeHead(404); response.end('Not found');
   }).listen(PORT, '127.0.0.1', () => console.log(`Analytics API: http://127.0.0.1:${PORT}/api/analytics`));
 }
